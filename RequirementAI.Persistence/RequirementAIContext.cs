@@ -22,11 +22,7 @@ public class RequirementAIContext(DbContextOptions<RequirementAIContext> options
             entity.HasIndex(e => e.Email)
                 .IsUnique();
 
-            entity.Property(e => e.FirstName)
-                .IsRequired()
-                .HasMaxLength(255);
-
-                entity.Property(e => e.LastName)
+            entity.Property(e => e.Name)
                 .IsRequired()
                 .HasMaxLength(255);
 

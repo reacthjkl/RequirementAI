@@ -20,6 +20,8 @@ AppSetup.SetupHttpContextAccessor(builder);
 
 AppSetup.SetupServices(builder);
 
+AppSetup.SetupAuthProviders(builder);
+
 AppSetup.SetupRepositories(builder);
 
 AppSetup.SetupControllers(builder);

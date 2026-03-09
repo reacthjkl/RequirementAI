@@ -11,9 +11,7 @@ public class User
 
     [MaxLength(255)] public string? Password { get; set; }
 
-    [Required] [MaxLength(255)] public required string FirstName { get; set; }
-
-    [Required] [MaxLength(255)] public required string LastName { get; set; }
+    [Required] [MaxLength(255)] public required string Name { get; set; }
 
     [Required] public AuthProvider Provider { get; set; }
 
