@@ -1,8 +1,9 @@
 using RequirementAI.Contract.Dto.AuthDtos;
+using RequirementAI.Persistence.Entities;
 
 namespace RequirementAI.Business.Interfaces;
 
 public interface ILocalAuthProvider
 {
-    Task<UserIdentityPayload?> ValidateAsync(LocalAuthRequestDto request, CancellationToken ct);
+    Task<User?> GetUserByValidCredentials(LocalAuthRequestDto request, CancellationToken ct);
 }

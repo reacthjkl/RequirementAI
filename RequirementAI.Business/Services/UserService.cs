@@ -5,13 +5,11 @@ using RequirementAI.Persistence.Interfaces;
 
 namespace RequirementAI.Business.Services;
 
-public class UserService(IUserRepository userRepository, ICurrentUserService currentUser, IMapper mapper) : IUserService
+public class UserService(IUserRepository userRepository, IMapper mapper) : IUserService
 {
-    public async Task<UserDto> GetAsync(CancellationToken ct)
+    public async Task<UserDto> GetById(Guid userId, CancellationToken ct)
     {
-        var user = await userRepository.GetById(currentUser.Id, ct)
-                   ?? throw new KeyNotFoundException("User not found");
-
+        var user = await userRepository.GetById(userId, ct);
         return mapper.Map<UserDto>(user);
     }
 

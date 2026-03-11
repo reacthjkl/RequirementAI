@@ -16,15 +16,17 @@ AppSetup.SetupEntityFramework(builder);
 
 AppSetup.SetupAuthentication(builder);
 
-AppSetup.SetupHttpContextAccessor(builder);
-
 AppSetup.SetupServices(builder);
 
 AppSetup.SetupAuthProviders(builder);
 
 AppSetup.SetupRepositories(builder);
 
+AppSetup.SetupExceptionHandler(builder);
+
 AppSetup.SetupControllers(builder);
+
+AppSetup.SetupHttpContextAccessor(builder);
 
 var app = builder.Build();
 
@@ -35,6 +37,8 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
+app.UseExceptionHandler();
 
 app.UseHttpsRedirection();
 

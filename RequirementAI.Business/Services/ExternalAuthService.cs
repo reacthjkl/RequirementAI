@@ -2,6 +2,7 @@ using Microsoft.Extensions.Options;
 using RequirementAI.Business.Interfaces;
 using RequirementAI.Contract.Dto.AuthDtos;
 using RequirementAI.Contract.Enums;
+using RequirementAI.Contract.Exceptions;
 using RequirementAI.Contract.Settings;
 using RequirementAI.Persistence.Entities;
 using RequirementAI.Persistence.Interfaces;
@@ -33,11 +34,11 @@ public class ExternalAuthService : IExternalAuthService
     public async Task AuthenticateExternalAsync(ExternalAuthRequestDto request, CancellationToken ct)
     {
         if (!_externalProviders.TryGetValue(request.Provider, out var provider))
-            throw new Exception($"Unsupported provider: {request.Provider}");
+            throw new AuthorizationException($"Unsupported provider: {request.Provider}");
 
         var payload = await provider.ValidateAsync(request.Token);
         if (payload == null)
-            throw new UnauthorizedAccessException("Invalid token");
+            throw new AuthorizationException("Invalid token");
 
         var user = await _userRepo.GetByEmailAsync(payload.Email, ct)
                    ?? await _userRepo.CreateAsync(new User
@@ -46,12 +47,8 @@ public class ExternalAuthService : IExternalAuthService
                        Name = payload.Name,
                        Provider = request.Provider,
                        ProviderId = payload.ProviderId,
-                       AvatarUrl = payload.AvatarUrl,
-                       EmailConfirmed = true
+                       AvatarUrl = payload.AvatarUrl
                    }, ct);
-
-        if (!user.EmailConfirmed)
-            throw new UnauthorizedAccessException("Email was not confirmed.");
 
         var token = _jwtService.GenerateJwt(user);
         var refreshToken = _jwtService.GenerateRefreshToken();

@@ -25,7 +25,7 @@ public class JwtTokenService(IOptions<JwtSettings> settings) : IJwtTokenService
     public string GenerateJwt(User user)
     {
         var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_settings.Key));
-        var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+        var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
         var claims = new[]
         {
@@ -39,7 +39,7 @@ public class JwtTokenService(IOptions<JwtSettings> settings) : IJwtTokenService
             _settings.Audience,
             claims,
             expires: DateTimeOffset.UtcNow.UtcDateTime.AddMinutes(_settings.AccessTokenLifetimeMinutes),
-            signingCredentials: creds
+            signingCredentials: credentials
         );
 
         return new JwtSecurityTokenHandler().WriteToken(token);

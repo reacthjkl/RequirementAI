@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using RequirementAI.Contract.Exceptions;
 using RequirementAI.Persistence.Entities;
 using RequirementAI.Persistence.Interfaces;
 
@@ -32,10 +33,11 @@ public class UserRepository(RequirementAIContext context) : IUserRepository
             .FirstOrDefaultAsync(u => u.RefreshToken == expiredRefreshToken, ct);
     }
 
-    public async Task<User?> GetById(Guid id, CancellationToken ct)
+    public async Task<User> GetById(Guid id, CancellationToken ct)
     {
         return await context.Users
-            .AsNoTracking()
-            .FirstOrDefaultAsync(u => u.Id == id, ct);
+                   .AsNoTracking()
+                   .FirstOrDefaultAsync(u => u.Id == id, ct)
+               ?? throw new PersistenceException("User not found");
     }
 }

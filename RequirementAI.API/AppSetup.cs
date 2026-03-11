@@ -4,6 +4,7 @@ using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using RequirementAI.API.Middleware;
 using RequirementAI.Business.Helpers;
 using RequirementAI.Business.Interfaces;
 using RequirementAI.Business.MappingProfiles;
@@ -13,6 +14,7 @@ using RequirementAI.Contract.Settings;
 using RequirementAI.Persistence;
 using RequirementAI.Persistence.Interfaces;
 using RequirementAI.Persistence.Repositories;
+
 namespace RequirementAI.API;
 
 public static class AppSetup
@@ -28,8 +30,6 @@ public static class AppSetup
         builder.Services.AddScoped<IJwtTokenService, JwtTokenService>();
         builder.Services.AddSingleton<IPasswordHasher, Argon2PasswordHasher>();
         builder.Services.AddScoped<ICookiesHelper, CookiesHelper>();
-        builder.Services.AddScoped<ICurrentUserService, CurrentUserService>();
-        builder.Services.AddScoped<IEmailService, EmailService>();
         builder.Services.AddHttpClient();
     }
 
@@ -165,16 +165,22 @@ public static class AppSetup
         builder.Services.AddScoped<IExternalAuthProvider, GoogleAuthProvider>();
     }
 
-    public static void SetupHttpContextAccessor(WebApplicationBuilder builder)
-    {
-        builder.Services.AddHttpContextAccessor();
-    }
-
     public static void ApplyMigrations(WebApplication app)
     {
         using var scope = app.Services.CreateScope();
         var db = scope.ServiceProvider.GetRequiredService<RequirementAIContext>();
         db.Database.Migrate();
         Console.WriteLine("Database migrations applied successfully.");
+    }
+
+    public static void SetupExceptionHandler(WebApplicationBuilder builder)
+    {
+        builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
+        builder.Services.AddProblemDetails();
+    }
+
+    public static void SetupHttpContextAccessor(WebApplicationBuilder builder)
+    {
+        builder.Services.AddHttpContextAccessor();
     }
 }

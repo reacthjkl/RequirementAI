@@ -4,13 +4,14 @@ using Microsoft.Extensions.Configuration;
 using RequirementAI.Business.Interfaces;
 using RequirementAI.Contract.Dto.AuthDtos;
 using RequirementAI.Contract.Enums;
+using RequirementAI.Contract.Exceptions;
 
 namespace RequirementAI.Business.Providers;
 
 public class GoogleAuthProvider(IConfiguration config, IMapper mapper) : IExternalAuthProvider
 {
     private readonly string _clientId = config["Authentication:Google:ClientId"]
-                                        ?? throw new InvalidOperationException(
+                                        ?? throw new AuthorizationException(
                                             "Missing Google Client ID configuration.");
 
     public AuthProvider Provider => AuthProvider.Google;

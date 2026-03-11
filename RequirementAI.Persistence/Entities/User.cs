@@ -24,10 +24,4 @@ public class User
     public DateTimeOffset? RefreshTokenExpiry { get; set; }
 
     public DateTimeOffset CreatedAt { get; set; } = DateTimeOffset.UtcNow;
-
-    public bool EmailConfirmed { get; set; } = false;
-
-    public Guid? EmailConfirmationToken { get; set; }
-
-    public DateTimeOffset? EmailConfirmationTokenExpiry { get; set; }
 }
