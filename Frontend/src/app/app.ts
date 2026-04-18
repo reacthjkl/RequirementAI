@@ -1,5 +1,6 @@
-import { Component } from '@angular/core';
+import { Component, signal } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
+import { Auth } from './shared/services/auth';
 
 @Component({
   selector: 'app-root',
@@ -7,4 +8,14 @@ import { RouterOutlet } from '@angular/router';
   templateUrl: './app.html',
   styleUrl: './app.scss',
 })
-export class App {}
+export class App {
+  public loggedIn = signal(false);
+
+  constructor(private auth: Auth) {
+    this.loggedIn = this.auth.loggedIn;
+  }
+
+  async ngOnInit() {
+    await this.auth.checkIsLoggedIn();
+  }
+}

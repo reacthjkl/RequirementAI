@@ -15,19 +15,25 @@ export class Api {
   constructor(private http: HttpClient) {}
 
   public async get<T>(controller: ApiController, resource: string) {
-    return await firstValueFrom(this.http.get<ApiResponse<T>>(this.url(controller, resource)));
+    return await firstValueFrom(
+      this.http.get<ApiResponse<T>>(this.url(controller, resource), { withCredentials: true }),
+    );
   }
 
   public async put<ReqT, ResT>(controller: ApiController, resource: string, body?: ReqT) {
     return await firstValueFrom(
-      this.http.put<ApiResponse<ResT>>(this.url(controller, resource), body),
+      this.http.put<ApiResponse<ResT>>(this.url(controller, resource), body, {
+        withCredentials: true,
+      }),
     );
   }
 
   public async post<T>(controller: ApiController, resource: string, body?: T) {
     try {
       return await firstValueFrom(
-        this.http.post<ApiResponse<null>>(this.url(controller, resource), body),
+        this.http.post<ApiResponse<null>>(this.url(controller, resource), body, {
+          withCredentials: true,
+        }),
       );
     } catch {
       return { successful: false } as ApiResponse<null>;
@@ -36,7 +42,9 @@ export class Api {
 
   public async delete(controller: ApiController, resource: string) {
     return await firstValueFrom(
-      this.http.delete<ApiResponse<null>>(this.url(controller, resource)),
+      this.http.delete<ApiResponse<null>>(this.url(controller, resource), {
+        withCredentials: true,
+      }),
     );
   }
 }

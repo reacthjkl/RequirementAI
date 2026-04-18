@@ -33,7 +33,7 @@ public class CookiesHelper(IHttpContextAccessor httpContextAccessor) : ICookiesH
         {
             HttpOnly = true,
             Secure = true,
-            SameSite = SameSiteMode.Lax,
+            SameSite = SameSiteMode.None,
             Expires = expires
         };
 
