@@ -3,30 +3,13 @@ using Microsoft.AspNetCore.Mvc;
 using RequirementAI.Business.Interfaces;
 using RequirementAI.Contract.Dto.AuthDtos;
 using RequirementAI.Contract.Dto.ResponseWrappers;
-using RequirementAI.Contract.Enums;
 
 namespace RequirementAI.API.Controllers;
 
 public class AuthController(
-    IExternalAuthService externalAuthService,
     ILocalAuthService localAuthService)
     : RequirementAIControllerBase
 {
-    [AllowAnonymous]
-    [HttpPost("external-login")]
-    public async Task<ActionResult<ResponseDto>> ExternalLogin([FromBody] ExternalAuthRequestDto request,
-        CancellationToken ct = default)
-    {
-        if (request.Provider == AuthProvider.Local)
-            return BadRequest(
-                ResponseDto.Fail(
-                    "Local login is not supported in this endpoint. Use /api/login instead."));
-
-        await externalAuthService.AuthenticateExternalAsync(request, ct);
-
-        return Ok(ResponseDto.Success());
-    }
-
     [AllowAnonymous]
     [HttpPost("login")]
     public async Task<ActionResult<ResponseDto>> Login(
