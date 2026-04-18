@@ -6,7 +6,7 @@ using RequirementAI.Contract.Dto.AuthDtos;
 using RequirementAI.Contract.Enums;
 using RequirementAI.Contract.Exceptions;
 
-namespace RequirementAI.Business.Providers;
+namespace RequirementAI.Business.Providers.Auth;
 
 public class GoogleAuthProvider(IConfiguration config, IMapper mapper) : IExternalAuthProvider
 {

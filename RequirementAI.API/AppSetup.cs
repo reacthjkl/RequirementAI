@@ -9,6 +9,8 @@ using RequirementAI.Business.Helpers;
 using RequirementAI.Business.Interfaces;
 using RequirementAI.Business.MappingProfiles;
 using RequirementAI.Business.Providers;
+using RequirementAI.Business.Providers.Auth;
+using RequirementAI.Business.Providers.LLM;
 using RequirementAI.Business.Services;
 using RequirementAI.Contract.Settings;
 using RequirementAI.Persistence;
@@ -23,10 +25,16 @@ public static class AppSetup
     {
         // entity related services
         builder.Services.AddScoped<IUserService, UserService>();
-
-        // helper services
+        builder.Services.AddScoped<IUserStoryService, UserStoryService>();
+        
+        // auth providers
         builder.Services.AddScoped<ILocalAuthService, LocalAuthService>();
         builder.Services.AddScoped<IExternalAuthService, ExternalAuthService>();
+
+        // LLM providers
+        builder.Services.AddScoped<ILLMProvider, OpenAIProvider>();
+        
+        // helper services
         builder.Services.AddScoped<IJwtTokenService, JwtTokenService>();
         builder.Services.AddSingleton<IPasswordHasher, Argon2PasswordHasher>();
         builder.Services.AddScoped<ICookiesHelper, CookiesHelper>();

@@ -4,7 +4,7 @@ using RequirementAI.Contract.Enums;
 using RequirementAI.Persistence.Entities;
 using RequirementAI.Persistence.Interfaces;
 
-namespace RequirementAI.Business.Providers;
+namespace RequirementAI.Business.Providers.Auth;
 
 public class LocalAuthProvider(IUserRepository userRepository, IPasswordHasher hasher)
     : ILocalAuthProvider
