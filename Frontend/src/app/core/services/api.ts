@@ -25,9 +25,13 @@ export class Api {
   }
 
   public async post<T>(controller: ApiController, resource: string, body?: T) {
-    return await firstValueFrom(
-      this.http.post<ApiResponse<null>>(this.url(controller, resource), body),
-    );
+    try {
+      return await firstValueFrom(
+        this.http.post<ApiResponse<null>>(this.url(controller, resource), body),
+      );
+    } catch {
+      return { successful: false } as ApiResponse<null>;
+    }
   }
 
   public async delete(controller: ApiController, resource: string) {

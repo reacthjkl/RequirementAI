@@ -1,1 +1,40 @@
-<p>login works!</p>
+<div
+  class="container d-flex flex-column justify-content-center align-items-center"
+  style="min-height: 100vh"
+>
+  <h1 class="mb-4 text-center">Anmelden</h1>
+
+  <div class="card p-4 col-8" style="max-width: 480px">
+    <!--Form-->
+    <form class="row gap-4" [formGroup]="loginForm">
+      <!--Email-->
+      <div class="col-12">
+        <label class="form-label" for="email">Email: </label>
+        <input class="form-control" id="email" type="text" formControlName="email" />
+      </div>
+
+      <!--Password-->
+      <div class="col-12">
+        <label class="form-label" for="password">Passwort: </label>
+        <input class="form-control" id="password" type="password" formControlName="password" />
+      </div>
+
+      <div
+        class="col-12"
+        [style.visibility]="loginForm.errors?.['wrongCredentials'] ? 'visible' : 'hidden'"
+      >
+        <p class="text-danger mb-0">
+          {{ loginForm.errors?.['wrongCredentials'] || 'placeholder' }}
+        </p>
+      </div>
+
+      <!--submit-->
+      <div class="col-12">
+        <button class="btn btn-primary w-100" (click)="login()">
+          <fa-icon [icon]="lock"></fa-icon>
+          Anmelden
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
