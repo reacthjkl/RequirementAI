@@ -55,6 +55,7 @@ nunit-*.xml
 
 # Angular
 node_modules/
+.angular/
 
 # MacOS Specific
 .DS_Store
