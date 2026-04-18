@@ -3,7 +3,7 @@ using RequirementAI.Persistence.Entities;
 
 namespace RequirementAI.Business.Interfaces;
 
-public interface ILocalAuthProvider
+public interface IAuthProvider
 {
-    Task<User?> GetUserByValidCredentials(LocalAuthRequestDto request, CancellationToken ct);
+    Task<User?> GetUserByValidCredentials(AuthRequestDto request, CancellationToken ct);
 }

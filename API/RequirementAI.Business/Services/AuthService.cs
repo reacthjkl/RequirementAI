@@ -10,8 +10,8 @@ using RequirementAI.Persistence.Interfaces;
 
 namespace RequirementAI.Business.Services;
 
-public class LocalAuthService(
-    ILocalAuthProvider provider,
+public class AuthService(
+    IAuthProvider provider,
     IUserRepository userRepository,
     IJwtTokenService jwtService,
     IOptions<JwtSettings> jwtSettings,
@@ -19,11 +19,11 @@ public class LocalAuthService(
     IMapper mapper,
     IPasswordHasher passwordHasher
 )
-    : ILocalAuthService
+    : IAuthService
 {
     private readonly JwtSettings _jwtSettings = jwtSettings.Value;
 
-    public async Task AuthenticateLocalAsync(LocalAuthRequestDto request, CancellationToken ct)
+    public async Task AuthenticateLocalAsync(AuthRequestDto request, CancellationToken ct)
     {
         var user = await provider.GetUserByValidCredentials(request, ct)
                    ?? throw new AuthorizationException("Invalid email or password.");
@@ -76,7 +76,7 @@ public class LocalAuthService(
         cookiesHelper.ResetTokenCookies();
     }
 
-    public async Task Register(LocalRegisterRequestDto request, CancellationToken ct)
+    public async Task Register(RegisterRequestDto request, CancellationToken ct)
     {
         var existingUser = await userRepository.GetByEmailAsync(request.Email, ct);
 

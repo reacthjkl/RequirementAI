@@ -2,10 +2,10 @@ using RequirementAI.Contract.Dto.AuthDtos;
 
 namespace RequirementAI.Business.Interfaces;
 
-public interface ILocalAuthService
+public interface IAuthService
 {
-    Task AuthenticateLocalAsync(LocalAuthRequestDto request, CancellationToken ct);
+    Task AuthenticateLocalAsync(AuthRequestDto request, CancellationToken ct);
     Task RefreshTokens(string refreshToken, CancellationToken ct);
     Task LogoutAsync(Guid userId, CancellationToken ct);
-    Task Register(LocalRegisterRequestDto request, CancellationToken ct);
+    Task Register(RegisterRequestDto request, CancellationToken ct);
 }

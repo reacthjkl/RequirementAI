@@ -29,11 +29,6 @@ public class RequirementAIContext(DbContextOptions<RequirementAIContext> options
             entity.Property(e => e.Password)
                 .HasMaxLength(255);
 
-            entity.Property(e => e.Provider)
-                .IsRequired()
-                .HasConversion<string>()
-                .HasMaxLength(50);
-
             entity.Property(e => e.ProviderId)
                 .HasMaxLength(255);
 

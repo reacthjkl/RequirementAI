@@ -8,7 +8,6 @@ using RequirementAI.API.Middleware;
 using RequirementAI.Business.Helpers;
 using RequirementAI.Business.Interfaces;
 using RequirementAI.Business.MappingProfiles;
-using RequirementAI.Business.Providers;
 using RequirementAI.Business.Providers.Auth;
 using RequirementAI.Business.Providers.LLM;
 using RequirementAI.Business.Services;
@@ -28,8 +27,7 @@ public static class AppSetup
         builder.Services.AddScoped<IUserStoryService, UserStoryService>();
         
         // auth providers
-        builder.Services.AddScoped<ILocalAuthService, LocalAuthService>();
-        builder.Services.AddScoped<IExternalAuthService, ExternalAuthService>();
+        builder.Services.AddScoped<IAuthService, AuthService>();
 
         // LLM providers
         builder.Services.AddScoped<ILLMProvider, OpenAIProvider>();
@@ -166,11 +164,7 @@ public static class AppSetup
 
     public static void SetupAuthProviders(WebApplicationBuilder builder)
     {
-        // local
-        builder.Services.AddScoped<ILocalAuthProvider, LocalAuthProvider>();
-
-        // external
-        builder.Services.AddScoped<IExternalAuthProvider, GoogleAuthProvider>();
+        builder.Services.AddScoped<IAuthProvider, AuthProvider>();
     }
 
     public static void ApplyMigrations(WebApplication app)

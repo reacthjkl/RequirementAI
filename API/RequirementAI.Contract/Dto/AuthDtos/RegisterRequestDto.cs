@@ -1,6 +1,6 @@
 namespace RequirementAI.Contract.Dto.AuthDtos;
 
-public class LocalRegisterRequestDto
+public class RegisterRequestDto
 {
     public required string Email { get; set; }
     public required string Password { get; set; }
