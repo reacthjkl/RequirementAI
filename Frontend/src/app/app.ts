@@ -14,8 +14,4 @@ export class App {
   constructor(private auth: Auth) {
     this.loggedIn = this.auth.loggedIn;
   }
-
-  async ngOnInit() {
-    await this.auth.checkIsLoggedIn();
-  }
 }

@@ -12,6 +12,8 @@ import { User } from '../models/user.model';
 export class Auth {
   public loggedIn = signal(false);
 
+  private refreshInProgress: Promise<boolean> | null = null;
+
   constructor(
     private api: Api,
     private cu: CurrentUser,
@@ -34,7 +36,7 @@ export class Auth {
   }
 
   public async refresh() {
-    return await this.api.get(ApiController.Auth, 'refresh');
+    return await this.api.get<boolean>(ApiController.Auth, 'refresh');
   }
 
   public async checkIsLoggedIn() {
@@ -47,5 +49,31 @@ export class Auth {
     }
 
     return exists;
+  }
+
+  public async refreshTokenOrLogout() {
+    // if refresh is active, return promise, so the caller waites for the existing request
+    if (this.refreshInProgress) {
+      return this.refreshInProgress;
+    }
+
+    // perform request and cache it
+    this.refreshInProgress = (async () => {
+      const response: ApiResponse<boolean> = await this.refresh();
+
+      if (response.successful) {
+        return true;
+      }
+
+      await this.logout();
+      return false;
+    })();
+
+    try {
+      return await this.refreshInProgress;
+    } finally {
+      // remove from cache, when request was performed
+      this.refreshInProgress = null;
+    }
   }
 }
