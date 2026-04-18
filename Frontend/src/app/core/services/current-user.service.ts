@@ -6,7 +6,7 @@ import { Api } from './api';
 @Injectable({
   providedIn: 'root',
 })
-export class CurrentUser {
+export class CurrentUserService {
   constructor(private api: Api) {}
 
   public async get() {

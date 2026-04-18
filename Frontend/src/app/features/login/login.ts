@@ -5,7 +5,7 @@ import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { faLock } from '@fortawesome/free-solid-svg-icons';
 import { ApiResponse } from '../../shared/models/api-response.model';
 import { AuthRequest } from '../../shared/models/auth-request.model';
-import { Auth } from '../../shared/services/auth';
+import { AuthService } from '../../shared/services/auth.service';
 
 @Component({
   selector: 'app-login',
@@ -27,7 +27,7 @@ export class Login {
   });
 
   constructor(
-    private auth: Auth,
+    private auth: AuthService,
     private router: Router,
   ) {}
 

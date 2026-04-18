@@ -1,2 +1,6 @@
+@if (loading()) {
+  <app-global-spinner />
+}
+
 User is logged in: {{ loggedIn() }}
 <router-outlet />

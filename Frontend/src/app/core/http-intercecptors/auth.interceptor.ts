@@ -6,10 +6,10 @@ import {
 } from '@angular/common/http';
 import { inject } from '@angular/core';
 import { catchError, from, switchMap, throwError } from 'rxjs';
-import { Auth } from '../../shared/services/auth';
+import { AuthService } from '../../shared/services/auth.service';
 
 export const authInterceptor: HttpInterceptorFn = (req, next) => {
-  const auth = inject(Auth);
+  const auth = inject(AuthService);
 
   return next(req).pipe(
     catchError((error: HttpErrorResponse) => handleError(error, req, next, auth)),
@@ -20,7 +20,7 @@ function handleError(
   error: HttpErrorResponse,
   originalReq: HttpRequest<unknown>,
   next: HttpHandlerFn,
-  auth: Auth,
+  auth: AuthService,
 ) {
   if (error.status === 401 && !originalReq.url.includes('auth')) {
     return from(auth.refreshTokenOrLogout()).pipe(

@@ -1,6 +1,6 @@
 import { Injectable, signal } from '@angular/core';
 import { Api } from '../../core/services/api';
-import { CurrentUser } from '../../core/services/current-user';
+import { CurrentUserService } from '../../core/services/current-user.service';
 import { ApiController } from '../enums/api-controller.enum';
 import { ApiResponse } from '../models/api-response.model';
 import { AuthRequest } from '../models/auth-request.model';
@@ -9,14 +9,14 @@ import { User } from '../models/user.model';
 @Injectable({
   providedIn: 'root',
 })
-export class Auth {
+export class AuthService {
   public loggedIn = signal(false);
 
   private refreshInProgress: Promise<boolean> | null = null;
 
   constructor(
     private api: Api,
-    private cu: CurrentUser,
+    private cu: CurrentUserService,
   ) {}
 
   public async authenticate(request: AuthRequest) {
