@@ -4,5 +4,5 @@ namespace RequirementAI.Business.Interfaces;
 
 public interface ILLMProvider
 {
-    Task<List<T>> Generate<T>(string description, CancellationToken ct);
+    Task<T> Generate<T>(string description, CancellationToken ct);
 }

@@ -8,6 +8,7 @@ using RequirementAI.API.Middleware;
 using RequirementAI.Business.Helpers;
 using RequirementAI.Business.Interfaces;
 using RequirementAI.Business.MappingProfiles;
+using RequirementAI.Business.Providers;
 using RequirementAI.Business.Providers.Auth;
 using RequirementAI.Business.Providers.LLM;
 using RequirementAI.Business.Services;
@@ -36,6 +37,8 @@ public static class AppSetup
         builder.Services.AddScoped<IJwtTokenService, JwtTokenService>();
         builder.Services.AddSingleton<IPasswordHasher, Argon2PasswordHasher>();
         builder.Services.AddScoped<ICookiesHelper, CookiesHelper>();
+        builder.Services.AddScoped<IPromptProvider, PromptProvider>();
+        builder.Services.AddScoped<ITaskProvider, TaskProvider>();
         builder.Services.AddHttpClient();
     }
 
