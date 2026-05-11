@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using RequirementAI.Persistence;
@@ -11,9 +12,11 @@ using RequirementAI.Persistence;
 namespace RequirementAI.Persistence.Migrations
 {
     [DbContext(typeof(RequirementAIContext))]
-    partial class RequirementAIContextModelSnapshot : ModelSnapshot
+    [Migration("20260511183206_basicStructure")]
+    partial class basicStructure
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -234,7 +237,7 @@ namespace RequirementAI.Persistence.Migrations
                         .HasMaxLength(255)
                         .HasColumnType("character varying(255)");
 
-                    b.Property<Guid>("OrganizationId")
+                    b.Property<Guid?>("OrganizationId")
                         .HasColumnType("uuid");
 
                     b.Property<string>("Password")
@@ -348,9 +351,7 @@ namespace RequirementAI.Persistence.Migrations
                 {
                     b.HasOne("RequirementAI.Persistence.Entities.Organization", "Organization")
                         .WithMany("Users")
-                        .HasForeignKey("OrganizationId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("OrganizationId");
 
                     b.Navigation("Organization");
                 });
