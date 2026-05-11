@@ -1,24 +1,16 @@
-using System.ComponentModel.DataAnnotations;
+using RequirementAI.Persistence.Interfaces;
 
 namespace RequirementAI.Persistence.Entities;
 
-public class User
+public class User: ICreatable
 {
     public Guid Id { get; set; }
-
-    [Required] [MaxLength(255)] public required string Email { get; set; }
-
-    [MaxLength(255)] public string? Password { get; set; }
-
-    [Required] [MaxLength(255)] public required string Name { get; set; }
-
-    [MaxLength(255)] public string? ProviderId { get; set; }
-
-    [MaxLength(500)] public string? AvatarUrl { get; set; }
-
-    [MaxLength(255)] public string? RefreshToken { get; set; }
-
+    public required string Email { get; set; }
+    public string? Password { get; set; }
+    public required string Name { get; set; }
+    public string? RefreshToken { get; set; }
     public DateTimeOffset? RefreshTokenExpiry { get; set; }
-
     public DateTimeOffset CreatedAt { get; set; } = DateTimeOffset.UtcNow;
+    public Guid OrganizationId { get; set; }
+    public Organization Organization { get; set; } = null!;
 }
