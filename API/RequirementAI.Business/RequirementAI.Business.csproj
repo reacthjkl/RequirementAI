@@ -7,20 +7,21 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\RequirementAi.Contract\RequirementAi.Contract.csproj"/>
-        <ProjectReference Include="..\RequirementAi.Persistence\RequirementAi.Persistence.csproj"/>
+        <ProjectReference Include="..\RequirementAi.Contract\RequirementAi.Contract.csproj" />
+        <ProjectReference Include="..\RequirementAi.Persistence\RequirementAi.Persistence.csproj" />
     </ItemGroup>
 
     <ItemGroup>
         <PackageReference Include="AutoMapper" Version="16.1.1" />
-        <PackageReference Include="Google.Apis.Auth" Version="1.72.0"/>
-        <PackageReference Include="Isopoh.Cryptography.Argon2" Version="2.0.0"/>
-        <PackageReference Include="Magick.NET.SystemDrawing" Version="8.0.12"/>
-        <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="9.0.10"/>
-        <PackageReference Include="Microsoft.AspNetCore.Http.Abstractions" Version="2.3.0"/>
-        <PackageReference Include="Microsoft.IdentityModel.Tokens" Version="8.14.0"/>
+        <PackageReference Include="Google.Apis.Auth" Version="1.72.0" />
+        <PackageReference Include="Isopoh.Cryptography.Argon2" Version="2.0.0" />
+        <PackageReference Include="Magick.NET.SystemDrawing" Version="8.0.12" />
+        <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="9.0.10" />
+        <PackageReference Include="Microsoft.AspNetCore.Http.Abstractions" Version="2.3.0" />
+        <PackageReference Include="Microsoft.IdentityModel.Tokens" Version="8.14.0" />
+        <PackageReference Include="NJsonSchema" Version="11.6.1" />
         <PackageReference Include="OpenAI" Version="2.9.1" />
-        <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="8.14.0"/>
+        <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="8.14.0" />
     </ItemGroup>
 
 </Project>

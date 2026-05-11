@@ -6,7 +6,7 @@ namespace RequirementAI.Business.Interfaces;
 
 public class UserStoryService(ILLMProvider llmProvider) : IUserStoryService
 {
-    public async Task<List<UserStoryDto>> Generate(string description, CancellationToken ct)
+    public async Task<UserStoryDto> Generate(string description, CancellationToken ct)
     {
         return await llmProvider.Generate<UserStoryDto>(description, ct);
     }

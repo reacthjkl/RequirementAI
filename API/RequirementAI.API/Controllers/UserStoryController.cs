@@ -11,7 +11,7 @@ public class UserStoryController(IUserStoryService userStoryService) : Requireme
     [HttpPost]
     public async Task<IActionResult> GenerateUserStories(string description, CancellationToken ct)
     {
-        var stories = await userStoryService.Generate(description, ct);
-        return Ok(ResponseDto<UserStoryDto>.SuccessList(stories));
+        var story = await userStoryService.Generate(description, ct);
+        return Ok(ResponseDto<UserStoryDto>.Success(story));
     }
 }

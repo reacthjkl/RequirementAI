@@ -11,15 +11,18 @@ namespace RequirementAI.Business.Providers.LLM;
 public class OpenAIProvider : ILLMProvider
 {
     private readonly ChatClient _chat;
+    private readonly IPromptProvider _promptProvider;
 
-    public OpenAIProvider(IConfiguration config)
+    public OpenAIProvider(IConfiguration config, IPromptProvider promptProvider)
     {
          var client = new OpenAIClient(config["OpenAI:ApiKey"]);
         _chat = client.GetChatClient(config["OpenAI:Model"]);
+        
+        _promptProvider = promptProvider;
     }
-    public async Task<List<T>> Generate<T>(string description, CancellationToken ct)
+    public async Task<T> Generate<T>(string description, CancellationToken ct)
     {
-        var request = PromptBuilder.UserStory(description);
+        var request = _promptProvider.Build<T>(description);
         
         var completion = await _chat.CompleteChatAsync(
             new List<ChatMessage>
@@ -31,7 +34,7 @@ public class OpenAIProvider : ILLMProvider
         var text = completion.Value.Content[0].Text
             ?? throw new BusinessException("LLM Request failed.");
         
-        return JsonSerializer.Deserialize<List<T>>(text)
+        return JsonSerializer.Deserialize<T>(text)
             ?? throw new BusinessException("LLM Request failed.");
     }
 }
