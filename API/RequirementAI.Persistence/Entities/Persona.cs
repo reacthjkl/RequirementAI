@@ -11,7 +11,7 @@ public class Persona: ICreatable
     public string Goals { get; set; } = null!;
     public string Frustrations { get; set; } = null!;
     public DateTimeOffset CreatedAt { get; set; }
-    public Guid ProjectId  { get; set; }
-    public Project Project { get; set; } = null!;
     public IList<Scenario> Scenarios { get; set; } = new List<Scenario>();
+    public Guid ProjectId { get; set; }
+    public Project Project { get; set; } = null!;
 }
