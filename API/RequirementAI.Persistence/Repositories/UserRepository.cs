@@ -7,27 +7,27 @@ namespace RequirementAI.Persistence.Repositories;
 
 public class UserRepository(RequirementAIContext context) : IUserRepository
 {
-    public async Task<User?> GetByEmailAsync(string email, CancellationToken ct)
+    public async Task<User?> GetByEmail(string email, CancellationToken ct)
     {
         return await context.Users
             .AsNoTracking()
             .FirstOrDefaultAsync(u => u.Email == email, ct);
     }
 
-    public async Task<User> CreateAsync(User user, CancellationToken ct)
+    public async Task<User> Create(User user, CancellationToken ct)
     {
         context.Users.Add(user);
         await context.SaveChangesAsync(ct);
         return user;
     }
 
-    public async Task UpdateAsync(User user, CancellationToken ct)
+    public async Task Update(User user, CancellationToken ct)
     {
         context.Users.Update(user);
         await context.SaveChangesAsync(ct);
     }
 
-    public async Task<User?> GetUserByRefreshToken(string expiredRefreshToken, CancellationToken ct)
+    public async Task<User?> GetByRefreshToken(string expiredRefreshToken, CancellationToken ct)
     {
         return await context.Users
             .FirstOrDefaultAsync(u => u.RefreshToken == expiredRefreshToken, ct);

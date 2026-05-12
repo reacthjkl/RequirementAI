@@ -10,7 +10,7 @@ public class AuthProvider(IUserRepository userRepository, IPasswordHasher hasher
 {
     public async Task<User?> GetUserByValidCredentials(AuthRequestDto request, CancellationToken ct)
     {
-        var user = await userRepository.GetByEmailAsync(request.Email, ct);
+        var user = await userRepository.GetByEmail(request.Email, ct);
 
         if (user is not {  Password: not null }) return null;
 
