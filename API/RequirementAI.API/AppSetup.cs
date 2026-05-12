@@ -44,7 +44,14 @@ public static class AppSetup
 
     public static void SetupRepositories(WebApplicationBuilder builder)
     {
+        builder.Services.AddScoped<IAcceptanceCriteriaRepository, AcceptanceCriteriaRepository>();
+        builder.Services.AddScoped<IEdgeCaseRepository, EdgeCaseRepository>();
+        builder.Services.AddScoped<IOrganizationRepository, OrganizationRepository>();
+        builder.Services.AddScoped<IPersonaRepository, PersonaRepository>();
+        builder.Services.AddScoped<IProjectRepository, ProjectRepository>();
+        builder.Services.AddScoped<IScenarioRepository, ScenarioRepository>();
         builder.Services.AddScoped<IUserRepository, UserRepository>();
+        builder.Services.AddScoped<IUserStoryRepository, UserStoryRepository>();
     }
 
     public static void SetupAutoMapper(WebApplicationBuilder builder)

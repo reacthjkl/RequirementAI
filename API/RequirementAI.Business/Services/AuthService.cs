@@ -34,7 +34,7 @@ public class AuthService(
         user.RefreshToken = refreshToken;
         user.RefreshTokenExpiry = DateTimeOffset.UtcNow.AddDays(_jwtSettings.RefreshTokenLifetimeDays);
 
-        await userRepository.UpdateAsync(user, ct);
+        await userRepository.Update(user, ct);
 
         cookiesHelper.SetAccessTokenCookie(accessToken, _jwtSettings.AccessTokenLifetimeMinutes);
         cookiesHelper.SetRefreshTokenCookie(refreshToken, _jwtSettings.RefreshTokenLifetimeDays);
@@ -42,14 +42,14 @@ public class AuthService(
 
     public async Task RefreshTokens(string refreshToken, CancellationToken ct)
     {
-        var user = await userRepository.GetUserByRefreshToken(refreshToken, ct)
+        var user = await userRepository.GetByRefreshToken(refreshToken, ct)
                    ?? throw new AuthenticationException("Invalid refresh token used.");
 
         if (user.RefreshTokenExpiry <= DateTimeOffset.UtcNow)
         {
             user.RefreshToken = null;
             user.RefreshTokenExpiry = null;
-            await userRepository.UpdateAsync(user, ct);
+            await userRepository.Update(user, ct);
             throw new AuthenticationException("Expired refresh token used.");
         }
 
@@ -59,7 +59,7 @@ public class AuthService(
         user.RefreshToken = newRefreshToken;
         user.RefreshTokenExpiry = DateTimeOffset.UtcNow.AddDays(_jwtSettings.RefreshTokenLifetimeDays);
 
-        await userRepository.UpdateAsync(user, ct);
+        await userRepository.Update(user, ct);
 
         cookiesHelper.SetAccessTokenCookie(newAccessToken, _jwtSettings.AccessTokenLifetimeMinutes);
         cookiesHelper.SetRefreshTokenCookie(newRefreshToken, _jwtSettings.RefreshTokenLifetimeDays);
@@ -72,13 +72,13 @@ public class AuthService(
         user.RefreshToken = null;
         user.RefreshTokenExpiry = null;
 
-        await userRepository.UpdateAsync(user, ct);
+        await userRepository.Update(user, ct);
         cookiesHelper.ResetTokenCookies();
     }
 
     public async Task Register(RegisterRequestDto request, CancellationToken ct)
     {
-        var existingUser = await userRepository.GetByEmailAsync(request.Email, ct);
+        var existingUser = await userRepository.GetByEmail(request.Email, ct);
 
         if (existingUser != null)
             throw new BusinessException("User with this email already exists.");
@@ -88,6 +88,6 @@ public class AuthService(
         if (user.Password != null)
             user.Password = passwordHasher.Hash(user.Password);
 
-        await userRepository.CreateAsync(user, ct);
+        await userRepository.Create(user, ct);
     }
 }
