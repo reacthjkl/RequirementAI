@@ -15,7 +15,7 @@ public class UserService(IUserRepository userRepository, IMapper mapper) : IUser
 
     public async Task<bool> IsEmailAvailable(string email, CancellationToken ct)
     {
-        var user = await userRepository.GetByEmail(email, ct);
+        var user = await userRepository.GetByEmailIgnoringFilters(email, ct);
         return user == null;
     }
 }

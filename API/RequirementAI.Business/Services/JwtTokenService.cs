@@ -31,6 +31,7 @@ public class JwtTokenService(IOptions<JwtSettings> settings) : IJwtTokenService
         {
             new Claim("UserId", user.Id.ToString()),
             new Claim("Email", user.Email),
+            new Claim("OrganizationId", user.OrganizationId.ToString()),
         };
 
         var token = new JwtSecurityToken(

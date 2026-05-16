@@ -7,10 +7,11 @@ namespace RequirementAI.Persistence.Repositories;
 
 public class UserRepository(RequirementAIContext context) : IUserRepository
 {
-    public async Task<User?> GetByEmail(string email, CancellationToken ct)
+    public async Task<User?> GetByEmailIgnoringFilters(string email, CancellationToken ct)
     {
         return await context.Users
             .AsNoTracking()
+            .IgnoreQueryFilters()
             .FirstOrDefaultAsync(u => u.Email == email, ct);
     }
 
