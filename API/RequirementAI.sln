@@ -8,7 +8,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RequirementAI.Contract", "R
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RequirementAI.Persistence", "RequirementAI.Persistence\RequirementAI.Persistence.csproj", "{F8E35742-2B2F-44E6-8DD3-D63B5AF1A12B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Abstractions", "Abstractions\Abstractions.csproj", "{607D2CCD-925E-462C-82F8-4E95CB51972A}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RequirementAI.Abstractions", "RequirementAI.Abstractions\RequirementAI.Abstractions.csproj", "{607D2CCD-925E-462C-82F8-4E95CB51972A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
