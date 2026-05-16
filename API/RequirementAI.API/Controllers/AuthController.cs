@@ -16,7 +16,7 @@ public class AuthController(
         [FromBody] AuthRequestDto request,
         CancellationToken ct = default)
     {
-        await authService.AuthenticateLocalAsync(request, ct);
+        await authService.AuthenticateAsync(request, ct);
         return Ok(ResponseDto.Success());
     }
 
@@ -41,7 +41,8 @@ public class AuthController(
         return Ok(ResponseDto.Success());
     }
 
-
+    //TODO: remove when going prod
+    // or secure for an admin
     [AllowAnonymous]
     [HttpPost("register")]
     public async Task<ActionResult<ResponseDto>> Register(

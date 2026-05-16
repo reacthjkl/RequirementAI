@@ -1,6 +1,8 @@
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using Abstractions.Interfaces;
+using Abstractions.Providers;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -29,6 +31,7 @@ public static class AppSetup
         
         // auth providers
         builder.Services.AddScoped<IAuthService, AuthService>();
+        builder.Services.AddScoped<ICurrentUser, CurrentUser>();
 
         // LLM providers
         builder.Services.AddScoped<ILLMProvider, OpenAIProvider>();

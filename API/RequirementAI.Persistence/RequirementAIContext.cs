@@ -1,9 +1,10 @@
+using Abstractions.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using RequirementAI.Persistence.Entities;
 
 namespace RequirementAI.Persistence;
 
-public class RequirementAIContext(DbContextOptions<RequirementAIContext> options) : DbContext(options)
+public class RequirementAIContext(DbContextOptions<RequirementAIContext> options, ICurrentUser currentUser) : DbContext(options)
 {
     public virtual DbSet<AcceptanceCriteria> AcceptanceCriteria { get; set; }
     public virtual DbSet<EdgeCase> EdgeCases { get; set; }
@@ -26,6 +27,8 @@ public class RequirementAIContext(DbContextOptions<RequirementAIContext> options
                 .HasColumnType("timestamptz")
                 .HasDefaultValueSql("CURRENT_TIMESTAMP")
                 .ValueGeneratedOnAdd();
+            
+            entity.HasQueryFilter(e => e.UserStory.Scenario.Persona.Project.OrganizationId == currentUser.OrganizationId);
         });
         
         modelBuilder.Entity<EdgeCase>(entity =>
@@ -45,6 +48,8 @@ public class RequirementAIContext(DbContextOptions<RequirementAIContext> options
                 .HasColumnType("timestamptz")
                 .HasDefaultValueSql("CURRENT_TIMESTAMP")
                 .ValueGeneratedOnAdd();
+            
+            entity.HasQueryFilter(e => e.UserStory.Scenario.Persona.Project.OrganizationId == currentUser.OrganizationId);
         });
         
         modelBuilder.Entity<Organization>(entity =>
@@ -66,6 +71,8 @@ public class RequirementAIContext(DbContextOptions<RequirementAIContext> options
                 .HasColumnType("timestamptz")
                 .HasDefaultValueSql("CURRENT_TIMESTAMP")
                 .ValueGeneratedOnAdd();
+            
+            entity.HasQueryFilter(e => e.Id == currentUser.OrganizationId);
         });
         
         modelBuilder.Entity<Persona>(entity =>
@@ -95,6 +102,8 @@ public class RequirementAIContext(DbContextOptions<RequirementAIContext> options
                 .HasColumnType("timestamptz")
                 .HasDefaultValueSql("CURRENT_TIMESTAMP")
                 .ValueGeneratedOnAdd();
+            
+            entity.HasQueryFilter(e => e.Project.OrganizationId == currentUser.OrganizationId);
         });
         
         modelBuilder.Entity<Project>(entity =>
@@ -115,6 +124,8 @@ public class RequirementAIContext(DbContextOptions<RequirementAIContext> options
                 .HasColumnType("timestamptz")
                 .HasDefaultValueSql("CURRENT_TIMESTAMP")
                 .ValueGeneratedOnAdd();
+            
+            entity.HasQueryFilter(e => e.OrganizationId == currentUser.OrganizationId);
         });
         
         modelBuilder.Entity<Scenario>(entity =>
@@ -135,6 +146,8 @@ public class RequirementAIContext(DbContextOptions<RequirementAIContext> options
                 .HasColumnType("timestamptz")
                 .HasDefaultValueSql("CURRENT_TIMESTAMP")
                 .ValueGeneratedOnAdd();
+            
+            entity.HasQueryFilter(e => e.Persona.Project.OrganizationId == currentUser.OrganizationId);
         });
         
         modelBuilder.Entity<User>(entity =>
@@ -166,6 +179,8 @@ public class RequirementAIContext(DbContextOptions<RequirementAIContext> options
                 .HasColumnType("timestamptz")
                 .HasDefaultValueSql("CURRENT_TIMESTAMP")
                 .ValueGeneratedOnAdd();
+            
+            entity.HasQueryFilter(e => e.OrganizationId == currentUser.OrganizationId);
         });
         
         modelBuilder.Entity<UserStory>(entity => {  
@@ -188,6 +203,9 @@ public class RequirementAIContext(DbContextOptions<RequirementAIContext> options
             entity.Property(e => e.CreatedAt)
                 .HasColumnType("timestamptz")
                 .HasDefaultValueSql("CURRENT_TIMESTAMP")
-                .ValueGeneratedOnAdd();});
+                .ValueGeneratedOnAdd();
+          
+            entity.HasQueryFilter(e => e.Scenario.Persona.Project.OrganizationId == currentUser.OrganizationId);
+        });
     }
 }

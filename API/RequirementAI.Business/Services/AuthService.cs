@@ -23,7 +23,7 @@ public class AuthService(
 {
     private readonly JwtSettings _jwtSettings = jwtSettings.Value;
 
-    public async Task AuthenticateLocalAsync(AuthRequestDto request, CancellationToken ct)
+    public async Task AuthenticateAsync(AuthRequestDto request, CancellationToken ct)
     {
         var user = await provider.GetUserByValidCredentials(request, ct)
                    ?? throw new AuthorizationException("Invalid email or password.");
@@ -78,7 +78,7 @@ public class AuthService(
 
     public async Task Register(RegisterRequestDto request, CancellationToken ct)
     {
-        var existingUser = await userRepository.GetByEmail(request.Email, ct);
+        var existingUser = await userRepository.GetByEmailIgnoringFilters(request.Email, ct);
 
         if (existingUser != null)
             throw new BusinessException("User with this email already exists.");
