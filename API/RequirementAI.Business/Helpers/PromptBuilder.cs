@@ -2,27 +2,35 @@ using Newtonsoft.Json.Schema;
 using RequirementAI.Contract.Dto;
 using NJsonSchema;
 using RequirementAI.Business.Interfaces;
+using RequirementAI.Contract.Dto.LLMDtos;
 using JsonSchema = NJsonSchema.JsonSchema;
 
 
 namespace RequirementAI.Business.Helpers;
 
-public class PromptProvider(ITaskProvider taskProvider): IPromptProvider
+public class PromptProvider(IRefinementTaskProvider refinementTaskProvider): IPromptProvider
 {
-    public LLMRequestDto Build<T>(string input)
+    public LLMRequestDto Build<T>(string input, string context)
     {
         var schema = JsonSchema.FromType<T>();
-        var task = taskProvider.FromType<T>();
+        var task = refinementTaskProvider.FromType<T>();
 
         return new LLMRequestDto($"""
                                   You are a senior business analyst and requirements refinement assistant.
 
                                   TASK:
+                                  ---
                                   {task}
+                                  ---
 
                                   INPUT:
                                   ---
                                   {input}
+                                  ---
+                                  
+                                  CONTEXT:
+                                  ---
+                                  {context}
                                   ---
 
                                   OBJECTIVE:

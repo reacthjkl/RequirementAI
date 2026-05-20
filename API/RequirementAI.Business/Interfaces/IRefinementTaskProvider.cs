@@ -1,6 +1,6 @@
 namespace RequirementAI.Business.Interfaces;
 
-public interface ITaskProvider
+public interface IRefinementTaskProvider
 {
     string FromType<T>();
 }

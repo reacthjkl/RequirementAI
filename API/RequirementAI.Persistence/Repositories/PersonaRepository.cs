@@ -13,6 +13,14 @@ public class PersonaRepository(RequirementAIContext context): IPersonaRepository
             ?? throw new EntityNotFoundException<Persona>(id);
     }
 
+    public async Task<Persona> GetWithProjectById(Guid id, CancellationToken ct)
+    {
+        return await context.Personas
+                   .Include(e => e.Project)
+                   .FirstOrDefaultAsync(p => p.Id == id, ct) 
+               ?? throw new EntityNotFoundException<Persona>(id);
+    }
+
     public async Task<IList<Persona>> GetByProject(Guid projectId, CancellationToken ct)
     {
         return await context.Personas
