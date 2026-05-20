@@ -1,8 +1,9 @@
 using RequirementAI.Contract.Dto;
+using RequirementAI.Contract.Dto.LLMDtos;
 
 namespace RequirementAI.Business.Interfaces;
 
 public interface IPromptProvider
 {
-    LLMRequestDto Build<T>(string input);
+    LLMRequestDto Build<T>(string input, string context);
 }

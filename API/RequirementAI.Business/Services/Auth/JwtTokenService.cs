@@ -8,7 +8,7 @@ using RequirementAI.Business.Interfaces;
 using RequirementAI.Contract.Settings;
 using RequirementAI.Persistence.Entities;
 
-namespace RequirementAI.Business.Services;
+namespace RequirementAI.Business.Services.Auth;
 
 public class JwtTokenService(IOptions<JwtSettings> settings) : IJwtTokenService
 {

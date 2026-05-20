@@ -14,6 +14,7 @@ using RequirementAI.Business.Providers;
 using RequirementAI.Business.Providers.Auth;
 using RequirementAI.Business.Providers.LLM;
 using RequirementAI.Business.Services;
+using RequirementAI.Business.Services.Auth;
 using RequirementAI.Contract.Settings;
 using RequirementAI.Persistence;
 using RequirementAI.Persistence.Interfaces;
@@ -29,6 +30,9 @@ public static class AppSetup
         builder.Services.AddScoped<IUserService, UserService>();
         builder.Services.AddScoped<IUserStoryService, UserStoryService>();
         
+        // refinement services
+        builder.Services.AddScoped<IPersonaRefiner, PersonaRefiner>();
+        
         // auth providers
         builder.Services.AddScoped<IAuthService, AuthService>();
         builder.Services.AddScoped<ICurrentUser, CurrentUser>();
@@ -41,8 +45,10 @@ public static class AppSetup
         builder.Services.AddSingleton<IPasswordHasher, Argon2PasswordHasher>();
         builder.Services.AddScoped<ICookiesHelper, CookiesHelper>();
         builder.Services.AddScoped<IPromptProvider, PromptProvider>();
-        builder.Services.AddScoped<ITaskProvider, TaskProvider>();
+        builder.Services.AddScoped<IRefinementTaskProvider, RefinementTaskProvider>();
         builder.Services.AddHttpClient();
+        
+        builder.Services.AddScoped<ITestService, TestService>();
     }
 
     public static void SetupRepositories(WebApplicationBuilder builder)
@@ -60,7 +66,8 @@ public static class AppSetup
     public static void SetupAutoMapper(WebApplicationBuilder builder)
     {
         builder.Services.AddAutoMapper(_ => { },
-            typeof(UserProfile)
+            typeof(UserProfile),
+            typeof(PersonaProfile)
         );
     }
 
