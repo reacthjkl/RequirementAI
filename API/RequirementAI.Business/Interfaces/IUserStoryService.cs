@@ -1,6 +1,6 @@
 using RequirementAI.Contract.Dto;
 
-namespace RequirementAI.Business.Services;
+namespace RequirementAI.Business.Interfaces;
 
 public interface IUserStoryService
 {

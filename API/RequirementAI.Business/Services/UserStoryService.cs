@@ -1,8 +1,7 @@
-using RequirementAI.Business.Helpers;
-using RequirementAI.Business.Services;
+using RequirementAI.Business.Interfaces;
 using RequirementAI.Contract.Dto;
 
-namespace RequirementAI.Business.Interfaces;
+namespace RequirementAI.Business.Services;
 
 public class UserStoryService(ILLMProvider llmProvider) : IUserStoryService
 {
