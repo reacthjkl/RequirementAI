@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { Project } from '../../../../../shared/models/project.model';
 import { ProjectService } from '../../../../../shared/services/project';
 import { ProjectWizardState } from '../../services/project-wizard-state';
 
@@ -23,21 +24,30 @@ export class ProjectWizardProjectStep {
       name: ['', Validators.required],
       description: ['', Validators.required],
     });
+
+    const currentProject = this.wizardState.project();
+
+    if (currentProject) {
+      this.form.patchValue({
+        name: currentProject.name,
+        description: currentProject.description,
+      });
+    }
   }
 
-  async persistChanges(): Promise<boolean> {
+  async persistChanges(): Promise<Project | null> {
     this.form.markAllAsTouched();
 
     if (this.form.invalid) {
-      return false;
+      return null;
     }
 
     const project = await this.projectService.create(this.form.getRawValue());
-    if (!project) return false;
+    if (!project) return null;
 
     this.wizardState.setProject(project);
 
-    return true;
+    return project;
   }
 
   isInvalid(controlName: string): boolean {
