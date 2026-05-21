@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using RequirementAI.Business;
 using RequirementAI.Business.MappingProfiles;
+using RequirementAI.Business.Services.Refinement;
 using RequirementAI.Persistence;
 
 namespace RequirementAI.RefinementWorker;
@@ -33,4 +34,9 @@ public static class AppSetup
             typeof(EdgeCaseProfile)
         );    
     }
+
+    public static void SetupServices(HostApplicationBuilder builder)
+    {
+        builder.Services.AddHostedService<Worker>();
+        builder.Services.AddScoped<IProjectRefinementJobProcessor, ProjectRefinementJobProcessor>();    }
 }

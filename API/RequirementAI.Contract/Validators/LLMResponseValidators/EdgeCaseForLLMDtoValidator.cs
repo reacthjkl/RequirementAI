@@ -3,9 +3,9 @@ using RequirementAI.Contract.Dto.LLMDtos;
 
 namespace RequirementAI.Contract.Validators.LLMResponseValidators;
 
-public class EdgeCaseValidator: AbstractValidator<EdgeCaseForLLMDto>
+public class EdgeCaseForLLMDtoValidator: AbstractValidator<EdgeCaseForLLMDto>
 {
-    public EdgeCaseValidator()
+    public EdgeCaseForLLMDtoValidator()
     {
         RuleFor(x => x.Preconditions).MaximumLength(1028).NotEmpty();
         RuleFor(x => x.TriggerAction).MaximumLength(1028).NotEmpty();

@@ -1,6 +1,7 @@
 using System.Text.Json;
 using AutoMapper;
 using FluentValidation;
+using Microsoft.Extensions.DependencyInjection;
 using RequirementAI.Business.Interfaces;
 using RequirementAI.Business.Interfaces.Refinement;
 using RequirementAI.Contract.Dto.LLMDtos;
@@ -73,7 +74,8 @@ public class RefinementService(
 
         await Validate(refined, ct);
         
-        mapper.Map(refined, entity);
+        var merger = serviceProvider.GetRequiredService<IRefinementMerger<TEntity, TDto>>();
+        merger.Apply(entity, refined);
 
         return entity;
     }

@@ -1,3 +1,4 @@
+using FluentValidation;
 using Microsoft.Extensions.DependencyInjection;
 using RequirementAI.Business.Helpers;
 using RequirementAI.Business.Interfaces;
@@ -11,6 +12,7 @@ using RequirementAI.Business.Services.Auth;
 using RequirementAI.Business.Services.EntityRelated;
 using RequirementAI.Business.Services.Refinement;
 using RequirementAI.Contract.Dto.LLMDtos;
+using RequirementAI.Contract.Validators.LLMResponseValidators;
 using RequirementAI.Persistence.Entities;
 
 namespace RequirementAI.Business;
@@ -35,6 +37,8 @@ public static class DependencyInjection
         services.AddScoped<IRefinementMerger<Persona, PersonaForLLMDto>, PersonaRefinementMerger>();
         services.AddScoped<IRefinementMerger<Scenario, ScenarioForLLMDto>, ScenarioRefinementMerger>();
         services.AddScoped<IRefinementMerger<UserStory, UserStoryForLLMDto>, UserStoryRefinementMerger>();
+        services.AddScoped<IProjectRefinementOrchestrator, ProjectRefinementOrchestrator>();
+        services.AddScoped<IProjectRefinementJobProcessor, ProjectRefinementJobProcessor>();
         
         // auth providers
         services.AddScoped<IAuthService, AuthService>();
@@ -50,6 +54,13 @@ public static class DependencyInjection
         services.AddScoped<ICookiesHelper, CookiesHelper>();
         services.AddScoped<IPromptBuilder, PromptBuilder>();
         services.AddHttpClient();
+        
+        // validators
+        services.AddScoped<IValidator<AcceptanceCriteriaForLLMDto>, AcceptanceCriteriaForLLMDtoValidator>();
+        services.AddScoped<IValidator<EdgeCaseForLLMDto>, EdgeCaseForLLMDtoValidator>();
+        services.AddScoped<IValidator<PersonaForLLMDto>, PersonaForLLMDtoValidator>();
+        services.AddScoped<IValidator<ScenarioForLLMDto>, ScenarioForLLMDtoValidator>();
+        services.AddScoped<IValidator<UserStoryForLLMDto>, UserStoryForLLMDtoValidator>();
         
         services.AddHttpContextAccessor();
         

@@ -3,9 +3,9 @@ using RequirementAI.Contract.Dto.LLMDtos;
 
 namespace RequirementAI.Contract.Validators.LLMResponseValidators;
 
-public class ScenarioValidator: AbstractValidator<ScenarioForLLMDto>
+public class ScenarioForLLMDtoValidator: AbstractValidator<ScenarioForLLMDto>
 {
-    public ScenarioValidator()
+    public ScenarioForLLMDtoValidator()
     {
         RuleFor(x => x.Title).MaximumLength(1028).NotEmpty();
         RuleFor(x => x.Content).MaximumLength(5000).NotEmpty();

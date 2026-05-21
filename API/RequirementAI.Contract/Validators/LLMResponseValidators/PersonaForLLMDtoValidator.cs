@@ -3,9 +3,9 @@ using RequirementAI.Contract.Dto.LLMDtos;
 
 namespace RequirementAI.Contract.Validators.LLMResponseValidators;
 
-public class PersonaValidator: AbstractValidator<PersonaForLLMDto>
+public class PersonaForLLMDtoValidator: AbstractValidator<PersonaForLLMDto>
 {
-    public PersonaValidator()
+    public PersonaForLLMDtoValidator()
     {
         RuleFor(x => x.Name).MaximumLength(255).NotEmpty();
         RuleFor(x => x.Description).MaximumLength(2048).NotEmpty();
