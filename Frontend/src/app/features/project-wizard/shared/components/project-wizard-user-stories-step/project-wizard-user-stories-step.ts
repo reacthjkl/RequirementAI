@@ -1,4 +1,4 @@
-import { Component, effect } from '@angular/core';
+import { Component, effect, Input, OnChanges, SimpleChanges } from '@angular/core';
 import {
   FormArray,
   FormBuilder,
@@ -25,7 +25,9 @@ type UserStoryForm = FormGroup<{
   templateUrl: './project-wizard-user-stories-step.html',
   styleUrl: './project-wizard-user-stories-step.scss',
 })
-export class ProjectWizardUserStoriesStep {
+export class ProjectWizardUserStoriesStep implements OnChanges {
+  @Input() initialScenarioIndex = 0;
+
   readonly form;
   currentScenarioIndex = 0;
   private syncedKey = '';
@@ -52,6 +54,14 @@ export class ProjectWizardUserStoriesStep {
 
       this.syncCurrentScenarioForm(key);
     });
+  }
+
+  ngOnChanges(changes: SimpleChanges): void {
+    if (!changes['initialScenarioIndex']) {
+      return;
+    }
+
+    this.goToInitialScenario();
   }
 
   get scenarios(): Scenario[] {
@@ -213,6 +223,16 @@ export class ProjectWizardUserStoriesStep {
   private syncCurrentScenarioForm(key = this.createSyncKey()): void {
     this.syncedKey = key;
     this.rebuildForm(this.currentScenarioUserStories);
+  }
+
+  private goToInitialScenario(): void {
+    if (this.form.dirty) {
+      return;
+    }
+
+    const lastScenarioIndex = Math.max(this.scenarios.length - 1, 0);
+    this.currentScenarioIndex = Math.min(Math.max(this.initialScenarioIndex, 0), lastScenarioIndex);
+    this.syncCurrentScenarioForm();
   }
 
   private rebuildForm(userStories: UserStory[]): void {

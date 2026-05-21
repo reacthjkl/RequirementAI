@@ -8,6 +8,7 @@ import { ProjectWizardUserStoriesStep } from './shared/components/project-wizard
 import { ProjectWizardStep, StepNavigationResult } from './shared/models/project-wizard-step.model';
 import { ProjectWizardLoader } from './shared/services/project-wizard-loader';
 import { ProjectWizardState } from './shared/services/project-wizard-state';
+import { ProjectService } from '../../shared/services/project';
 
 @Component({
   selector: 'app-project-wizard',
@@ -43,12 +44,15 @@ export class ProjectWizard {
 
   currentStepIndex = 0;
   maxAllowedStepIndex = 0;
+  initialPersonaIndex = 0;
+  initialScenarioIndex = 0;
 
   constructor(
     private readonly route: ActivatedRoute,
     private readonly router: Router,
     private readonly wizardState: ProjectWizardState,
     private readonly wizardLoader: ProjectWizardLoader,
+    private readonly projectService: ProjectService,
   ) {}
 
   async ngOnInit() {
@@ -60,6 +64,7 @@ export class ProjectWizard {
     }
 
     await this.wizardLoader.load(projectId);
+    this.applyInitialNavigation();
   }
 
   get currentStep() {
@@ -133,6 +138,7 @@ export class ProjectWizard {
       return;
     }
 
+    await this.projectService.markAsFinished(projectId);
     await this.router.navigate(['/board', projectId]);
   }
 
@@ -140,6 +146,22 @@ export class ProjectWizard {
     this.currentStepIndex++;
 
     this.maxAllowedStepIndex = Math.max(this.maxAllowedStepIndex, this.currentStepIndex);
+  }
+
+  private applyInitialNavigation(): void {
+    const step = this.route.snapshot.queryParamMap.get('step');
+    const personaIndex = Number(this.route.snapshot.queryParamMap.get('personaIndex') ?? 0);
+    const scenarioIndex = Number(this.route.snapshot.queryParamMap.get('scenarioIndex') ?? 0);
+    const stepIndex = this.steps.findIndex((item) => item.key === step);
+
+    if (stepIndex < 0) {
+      return;
+    }
+
+    this.initialPersonaIndex = Number.isNaN(personaIndex) ? 0 : personaIndex;
+    this.initialScenarioIndex = Number.isNaN(scenarioIndex) ? 0 : scenarioIndex;
+    this.currentStepIndex = stepIndex;
+    this.maxAllowedStepIndex = Math.max(this.maxAllowedStepIndex, stepIndex);
   }
 
   private async askCurrentStepToLeave(): Promise<StepNavigationResult> {
