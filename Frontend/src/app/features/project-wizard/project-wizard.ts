@@ -2,21 +2,16 @@ import { Component, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ProjectWizardNavigation } from './shared/components/project-wizard-navigation/project-wizard-navigation';
 import { ProjectWizardPersonasStep } from './shared/components/project-wizard-personas-step/project-wizard-personas-step';
-import { ProjectWizardProgress } from './shared/components/project-wizard-progress/project-wizard-progress';
 import { ProjectWizardProjectStep } from './shared/components/project-wizard-project-step/project-wizard-project-step';
 import { ProjectWizardScenariosStep } from './shared/components/project-wizard-scenarios-step/project-wizard-scenarios-step';
 import { ProjectWizardUserStoriesStep } from './shared/components/project-wizard-user-stories-step/project-wizard-user-stories-step';
-import {
-  ProjectWizardStep,
-  StepNavigationResult,
-} from './shared/models/project-wizard-step.model';
+import { ProjectWizardStep, StepNavigationResult } from './shared/models/project-wizard-step.model';
 import { ProjectWizardLoader } from './shared/services/project-wizard-loader';
 import { ProjectWizardState } from './shared/services/project-wizard-state';
 
 @Component({
   selector: 'app-project-wizard',
   imports: [
-    ProjectWizardProgress,
     ProjectWizardNavigation,
     ProjectWizardProjectStep,
     ProjectWizardPersonasStep,
