@@ -11,25 +11,18 @@
   </div>
 </div>
 
-<div class="list-group list-group-flush">
-  @for (project of projects; track project.id) {
-    <a
-      [routerLink]="['/projects', project.id]"
-      routerLinkActive="active"
-      class="list-group-item list-group-item-action"
-    >
-      {{ project.name }}
-    </a>
-  }
-
-  <!--todo: remove after y overflow tested-->
-  @for (project of projects; track project.id) {
-    <a
-      [routerLink]="['/projects', project.id]"
-      routerLinkActive="active"
-      class="list-group-item list-group-item-action"
-    >
-      {{ project.name }}
-    </a>
-  }
-</div>
+@if (projects.length > 0) {
+  <div class="list-group list-group-flush">
+    @for (project of projects; track project.id) {
+      <a
+        [routerLink]="['/projects', project.id]"
+        routerLinkActive="active"
+        class="list-group-item list-group-item-action"
+      >
+        {{ project.name }}
+      </a>
+    }
+  </div>
+} @else {
+  <div class="text-secondary">There are no projects yet</div>
+}
