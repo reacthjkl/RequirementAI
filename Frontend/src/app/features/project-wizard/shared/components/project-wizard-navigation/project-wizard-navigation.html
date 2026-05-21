@@ -1,39 +1,50 @@
-<ul class="nav nav-pills nav-fill mb-4">
+<ol class="wizard-stepper mb-4">
   @for (step of steps; track step.key; let i = $index) {
-    <li class="nav-item">
+    <li class="wizard-stepper-item">
+      @if (i > 0) {
+        <span
+          class="wizard-step-connector"
+          [class.wizard-step-connector-primary]="isConnectorPrimary(i)"
+        ></span>
+      }
+
       <button
         type="button"
-        class="nav-link w-100"
-        [class.active]="i === currentStepIndex"
-        [class.disabled]="i > maxAllowedStepIndex"
+        class="wizard-step"
+        [class.wizard-step-complete]="isCompleted(i)"
+        [class.wizard-step-current]="i === currentStepIndex"
+        [class.wizard-step-upcoming]="i > currentStepIndex"
         [disabled]="i > maxAllowedStepIndex"
         (click)="stepSelected.emit(i)"
       >
-        {{ step.label }}
+        <span class="wizard-step-icon">
+          <fa-icon [icon]="getStepIcon(step)" />
+        </span>
+        <span class="wizard-step-label">{{ step.label }}</span>
       </button>
     </li>
   }
-</ul>
+</ol>
 
-<div class="card">
+<div class="card shadow-sm wizard-step-card">
   <div class="card-body">
     <ng-content />
   </div>
+</div>
 
-  <div class="card-footer d-flex justify-content-between">
-    <button
-      type="button"
-      class="btn btn-outline-secondary"
-      [disabled]="currentStepIndex === 0"
-      (click)="previous.emit()"
-    >
-      Back
-    </button>
+<div class="wizard-actions d-flex justify-content-between mt-3">
+  <button
+    type="button"
+    class="btn btn-outline-secondary"
+    [disabled]="currentStepIndex === 0"
+    (click)="previous.emit()"
+  >
+    Back
+  </button>
 
-    @if (isLastStep) {
-      <button type="button" class="btn btn-primary" (click)="finished.emit()">Create Project</button>
-    } @else {
-      <button type="button" class="btn btn-primary" (click)="next.emit()">Next</button>
-    }
-  </div>
+  @if (isLastStep) {
+    <button type="button" class="btn btn-primary" (click)="finished.emit()">Create Project</button>
+  } @else {
+    <button type="button" class="btn btn-primary" (click)="next.emit()">Next</button>
+  }
 </div>

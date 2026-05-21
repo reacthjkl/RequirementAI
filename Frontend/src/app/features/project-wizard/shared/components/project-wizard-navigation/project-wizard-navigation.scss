@@ -1,4 +1,118 @@
 :host {
+  --wizard-step-circle-size: 3rem;
+  --wizard-step-line-gap: 0.625rem;
+
   display: block;
 }
 
+.wizard-stepper {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.wizard-stepper-item {
+  position: relative;
+  min-width: 0;
+}
+
+.wizard-step-connector {
+  position: absolute;
+  top: calc((var(--wizard-step-circle-size) / 2) - 1px);
+  right: calc(50% + (var(--wizard-step-circle-size) / 2) + var(--wizard-step-line-gap));
+  left: calc(-50% + (var(--wizard-step-circle-size) / 2) + var(--wizard-step-line-gap));
+  height: 2px;
+  background: var(--bs-secondary-color);
+}
+
+.wizard-step-connector-primary {
+  background: var(--bs-primary);
+}
+
+.wizard-step {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  width: 100%;
+  padding: 0;
+  color: var(--bs-secondary-color);
+  background: transparent;
+  border: 0;
+}
+
+.wizard-step:disabled {
+  cursor: not-allowed;
+  opacity: 1;
+}
+
+.wizard-step-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--wizard-step-circle-size);
+  height: var(--wizard-step-circle-size);
+  border: 2px solid var(--bs-secondary-color);
+  border-radius: 50%;
+  background: var(--bs-body-bg);
+  color: var(--bs-secondary-color);
+  font-size: 1.125rem;
+}
+
+.wizard-step-label {
+  color: inherit;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  line-height: 1.2;
+  text-align: center;
+}
+
+.wizard-step-complete {
+  color: var(--bs-primary);
+}
+
+.wizard-step-complete .wizard-step-icon {
+  border-color: var(--bs-primary);
+  background: var(--bs-primary);
+  color: #fff;
+}
+
+.wizard-step-current {
+  color: var(--bs-primary);
+}
+
+.wizard-step-current .wizard-step-icon {
+  border-color: var(--bs-primary);
+  color: var(--bs-primary);
+}
+
+.wizard-step-upcoming .wizard-step-icon {
+  border-color: var(--bs-secondary-color);
+}
+
+.wizard-step-card {
+  border: 0;
+}
+
+.wizard-actions {
+  padding: 0 0.25rem;
+}
+
+@media (max-width: 575.98px) {
+  :host {
+    --wizard-step-circle-size: 2.5rem;
+    --wizard-step-line-gap: 0.375rem;
+  }
+
+  .wizard-step-icon {
+    font-size: 1rem;
+  }
+
+  .wizard-step-label {
+    font-size: 0.75rem;
+  }
+}
