@@ -2,18 +2,20 @@
   <app-global-spinner />
 }
 
-<div style="height: 100vh">
-  <div class="row g-0" style="height: 100%">
-    <!--Menu-->
+<div class="vh-100 d-flex flex-column">
+  <app-navbar />
+
+  <div class="row g-0 flex-grow-1 overflow-hidden">
+    <!-- Menu -->
     <div class="col-auto">
-      <app-menu></app-menu>
+      <app-menu></app-menu>x
     </div>
 
-    <!--Content-->
-    <div class="col">
-      <div class="container p-5" style="height: 100%">
+    <!-- Content -->
+    <main class="col overflow-auto">
+      <div class="container p-5">
         <router-outlet />
       </div>
-    </div>
+    </main>
   </div>
 </div>
