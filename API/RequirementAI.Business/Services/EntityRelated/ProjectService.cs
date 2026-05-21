@@ -1,6 +1,9 @@
+using System.Text;
 using AutoMapper;
 using RequirementAI.Business.Interfaces.EntityRelated;
 using RequirementAI.Contract.Dto;
+using RequirementAI.Contract.Enums;
+using RequirementAI.Contract.Exceptions;
 using RequirementAI.Persistence.Entities;
 using RequirementAI.Persistence.Interfaces;
 
@@ -39,6 +42,19 @@ public class ProjectService(
     {
         var entity = mapper.Map<Project>(project);
 
+        await projectRepository.Update(entity, ct);
+    }
+
+    public async Task MarkAsFinished(Guid projectId, CancellationToken ct)
+    {
+        var entity = await projectRepository.GetFullProjectById(projectId, ct);
+
+        var isReady = entity.Personas.All(p => p.Scenarios.All(s => s.UserStories.Any()));
+        
+        if(!isReady) throw new BusinessException("Project is still incomplete");
+
+        entity.Status = ProjectStatus.ReadyForRefinement;
+        
         await projectRepository.Update(entity, ct);
     }
 
