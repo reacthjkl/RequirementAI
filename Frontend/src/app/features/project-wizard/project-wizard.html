@@ -18,11 +18,11 @@
     }
 
     @case ('scenarios') {
-      <app-project-wizard-scenarios-step />
+      <app-project-wizard-scenarios-step [initialPersonaIndex]="initialPersonaIndex" />
     }
 
     @case ('userStories') {
-      <app-project-wizard-user-stories-step />
+      <app-project-wizard-user-stories-step [initialScenarioIndex]="initialScenarioIndex" />
     }
   }
 </app-project-wizard-navigation>

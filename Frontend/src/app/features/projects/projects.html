@@ -14,13 +14,14 @@
 @if (projects.length > 0) {
   <div class="list-group list-group-flush">
     @for (project of projects; track project.id) {
-      <a
-        [routerLink]="['/board', project.id]"
-        routerLinkActive="active"
-        class="list-group-item list-group-item-action"
+      <button
+        type="button"
+        class="list-group-item list-group-item-action project-list-item"
+        (click)="openProject(project)"
       >
-        {{ project.name }}
-      </a>
+        <span>{{ project.name }}</span>
+        <app-project-status [status]="project.status" />
+      </button>
     }
   </div>
 } @else {
