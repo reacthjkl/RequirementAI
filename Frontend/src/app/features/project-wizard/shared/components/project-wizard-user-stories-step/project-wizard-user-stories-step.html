@@ -28,7 +28,7 @@
 
     <form [formGroup]="form" class="d-flex flex-column gap-4">
       <div formArrayName="userStories" class="d-flex flex-column gap-3">
-        @for (userStoryForm of userStoryForms.controls; track $index; let i = $index) {
+        @for (userStoryForm of userStoryForms.controls; track userStoryForm; let i = $index) {
           <section class="border rounded p-3" [formGroupName]="i">
             <div class="d-flex justify-content-between gap-3 mb-3">
               <h6 class="mb-0">User story {{ i + 1 }}</h6>
