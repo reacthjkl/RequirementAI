@@ -3,9 +3,9 @@ using RequirementAI.Contract.Dto.LLMDtos;
 
 namespace RequirementAI.Contract.Validators.LLMResponseValidators;
 
-public class AcceptanceCriteriaValidator: AbstractValidator<AcceptanceCriteriaForLLMDto>
+public class AcceptanceCriteriaForLLMDtoValidator: AbstractValidator<AcceptanceCriteriaForLLMDto>
 {
-    public AcceptanceCriteriaValidator()
+    public AcceptanceCriteriaForLLMDtoValidator()
     {
         RuleFor(x => x.Wording).MaximumLength(1028).NotEmpty();
     }

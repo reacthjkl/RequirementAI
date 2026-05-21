@@ -2,7 +2,7 @@ using RequirementAI.RefinementWorker;
 
 var builder = Host.CreateApplicationBuilder(args);
 
-builder.Services.AddHostedService<Worker>();
+AppSetup.SetupServices(builder);
 
 AppSetup.SetupLayers(builder);
 

@@ -43,6 +43,13 @@ public class ProjectController(IProjectService projectService)
         return Ok(ResponseDto.Success());
     }
     
+    [HttpPut("refine/{projectId:guid}")]
+    public async Task<IActionResult> Refine([FromRoute] Guid projectId, CancellationToken ct)
+    {
+        await projectService.Refine(projectId, ct);
+        return Ok(ResponseDto.Success());
+    }
+    
     [HttpDelete("{id:guid}")]
     public async Task<IActionResult> Delete(Guid id, CancellationToken ct)
     {

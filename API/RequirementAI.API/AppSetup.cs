@@ -144,7 +144,6 @@ public static class AppSetup
         using var scope = app.Services.CreateScope();
         var db = scope.ServiceProvider.GetRequiredService<RequirementAIContext>();
         db.Database.Migrate();
-        Console.WriteLine("Database migrations applied successfully.");
     }
 
     public static void SetupExceptionHandler(WebApplicationBuilder builder)

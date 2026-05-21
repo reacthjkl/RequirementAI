@@ -11,6 +11,7 @@ namespace RequirementAI.Business.Services.EntityRelated;
 
 public class ProjectService(
     IProjectRepository projectRepository,
+    IProjectRefinementJobRepository projectRefinementJobRepository,
     IMapper mapper)
     : IProjectService
 {
@@ -43,6 +44,17 @@ public class ProjectService(
         var entity = mapper.Map<Project>(project);
 
         await projectRepository.Update(entity, ct);
+    }
+
+    public async Task<Guid> Refine(Guid projectId, CancellationToken ct)
+    {
+        var job = await projectRefinementJobRepository.Create(new ProjectRefinementJob { ProjectId = projectId }, ct);
+        
+        var project = await projectRepository.GetById(projectId, ct);
+        project.Status = ProjectStatus.RefinementInProgress;
+        await projectRepository.Update(project, ct);
+        
+        return job.Id;
     }
 
     public async Task MarkAsFinished(Guid projectId, CancellationToken ct)

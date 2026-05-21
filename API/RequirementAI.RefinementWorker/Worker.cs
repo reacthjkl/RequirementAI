@@ -1,24 +1,21 @@
+using RequirementAI.Business.Services.Refinement;
+
 namespace RequirementAI.RefinementWorker;
 
-public class Worker : BackgroundService
+public class Worker(IServiceScopeFactory scopeFactory) : BackgroundService
 {
-    private readonly ILogger<Worker> _logger;
-
-    public Worker(ILogger<Worker> logger)
+    protected override async Task ExecuteAsync(CancellationToken ct)
     {
-        _logger = logger;
-    }
-
-    protected override async Task ExecuteAsync(CancellationToken stoppingToken)
-    {
-        while (!stoppingToken.IsCancellationRequested)
+        while (!ct.IsCancellationRequested)
         {
-            if (_logger.IsEnabled(LogLevel.Information))
-            {
-                _logger.LogInformation("Worker running at: {time}", DateTimeOffset.Now);
-            }
+            using var scope = scopeFactory.CreateScope();
+            
+            var processor = scope.ServiceProvider
+                .GetRequiredService<IProjectRefinementJobProcessor>();
+            
+            await processor.ProcessNextJob(ct);
 
-            await Task.Delay(1000, stoppingToken);
+            await Task.Delay(5000, ct);
         }
     }
 }
