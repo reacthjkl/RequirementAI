@@ -1,8 +1,8 @@
 import { Component, signal } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
-import { LoadingService } from './core/services/loading-service';
-import { AuthService } from './shared/services/auth.service';
 import { GlobalSpinner } from './core/components/global-spinner/global-spinner';
+import { LoadingService } from './core/services/loading-service';
+import { AuthService } from './shared/services/auth';
 
 @Component({
   selector: 'app-root',

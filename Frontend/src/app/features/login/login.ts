@@ -5,7 +5,7 @@ import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { faLock } from '@fortawesome/free-solid-svg-icons';
 import { ApiResponse } from '../../shared/models/api-response.model';
 import { AuthRequest } from '../../shared/models/auth-request.model';
-import { AuthService } from '../../shared/services/auth.service';
+import { AuthService } from '../../shared/services/auth';
 
 @Component({
   selector: 'app-login',
