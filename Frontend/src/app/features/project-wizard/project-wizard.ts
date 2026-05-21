@@ -1,5 +1,5 @@
 import { Component, ViewChild } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { ProjectWizardNavigation } from './shared/components/project-wizard-navigation/project-wizard-navigation';
 import { ProjectWizardPersonasStep } from './shared/components/project-wizard-personas-step/project-wizard-personas-step';
 import { ProjectWizardProgress } from './shared/components/project-wizard-progress/project-wizard-progress';
@@ -51,6 +51,7 @@ export class ProjectWizard {
 
   constructor(
     private readonly route: ActivatedRoute,
+    private readonly router: Router,
     private readonly wizardState: ProjectWizardState,
     private readonly wizardLoader: ProjectWizardLoader,
   ) {}
@@ -123,7 +124,13 @@ export class ProjectWizard {
       return;
     }
 
-    console.log('Create project');
+    const projectId = this.wizardState.getProjectId();
+
+    if (!projectId) {
+      return;
+    }
+
+    await this.router.navigate(['/board', projectId]);
   }
 
   private moveNext(): void {
