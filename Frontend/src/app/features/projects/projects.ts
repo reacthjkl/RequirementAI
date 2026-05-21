@@ -19,7 +19,10 @@ type ProjectViewMode = 'list' | 'cards';
 })
 export class Projects {
   public projects: Project[] = [];
-  public viewMode: ProjectViewMode = 'list';
+
+  readonly viewModeStorageKey: string = 'projects-view-mode';
+  public viewMode: ProjectViewMode =
+    (localStorage.getItem(this.viewModeStorageKey) as ProjectViewMode) ?? 'list';
 
   //icons
   faGrip = faGrip;
@@ -40,6 +43,7 @@ export class Projects {
 
   setViewMode(viewMode: ProjectViewMode): void {
     this.viewMode = viewMode;
+    localStorage.setItem(this.viewModeStorageKey, this.viewMode);
   }
 
   async openProject(project: Project): Promise<void> {
