@@ -4,6 +4,7 @@ using RequirementAI.Business.Interfaces;
 using RequirementAI.Business.Interfaces.EntityRelated;
 using RequirementAI.Business.Interfaces.Refinement;
 using RequirementAI.Business.Providers;
+using RequirementAI.Business.Providers.Auth;
 using RequirementAI.Business.Providers.LLM;
 using RequirementAI.Business.Services;
 using RequirementAI.Business.Services.Auth;
@@ -37,6 +38,8 @@ public static class DependencyInjection
         
         // auth providers
         services.AddScoped<IAuthService, AuthService>();
+        services.AddScoped<IAuthProvider, AuthProvider>();
+        
 
         // LLM providers
         services.AddScoped<ILLMProvider, OpenAIProvider>();
@@ -47,6 +50,9 @@ public static class DependencyInjection
         services.AddScoped<ICookiesHelper, CookiesHelper>();
         services.AddScoped<IPromptBuilder, PromptBuilder>();
         services.AddHttpClient();
+        
+        services.AddHttpContextAccessor();
+        
         
         return services;
     }

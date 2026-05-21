@@ -18,13 +18,9 @@ AppSetup.SetupAuthentication(builder);
 
 AppSetup.SetupLayers(builder);
 
-AppSetup.SetupAuthProviders(builder);
-
 AppSetup.SetupExceptionHandler(builder);
 
 AppSetup.SetupControllers(builder);
-
-AppSetup.SetupHttpContextAccessor(builder);
 
 var app = builder.Build();
 

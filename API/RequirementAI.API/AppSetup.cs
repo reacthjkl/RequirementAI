@@ -1,6 +1,4 @@
 using System.Text;
-using System.Text.Json;
-using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -141,11 +139,6 @@ public static class AppSetup
         builder.Services.AddAuthorization();
     }
 
-    public static void SetupAuthProviders(WebApplicationBuilder builder)
-    {
-        builder.Services.AddScoped<IAuthProvider, AuthProvider>();
-    }
-
     public static void ApplyMigrations(WebApplication app)
     {
         using var scope = app.Services.CreateScope();
@@ -158,10 +151,5 @@ public static class AppSetup
     {
         builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
         builder.Services.AddProblemDetails();
-    }
-
-    public static void SetupHttpContextAccessor(WebApplicationBuilder builder)
-    {
-        builder.Services.AddHttpContextAccessor();
     }
 }

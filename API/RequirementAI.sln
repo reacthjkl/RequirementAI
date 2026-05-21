@@ -8,6 +8,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RequirementAI.Contract", "R
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RequirementAI.Persistence", "RequirementAI.Persistence\RequirementAI.Persistence.csproj", "{F8E35742-2B2F-44E6-8DD3-D63B5AF1A12B}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RequirementAI.RefinementWorker", "RequirementAI.RefinementWorker\RequirementAI.RefinementWorker.csproj", "{AFE10B59-BCFE-467B-846C-CAFCA31BCEFE}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -30,5 +32,9 @@ Global
 		{F8E35742-2B2F-44E6-8DD3-D63B5AF1A12B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F8E35742-2B2F-44E6-8DD3-D63B5AF1A12B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F8E35742-2B2F-44E6-8DD3-D63B5AF1A12B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AFE10B59-BCFE-467B-846C-CAFCA31BCEFE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AFE10B59-BCFE-467B-846C-CAFCA31BCEFE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AFE10B59-BCFE-467B-846C-CAFCA31BCEFE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AFE10B59-BCFE-467B-846C-CAFCA31BCEFE}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
