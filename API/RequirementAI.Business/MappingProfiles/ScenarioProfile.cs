@@ -1,4 +1,5 @@
 using AutoMapper;
+using RequirementAI.Contract.Dto;
 using RequirementAI.Contract.Dto.LLMDtos;
 using RequirementAI.Persistence.Entities;
 
@@ -9,5 +10,9 @@ public class ScenarioProfile: Profile
     public ScenarioProfile()
     {
         CreateMap<Scenario, ScenarioForLLMDto>().ReverseMap();
+        
+        CreateMap<Scenario, ScenarioResponseDto>();
+        CreateMap<ScenarioForCreationDto, Scenario>();
+        CreateMap<ScenarioForUpdateDto, Scenario>();
     }
 }
