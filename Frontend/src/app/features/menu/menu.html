@@ -1,18 +1,18 @@
-<aside class="p-0 bg-body-tertiary d-flex flex-column" style="height: 100%">
-  <nav class="p-3">
-    <div class="list-group list-group-flush">
-      <a
-        routerLink="/projects"
-        routerLinkActive="active"
-        class="list-group-item list-group-item-action bg-transparent cursor-pointer"
-      >
-        <fa-icon [icon]="faFolderOpen"></fa-icon>
-        Projects
-      </a>
-    </div>
-  </nav>
+@if (currentUser) {
+  <aside class="p-0 bg-body-tertiary d-flex flex-column" style="height: 100%">
+    <nav class="p-3">
+      <div class="list-group list-group-flush">
+        <a
+          routerLink="/projects"
+          routerLinkActive="active"
+          class="list-group-item list-group-item-action bg-transparent cursor-pointer"
+        >
+          <fa-icon [icon]="faFolderOpen"></fa-icon>
+          Projects
+        </a>
+      </div>
+    </nav>
 
-  @if (currentUser) {
     <div class="p-3 border-top mt-auto user-menu">
       @if (userMenuOpen) {
         <div class="user-menu-dropdown">
@@ -39,5 +39,5 @@
         <fa-icon class="ms-auto user-menu-chevron" [icon]="faChevronUp"></fa-icon>
       </button>
     </div>
-  }
-</aside>
+  </aside>
+}
