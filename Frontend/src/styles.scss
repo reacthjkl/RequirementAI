@@ -15,6 +15,50 @@ $btn-active-color: #fff;
   --bs-btn-disabled-color: #fff;
 }
 
+.badge {
+  --bs-badge-font-weight: 600;
+}
+
+.text-bg-primary {
+  color: var(--bs-primary) !important;
+  background-color: rgba(var(--bs-primary-rgb), 0.2) !important;
+}
+
+.text-bg-secondary {
+  color: var(--bs-secondary) !important;
+  background-color: rgba(var(--bs-secondary-rgb), 0.2) !important;
+}
+
+.text-bg-success {
+  color: var(--bs-success) !important;
+  background-color: rgba(var(--bs-success-rgb), 0.2) !important;
+}
+
+.text-bg-danger {
+  color: var(--bs-danger) !important;
+  background-color: rgba(var(--bs-danger-rgb), 0.2) !important;
+}
+
+.text-bg-warning {
+  color: #8a5a00 !important;
+  background-color: rgba(var(--bs-warning-rgb), 0.2) !important;
+}
+
+.text-bg-info {
+  color: #055160 !important;
+  background-color: rgba(var(--bs-info-rgb), 0.2) !important;
+}
+
+.text-bg-light {
+  color: var(--bs-dark) !important;
+  background-color: rgba(var(--bs-light-rgb), 0.2) !important;
+}
+
+.text-bg-dark {
+  color: var(--bs-dark) !important;
+  background-color: rgba(var(--bs-dark-rgb), 0.2) !important;
+}
+
 .cursor-pointer {
   cursor: pointer;
 }

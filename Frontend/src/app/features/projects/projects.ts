@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { Router, RouterModule } from '@angular/router';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-import { faPlus } from '@fortawesome/free-solid-svg-icons';
+import { faGrip, faList, faPlus } from '@fortawesome/free-solid-svg-icons';
 import { ProjectStatusComponent } from '../../shared/components/project-status/project-status';
 import { ProjectStatus } from '../../shared/enums/project-status.enum';
 import { Project } from '../../shared/models/project.model';
@@ -10,16 +10,20 @@ import { ProjectService } from '../../shared/services/project';
 import { ScenarioService } from '../../shared/services/scenario';
 import { UserStoryService } from '../../shared/services/user-story';
 
+type ProjectViewMode = 'list' | 'cards';
+
 @Component({
   selector: 'app-projects',
   imports: [FontAwesomeModule, RouterModule, ProjectStatusComponent],
   templateUrl: './projects.html',
-  styleUrl: './projects.scss',
 })
 export class Projects {
   public projects: Project[] = [];
+  public viewMode: ProjectViewMode = 'list';
 
   //icons
+  faGrip = faGrip;
+  faList = faList;
   faPlus = faPlus;
 
   constructor(
@@ -32,6 +36,10 @@ export class Projects {
 
   async ngOnInit() {
     this.projects = await this.projectSvc.get();
+  }
+
+  setViewMode(viewMode: ProjectViewMode): void {
+    this.viewMode = viewMode;
   }
 
   async openProject(project: Project): Promise<void> {
