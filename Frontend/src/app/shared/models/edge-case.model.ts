@@ -1,4 +1,4 @@
-export interface EdgeCaseResponse {
+export interface EdgeCase {
   id: string;
   preconditions: string;
   triggerAction: string;
