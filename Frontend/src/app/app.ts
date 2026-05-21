@@ -3,10 +3,11 @@ import { RouterOutlet } from '@angular/router';
 import { GlobalSpinner } from './core/components/global-spinner/global-spinner';
 import { LoadingService } from './core/services/loading-service';
 import { AuthService } from './shared/services/auth';
+import { Menu } from './features/menu/menu';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet, GlobalSpinner],
+  imports: [RouterOutlet, GlobalSpinner, Menu],
   templateUrl: './app.html',
   styleUrl: './app.scss',
 })

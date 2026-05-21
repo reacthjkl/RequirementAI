@@ -1,0 +1,24 @@
+<div class="row justify-content-between mb-5">
+  <div class="col-auto">
+    <h3>Projects</h3>
+  </div>
+
+  <div class="col-auto">
+    <button class="btn btn-primary" [routerLink]="['/project-wizzard']">
+      <fa-icon [icon]="faPlus"></fa-icon>
+      New
+    </button>
+  </div>
+</div>
+
+<div class="list-group list-group-flush">
+  @for (project of projects; track project.id) {
+    <a
+      [routerLink]="['/projects', project.id]"
+      routerLinkActive="active"
+      class="list-group-item list-group-item-action"
+    >
+      {{ project.name }}
+    </a>
+  }
+</div>
