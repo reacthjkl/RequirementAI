@@ -2,20 +2,20 @@
   <app-global-spinner />
 }
 
-<div class="vh-100 d-flex flex-column">
+<div class="vh-100 d-flex flex-column overflow-hidden app-shell">
   @if (loggedIn()) {
     <app-navbar />
   }
 
-  <div class="row g-0 flex-grow-1 overflow-hidden">
+  <div class="row g-0 flex-grow-1 overflow-hidden flex-nowrap app-body">
     <!-- Menu -->
     @if (loggedIn()) {
-      <div class="col-auto"><app-menu></app-menu>x</div>
+      <div class="col-auto"><app-menu></app-menu></div>
     }
 
     <!-- Content -->
-    <main class="col overflow-auto">
-      <div class="container p-5">
+    <main class="col app-content-shell">
+      <div class="container p-5 app-content-container">
         <router-outlet />
       </div>
     </main>
