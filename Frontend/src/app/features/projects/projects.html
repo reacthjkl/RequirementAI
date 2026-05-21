@@ -15,7 +15,7 @@
   <div class="list-group list-group-flush">
     @for (project of projects; track project.id) {
       <a
-        [routerLink]="['/projects', project.id]"
+        [routerLink]="['/board', project.id]"
         routerLinkActive="active"
         class="list-group-item list-group-item-action"
       >
