@@ -1,8 +1,8 @@
-import { Component } from '@angular/core';
-import { ProjectWizardPersonasStep } from './project-wizard-personas-step/project-wizard-personas-step';
-import { ProjectWizardProjectStep } from './project-wizard-project-step/project-wizard-project-step';
-import { ProjectWizardScenariosStep } from './project-wizard-scenarios-step/project-wizard-scenarios-step';
-import { ProjectWizardUserStoriesStep } from './project-wizard-user-stories-step/project-wizard-user-stories-step';
+import { Component, ViewChild } from '@angular/core';
+import { ProjectWizardPersonasStep } from './shared/components/project-wizard-personas-step/project-wizard-personas-step';
+import { ProjectWizardProjectStep } from './shared/components/project-wizard-project-step/project-wizard-project-step';
+import { ProjectWizardScenariosStep } from './shared/components/project-wizard-scenarios-step/project-wizard-scenarios-step';
+import { ProjectWizardUserStoriesStep } from './shared/components/project-wizard-user-stories-step/project-wizard-user-stories-step';
 
 @Component({
   selector: 'app-project-wizard',
@@ -16,6 +16,9 @@ import { ProjectWizardUserStoriesStep } from './project-wizard-user-stories-step
   styleUrl: './project-wizard.scss',
 })
 export class ProjectWizard {
+  @ViewChild(ProjectWizardProjectStep)
+  private projectStep?: ProjectWizardProjectStep;
+
   steps = [
     { key: 'project', label: 'Project' },
     { key: 'personas', label: 'Personas' },
@@ -46,13 +49,20 @@ export class ProjectWizard {
     this.currentStepIndex = index;
   }
 
-  nextStep(): void {
+  async nextStep(): Promise<void> {
     if (this.isLastStep) {
       return;
     }
 
-    this.currentStepIndex++;
-    this.maxAllowedStepIndex = Math.max(this.maxAllowedStepIndex, this.currentStepIndex);
+    if (this.currentStep.key === 'project') {
+      const saved = await this.projectStep?.persistChanges();
+
+      if (!saved) {
+        return;
+      }
+    }
+
+    this.moveNext();
   }
 
   previousStep(): void {
@@ -64,7 +74,12 @@ export class ProjectWizard {
   }
 
   finish(): void {
-    // later: collect wizard data and call API
     console.log('Create project');
+  }
+
+  private moveNext(): void {
+    this.currentStepIndex++;
+
+    this.maxAllowedStepIndex = Math.max(this.maxAllowedStepIndex, this.currentStepIndex);
   }
 }
