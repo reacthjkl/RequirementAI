@@ -8,10 +8,10 @@ namespace RequirementAI.API.Controllers;
 public class OrganizationController(IOrganizationService organizationService)
     : RequirementAIControllerBase
 {
-    [HttpGet("{id:guid}")]
-    public async Task<IActionResult> GetById(Guid id, CancellationToken ct)
+    [HttpGet]
+    public async Task<IActionResult> GetUsersOrganization(CancellationToken ct)
     {
-        var result = await organizationService.GetById(id, ct);
+        var result = await organizationService.GetById(OrganizationId, ct);
         return Ok(ResponseDto<OrganizationResponseDto>.Success(result));
     }
 
