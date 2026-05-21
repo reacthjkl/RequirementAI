@@ -23,9 +23,12 @@ public class ProjectService(
         return mapper.Map<List<ProjectResponseDto>>(entities);
     }
 
-    public async Task<ProjectResponseDto> Create(ProjectForCreationDto project, CancellationToken ct)
+    public async Task<ProjectResponseDto> Create(ProjectForCreationDto project, Guid organizationId,
+        CancellationToken ct)
     {
         var entity = mapper.Map<Project>(project);
+
+        entity.OrganizationId = organizationId;
 
         var created = await projectRepository.Create(entity, ct);
 

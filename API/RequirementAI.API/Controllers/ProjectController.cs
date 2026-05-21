@@ -25,7 +25,7 @@ public class ProjectController(IProjectService projectService)
     [HttpPost]
     public async Task<IActionResult> Create([FromBody] ProjectForCreationDto dto, CancellationToken ct)
     {
-        var result = await projectService.Create(dto, ct);
+        var result = await projectService.Create(dto, OrganizationId, ct);
         return Ok(ResponseDto<ProjectResponseDto>.Success(result));
     }
 
