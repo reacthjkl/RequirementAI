@@ -13,15 +13,31 @@
   </nav>
 
   @if (currentUser) {
-    <div class="p-3 border-top mt-auto">
-      <div class="d-flex align-items-center gap-2">
+    <div class="p-3 border-top mt-auto user-menu">
+      @if (userMenuOpen) {
+        <div class="user-menu-dropdown">
+          <button type="button" class="dropdown-item" (click)="logout()">
+            <fa-icon [icon]="faRightFromBracket"></fa-icon>
+            Logout
+          </button>
+        </div>
+      }
+
+      <button
+        type="button"
+        class="user-menu-trigger"
+        [attr.aria-expanded]="userMenuOpen"
+        (click)="toggleUserMenu()"
+      >
         <fa-icon [icon]="faUserCircle"></fa-icon>
 
-        <div class="small">
+        <div class="small text-start min-w-0">
           <div class="fw-semibold">{{ currentUser.name }}</div>
           <div class="text-muted">{{ currentUser.email }}</div>
         </div>
-      </div>
+
+        <fa-icon class="ms-auto user-menu-chevron" [icon]="faChevronUp"></fa-icon>
+      </button>
     </div>
   }
 </aside>
