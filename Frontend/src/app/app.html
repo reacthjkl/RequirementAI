@@ -2,5 +2,18 @@
   <app-global-spinner />
 }
 
-User is logged in: {{ loggedIn() }}
-<router-outlet />
+<div style="height: 100vh">
+  <div class="row g-0" style="height: 100%">
+    <!--Menu-->
+    <div class="col-auto">
+      <app-menu></app-menu>
+    </div>
+
+    <!--Content-->
+    <div class="col">
+      <div class="container p-5" style="height: 100%">
+        <router-outlet />
+      </div>
+    </div>
+  </div>
+</div>

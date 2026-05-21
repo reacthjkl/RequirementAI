@@ -10,6 +10,8 @@ export class CurrentUserService {
   constructor(private api: Api) {}
 
   public async get() {
-    return this.api.get<User>(ApiController.User, '');
+    const response = await this.api.get<User>(ApiController.User, '');
+
+    return response.data;
   }
 }

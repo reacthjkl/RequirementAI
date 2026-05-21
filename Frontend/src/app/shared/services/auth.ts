@@ -40,9 +40,9 @@ export class AuthService {
   }
 
   public async checkIsLoggedIn() {
-    const response: ApiResponse<User> = await this.cu.get();
+    const response: User | null = await this.cu.get();
 
-    const exists: boolean = response.data !== null;
+    const exists: boolean = response !== null;
 
     if (exists) {
       this.loggedIn.set(true);
