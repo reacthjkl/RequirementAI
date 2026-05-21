@@ -16,11 +16,9 @@ AppSetup.SetupEntityFramework(builder);
 
 AppSetup.SetupAuthentication(builder);
 
-AppSetup.SetupServices(builder);
+AppSetup.SetupLayers(builder);
 
 AppSetup.SetupAuthProviders(builder);
-
-AppSetup.SetupRepositories(builder);
 
 AppSetup.SetupExceptionHandler(builder);
 

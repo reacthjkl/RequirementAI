@@ -8,7 +8,7 @@ using JsonSchema = NJsonSchema.JsonSchema;
 
 namespace RequirementAI.Business.Helpers;
 
-public class PromptProvider(IRefinementTaskProvider refinementTaskProvider): IPromptProvider
+public class PromptBuilder(IRefinementTaskProvider refinementTaskProvider): IPromptBuilder
 {
     public LLMRequestDto Build<T>(string input, string context)
     {

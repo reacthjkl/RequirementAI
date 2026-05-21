@@ -7,17 +7,17 @@ public class RefinementTaskProvider : IRefinementTaskProvider
 {
     private static readonly Dictionary<Type, string> Tasks = new()
     {
-        [typeof(PersonaDto)] = """
+        [typeof(PersonaForLLMDto)] = """
                          Refine the provided persona. Improve clarity, consistency, and completeness.
                          Ensure motivations, goals, pain points, and context are well-defined.
                          """,
 
-        [typeof(ScenarioDto)] = """
+        [typeof(ScenarioForLLMDto)] = """
                          Refine the scenario description. Ensure logical flow, missing steps,
                          edge cases, and dependencies are identified.
                          """,
 
-        [typeof(UserStoryDto)] = """
+        [typeof(UserStoryForLLMDto)] = """
                          Refine the user story into clear format with acceptance criteria,
                          edge cases, and testable conditions.
                          """

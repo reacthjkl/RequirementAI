@@ -3,7 +3,7 @@ using RequirementAI.Contract.Dto.LLMDtos;
 
 namespace RequirementAI.Business.Interfaces;
 
-public interface IPromptProvider
+public interface IPromptBuilder
 {
     LLMRequestDto Build<T>(string input, string context);
 }

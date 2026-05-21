@@ -4,10 +4,10 @@ using RequirementAI.Persistence.Entities;
 
 namespace RequirementAI.Business.MappingProfiles;
 
-public class PersonaProfile : Profile
+public class UserStoryProfile: Profile
 {
-    public PersonaProfile()
+    public UserStoryProfile()
     {
-        CreateMap<Persona, PersonaForLLMDto>().ReverseMap();
+        CreateMap<UserStory, UserStoryForLLMDto>().ReverseMap();
     }
 }

@@ -16,7 +16,6 @@
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\RequirementAI.Abstractions\RequirementAI.Abstractions.csproj" />
         <ProjectReference Include="..\RequirementAI.Contract\RequirementAi.Contract.csproj"/>
     </ItemGroup>
 
