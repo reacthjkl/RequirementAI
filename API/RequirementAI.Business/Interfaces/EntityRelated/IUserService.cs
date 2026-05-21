@@ -1,6 +1,6 @@
 using RequirementAI.Contract.Dto;
 
-namespace RequirementAI.Business.Interfaces;
+namespace RequirementAI.Business.Interfaces.EntityRelated;
 
 public interface IUserService
 {

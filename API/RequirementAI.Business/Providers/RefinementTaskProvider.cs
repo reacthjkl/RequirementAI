@@ -1,4 +1,5 @@
 using RequirementAI.Business.Interfaces;
+using RequirementAI.Business.Interfaces.Refinement;
 using RequirementAI.Contract.Dto.LLMDtos;
 
 namespace RequirementAI.Business.Providers;

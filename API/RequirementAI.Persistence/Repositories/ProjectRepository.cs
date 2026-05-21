@@ -13,6 +13,24 @@ public class ProjectRepository(RequirementAIContext context): IProjectRepository
             ?? throw new EntityNotFoundException<Project>(id);
     }
 
+    public async Task<Project> GetFullProjectById(Guid id, CancellationToken ct)
+    {
+        return await context.Projects
+                   .Include(p => p.Personas)
+                   .ThenInclude(p => p.Scenarios)
+                   .ThenInclude(s => s.UserStories)
+                   .ThenInclude(us => us.AcceptanceCriteria)
+
+                   .Include(p => p.Personas)
+                   .ThenInclude(p => p.Scenarios)
+                   .ThenInclude(s => s.UserStories)
+                   .ThenInclude(us => us.EdgeCases)
+                   
+                   .AsSplitQuery()
+                   .FirstOrDefaultAsync(p => p.Id == id, ct)
+               ?? throw new EntityNotFoundException<Project>(id);
+    }
+
     public async Task<IList<Project>> GetByOrganization(Guid organizationId, CancellationToken ct)
     {
         return await context.Projects

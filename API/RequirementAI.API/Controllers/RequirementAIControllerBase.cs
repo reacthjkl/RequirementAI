@@ -9,5 +9,8 @@ namespace RequirementAI.API.Controllers;
 [Route("api/[controller]")]
 public class RequirementAIControllerBase : ControllerBase
 {
-    protected Guid UserId => Guid.TryParse(User.FindFirstValue("UserId"), out var id) ? id : Guid.Empty;
+    protected Guid UserId => GetClaimValue(nameof(UserId));
+    protected Guid OrganizationId => GetClaimValue(nameof(OrganizationId));
+    
+    private Guid GetClaimValue(string key) =>  Guid.TryParse(User.FindFirstValue(key), out var id) ? id : Guid.Empty;
 }

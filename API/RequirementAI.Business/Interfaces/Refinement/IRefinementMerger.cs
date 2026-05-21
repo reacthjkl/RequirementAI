@@ -1,4 +1,4 @@
-namespace RequirementAI.Business.Interfaces;
+namespace RequirementAI.Business.Interfaces.Refinement;
 
 public interface IRefinementMerger<TEntity, TDto>
 {

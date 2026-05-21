@@ -1,0 +1,8 @@
+using RequirementAI.Business.Interfaces.EntityRelated;
+
+namespace RequirementAI.Business.Services.EntityRelated;
+
+public class PersonaService:IPersonaService
+{
+    
+}
