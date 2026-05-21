@@ -52,11 +52,7 @@ public static class AppSetup
 
     public static void SetupControllers(WebApplicationBuilder builder)
     {
-        builder.Services.AddControllers()
-            .AddJsonOptions(opt =>
-            {
-                opt.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter(JsonNamingPolicy.CamelCase));
-            });
+        builder.Services.AddControllers();
     }
 
     public static void SetupCors(WebApplicationBuilder builder)
