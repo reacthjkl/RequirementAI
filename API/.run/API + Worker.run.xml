@@ -1,0 +1,7 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="API + Worker" type="CompoundRunConfigurationType">
+    <toRun name="RequirementAI.API: https" type="LaunchSettings" />
+    <toRun name="RequirementAI.RefinementWorker" type="LaunchSettings" />
+    <method v="2" />
+  </configuration>
+</component>
