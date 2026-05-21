@@ -28,7 +28,7 @@ export class EdgeCaseService {
   }
 
   public async create(edgeCase: EdgeCaseForCreation): Promise<EdgeCase | null> {
-    const response: ApiResponse<EdgeCase | null> = await this.api.post(
+    const response: ApiResponse<EdgeCase> = await this.api.post<EdgeCaseForCreation, EdgeCase>(
       ApiController.EdgeCase,
       '',
       edgeCase,

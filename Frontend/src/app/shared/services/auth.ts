@@ -20,7 +20,11 @@ export class AuthService {
   ) {}
 
   public async authenticate(request: AuthRequest) {
-    const response: ApiResponse<null> = await this.api.post(ApiController.Auth, 'login', request);
+    const response: ApiResponse<null> = await this.api.post<AuthRequest, null>(
+      ApiController.Auth,
+      'login',
+      request,
+    );
 
     this.loggedIn.set(response.successful);
 
@@ -28,7 +32,7 @@ export class AuthService {
   }
 
   public async logout() {
-    const response: ApiResponse<null> = await this.api.post(ApiController.Auth, 'logout');
+    const response: ApiResponse<null> = await this.api.post<void, null>(ApiController.Auth, 'logout');
 
     this.loggedIn.set(false);
 

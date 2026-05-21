@@ -1,1 +1,79 @@
-<p>project-wizard-user-stories-step works!</p>
+@if (scenarios.length === 0) {
+  <p class="text-muted mb-0">Add at least one scenario before defining user stories.</p>
+} @else {
+  <div class="d-flex flex-column gap-4">
+    <div class="d-flex justify-content-between align-items-center gap-3">
+      <div>
+        <div class="text-muted small">
+          Scenario {{ currentScenarioIndex + 1 }} of {{ scenarios.length }}
+        </div>
+        <h5 class="mb-0">{{ currentScenario?.title }}</h5>
+      </div>
+
+      <div class="btn-group" role="group" aria-label="User story scenario navigation">
+        @for (scenario of scenarios; track scenario.id; let i = $index) {
+          <button
+            type="button"
+            class="btn btn-sm"
+            [class.btn-primary]="i === currentScenarioIndex"
+            [class.btn-outline-secondary]="i !== currentScenarioIndex"
+            [disabled]="form.dirty"
+            (click)="goToScenario(i)"
+          >
+            {{ i + 1 }}
+          </button>
+        }
+      </div>
+    </div>
+
+    <form [formGroup]="form" class="d-flex flex-column gap-4">
+      <div formArrayName="userStories" class="d-flex flex-column gap-3">
+        @for (userStoryForm of userStoryForms.controls; track $index; let i = $index) {
+          <section class="border rounded p-3" [formGroupName]="i">
+            <div class="d-flex justify-content-between gap-3 mb-3">
+              <h6 class="mb-0">User story {{ i + 1 }}</h6>
+
+              <button
+                type="button"
+                class="btn btn-sm btn-outline-danger"
+                [disabled]="userStoryForms.length === 1"
+                (click)="removeUserStory(i)"
+              >
+                Remove
+              </button>
+            </div>
+
+            <div class="d-flex flex-column gap-3">
+              <div>
+                <label class="form-label" [for]="'userStoryTitle' + i">Title</label>
+                <input
+                  class="form-control"
+                  [class.is-invalid]="isInvalid(i, 'title')"
+                  [id]="'userStoryTitle' + i"
+                  formControlName="title"
+                />
+              </div>
+
+              <div>
+                <label class="form-label" [for]="'userStoryDescription' + i">Description</label>
+                <textarea
+                  class="form-control"
+                  [class.is-invalid]="isInvalid(i, 'description')"
+                  [id]="'userStoryDescription' + i"
+                  rows="4"
+                  formControlName="description"
+                ></textarea>
+              </div>
+            </div>
+          </section>
+        }
+      </div>
+
+      <div>
+        <button type="button" class="btn btn-outline-primary" (click)="addUserStory()">
+          Add user story
+        </button>
+      </div>
+    </form>
+  </div>
+}

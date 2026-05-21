@@ -28,7 +28,7 @@ export class PersonaService {
   }
 
   public async create(persona: PersonaForCreation): Promise<Persona | null> {
-    const response: ApiResponse<Persona | null> = await this.api.post(
+    const response: ApiResponse<Persona> = await this.api.post<PersonaForCreation, Persona>(
       ApiController.Persona,
       '',
       persona,

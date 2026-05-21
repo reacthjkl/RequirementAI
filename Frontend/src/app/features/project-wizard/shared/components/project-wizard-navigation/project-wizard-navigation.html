@@ -1,0 +1,39 @@
+<ul class="nav nav-pills nav-fill mb-4">
+  @for (step of steps; track step.key; let i = $index) {
+    <li class="nav-item">
+      <button
+        type="button"
+        class="nav-link w-100"
+        [class.active]="i === currentStepIndex"
+        [class.disabled]="i > maxAllowedStepIndex"
+        [disabled]="i > maxAllowedStepIndex"
+        (click)="stepSelected.emit(i)"
+      >
+        {{ step.label }}
+      </button>
+    </li>
+  }
+</ul>
+
+<div class="card">
+  <div class="card-body">
+    <ng-content />
+  </div>
+
+  <div class="card-footer d-flex justify-content-between">
+    <button
+      type="button"
+      class="btn btn-outline-secondary"
+      [disabled]="currentStepIndex === 0"
+      (click)="previous.emit()"
+    >
+      Back
+    </button>
+
+    @if (isLastStep) {
+      <button type="button" class="btn btn-primary" (click)="finished.emit()">Create Project</button>
+    } @else {
+      <button type="button" class="btn btn-primary" (click)="next.emit()">Next</button>
+    }
+  </div>
+</div>

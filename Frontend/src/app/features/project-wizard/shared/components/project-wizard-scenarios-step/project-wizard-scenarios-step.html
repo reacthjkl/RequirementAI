@@ -1,1 +1,77 @@
-<p>project-wizard-scenarios-step works!</p>
+@if (personas.length === 0) {
+  <p class="text-muted mb-0">Add at least one persona before defining scenarios.</p>
+} @else {
+  <div class="d-flex flex-column gap-4">
+    <div class="d-flex justify-content-between align-items-center gap-3">
+      <div>
+        <div class="text-muted small">Persona {{ currentPersonaIndex + 1 }} of {{ personas.length }}</div>
+        <h5 class="mb-0">{{ currentPersona?.name }}</h5>
+      </div>
+
+      <div class="btn-group" role="group" aria-label="Scenario persona navigation">
+        @for (persona of personas; track persona.id; let i = $index) {
+          <button
+            type="button"
+            class="btn btn-sm"
+            [class.btn-primary]="i === currentPersonaIndex"
+            [class.btn-outline-secondary]="i !== currentPersonaIndex"
+            [disabled]="form.dirty"
+            (click)="goToPersona(i)"
+          >
+            {{ i + 1 }}
+          </button>
+        }
+      </div>
+    </div>
+
+    <form [formGroup]="form" class="d-flex flex-column gap-4">
+      <div formArrayName="scenarios" class="d-flex flex-column gap-3">
+        @for (scenarioForm of scenarioForms.controls; track $index; let i = $index) {
+          <section class="border rounded p-3" [formGroupName]="i">
+            <div class="d-flex justify-content-between gap-3 mb-3">
+              <h6 class="mb-0">Scenario {{ i + 1 }}</h6>
+
+              <button
+                type="button"
+                class="btn btn-sm btn-outline-danger"
+                [disabled]="scenarioForms.length === 1"
+                (click)="removeScenario(i)"
+              >
+                Remove
+              </button>
+            </div>
+
+            <div class="d-flex flex-column gap-3">
+              <div>
+                <label class="form-label" [for]="'scenarioTitle' + i">Title</label>
+                <input
+                  class="form-control"
+                  [class.is-invalid]="isInvalid(i, 'title')"
+                  [id]="'scenarioTitle' + i"
+                  formControlName="title"
+                />
+              </div>
+
+              <div>
+                <label class="form-label" [for]="'scenarioContent' + i">Content</label>
+                <textarea
+                  class="form-control"
+                  [class.is-invalid]="isInvalid(i, 'content')"
+                  [id]="'scenarioContent' + i"
+                  rows="4"
+                  formControlName="content"
+                ></textarea>
+              </div>
+            </div>
+          </section>
+        }
+      </div>
+
+      <div>
+        <button type="button" class="btn btn-outline-primary" (click)="addScenario()">
+          Add scenario
+        </button>
+      </div>
+    </form>
+  </div>
+}

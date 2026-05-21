@@ -1,13 +1,14 @@
 import { TestBed } from '@angular/core/testing';
+import { provideHttpClient } from '@angular/common/http';
 
-import { UserStory } from './user-story';
+import { UserStoryService } from './user-story';
 
-describe('UserStory', () => {
-  let service: UserStory;
+describe('UserStoryService', () => {
+  let service: UserStoryService;
 
   beforeEach(() => {
-    TestBed.configureTestingModule({});
-    service = TestBed.inject(UserStory);
+    TestBed.configureTestingModule({ providers: [provideHttpClient()] });
+    service = TestBed.inject(UserStoryService);
   });
 
   it('should be created', () => {

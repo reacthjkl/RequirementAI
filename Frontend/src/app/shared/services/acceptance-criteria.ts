@@ -33,7 +33,10 @@ export class AcceptanceCriteriaService {
   public async create(
     acceptanceCriteria: AcceptanceCriteriaForCreation,
   ): Promise<AcceptanceCriteria | null> {
-    const response: ApiResponse<AcceptanceCriteria | null> = await this.api.post(
+    const response: ApiResponse<AcceptanceCriteria> = await this.api.post<
+      AcceptanceCriteriaForCreation,
+      AcceptanceCriteria
+    >(
       ApiController.AcceptanceCriteria,
       '',
       acceptanceCriteria,
