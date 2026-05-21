@@ -7,7 +7,7 @@ import {
   faSpinner,
   IconDefinition,
 } from '@fortawesome/free-solid-svg-icons';
-import { ProjectStatus as ProjectStatusValue } from '../../enums/project-status.enum';
+import { ProjectStatus } from '../../enums/project-status.enum';
 
 interface ProjectStatusViewModel {
   icon: IconDefinition;
@@ -22,12 +22,12 @@ interface ProjectStatusViewModel {
   styleUrl: './project-status.scss',
 })
 export class ProjectStatusComponent {
-  @Input({ required: true }) status!: ProjectStatusValue | string;
+  @Input({ required: true }) status!: ProjectStatus | string;
 
-  readonly projectStatus = ProjectStatusValue;
+  readonly projectStatus = ProjectStatus;
 
   get viewModel(): ProjectStatusViewModel {
-    if (this.matchesStatus(ProjectStatusValue.Incomplete, 'incomplete')) {
+    if (this.status == ProjectStatus.Incomplete) {
       return {
         icon: faCircleExclamation,
         label: 'Incomplete',
@@ -35,7 +35,7 @@ export class ProjectStatusComponent {
       };
     }
 
-    if (this.matchesStatus(ProjectStatusValue.ReadyForRefinement, 'readyforrefinement')) {
+    if (this.status == ProjectStatus.ReadyForRefinement) {
       return {
         icon: faCircleCheck,
         label: 'Ready',
@@ -43,7 +43,7 @@ export class ProjectStatusComponent {
       };
     }
 
-    if (this.matchesStatus(ProjectStatusValue.RefinementInProgress, 'refinementinprogress')) {
+    if (this.status == ProjectStatus.RefinementInProgress) {
       return {
         icon: faSpinner,
         label: 'In refinement',
@@ -56,9 +56,5 @@ export class ProjectStatusComponent {
       label: 'Refined',
       className: 'text-bg-secondary',
     };
-  }
-
-  private matchesStatus(enumValue: ProjectStatusValue, stringValue: string): boolean {
-    return this.status === enumValue || String(this.status).toLowerCase() === stringValue;
   }
 }
