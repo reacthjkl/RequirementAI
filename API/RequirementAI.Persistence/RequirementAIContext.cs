@@ -13,6 +13,7 @@ public class RequirementAIContext(DbContextOptions<RequirementAIContext> options
     public virtual DbSet<Scenario> Scenarios { get; set; }
     public virtual DbSet<User> Users { get; set; }
     public virtual DbSet<UserStory> UserStories { get; set; }
+    public virtual DbSet<ProjectRefinementJob> ProjectRefinementJobs { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -20,7 +21,7 @@ public class RequirementAIContext(DbContextOptions<RequirementAIContext> options
         {
             entity.HasKey(e => e.Id);
             
-            entity.Property(e => e.Wording).HasMaxLength(1028);
+            entity.Property(e => e.Wording).HasMaxLength(1024);
             
             entity.Property(e => e.CreatedAt)
                 .HasColumnType("timestamptz")
@@ -34,13 +35,13 @@ public class RequirementAIContext(DbContextOptions<RequirementAIContext> options
             entity.HasKey(e => e.Id);
 
             entity.Property(e => e.Preconditions)
-                .HasMaxLength(1028);
+                .HasMaxLength(1024);
             
             entity.Property(e => e.TriggerAction)
-                .HasMaxLength(1028);
+                .HasMaxLength(1024);
             
             entity.Property(e => e.ExpectedBehavior)
-                .HasMaxLength(1028);
+                .HasMaxLength(1024);
             
             entity.Property(e => e.CreatedAt)
                 .HasColumnType("timestamptz")
@@ -131,7 +132,7 @@ public class RequirementAIContext(DbContextOptions<RequirementAIContext> options
             entity.HasKey(e => e.Id);
             
             entity.Property(e => e.Title)
-                .HasMaxLength(1028);
+                .HasMaxLength(1024);
             
             entity.Property(e => e.Content)
                 .HasMaxLength(int.MaxValue);
@@ -183,7 +184,7 @@ public class RequirementAIContext(DbContextOptions<RequirementAIContext> options
             entity.HasKey(e => e.Id);
             
             entity.Property(e => e.Title)
-                .HasMaxLength(1028);
+                .HasMaxLength(1024);
             
             entity.Property(e => e.Description)
                 .HasMaxLength(int.MaxValue);
@@ -201,6 +202,33 @@ public class RequirementAIContext(DbContextOptions<RequirementAIContext> options
                 .HasDefaultValueSql("CURRENT_TIMESTAMP")
                 .ValueGeneratedOnAdd();
           
+        });
+        
+        modelBuilder.Entity<ProjectRefinementJob>(entity => {  
+            entity.HasKey(e => e.Id);
+            
+            entity.Property(e => e.ErrorMessage)
+                .HasMaxLength(1024);
+            
+            entity.Property(e => e.Status)
+                .HasMaxLength(255)
+                .HasConversion<string>();
+            
+            entity.Property(e => e.CreatedAt)
+                .HasColumnType("timestamptz")
+                .HasDefaultValueSql("CURRENT_TIMESTAMP")
+                .ValueGeneratedOnAdd();
+            
+            entity.Property(e => e.StartedAt)
+                .HasColumnType("timestamptz");
+            
+            entity.Property(e => e.FinishedAt)
+                .HasColumnType("timestamptz");
+
+            entity.HasOne<Project>()
+                .WithMany()
+                .HasForeignKey(e => e.ProjectId)
+                .OnDelete(DeleteBehavior.Cascade);
         });
     }
 }
