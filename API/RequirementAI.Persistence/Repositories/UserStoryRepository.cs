@@ -20,6 +20,13 @@ public class UserStoryRepository(RequirementAIContext context): IUserStoryReposi
             .ToListAsync(ct);
     }
 
+    public async Task<IList<UserStory>> GetByPersona(Guid personaId, CancellationToken ct)
+    {
+        return await context.UserStories
+            .Where(us => us.Scenario.PersonaId == personaId)
+            .ToListAsync(ct);
+    }
+
     public async Task<IList<UserStory>> GetByProject(Guid projectId, CancellationToken ct)
     {
         return await context.UserStories

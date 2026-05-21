@@ -4,5 +4,9 @@ namespace RequirementAI.Business.Interfaces.EntityRelated;
 
 public interface IProjectService
 {
+    public Task<ProjectResponseDto> GetById(Guid id, CancellationToken ct);
     Task<List<ProjectResponseDto>> GetByOrganizationId(Guid organizationId, CancellationToken ct);
+    public Task<ProjectResponseDto> Create(ProjectForCreationDto project, CancellationToken ct);
+    public Task Update(ProjectForUpdateDto project, CancellationToken ct);
+    public Task Delete(Guid id, CancellationToken ct);
 }
