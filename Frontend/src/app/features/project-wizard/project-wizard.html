@@ -1,0 +1,65 @@
+<div class="row justify-content-between mb-5">
+  <div class="col-auto">
+    <h3>Create Project</h3>
+  </div>
+
+  <div class="col-auto">
+    <span class="text-muted small"> Step {{ currentStepIndex + 1 }} of {{ steps.length }} </span>
+  </div>
+</div>
+
+<ul class="nav nav-pills nav-fill mb-4">
+  @for (step of steps; track step.key; let i = $index) {
+    <li class="nav-item">
+      <button
+        type="button"
+        class="nav-link w-100"
+        [class.active]="i === currentStepIndex"
+        [class.disabled]="i > maxAllowedStepIndex"
+        [disabled]="i > maxAllowedStepIndex"
+        (click)="goToStep(i)"
+      >
+        {{ step.label }}
+      </button>
+    </li>
+  }
+</ul>
+
+<div class="card">
+  <div class="card-body">
+    @switch (currentStep.key) {
+      @case ('project') {
+        <app-project-wizard-project-step />
+      }
+
+      @case ('personas') {
+        <app-project-wizard-personas-step />
+      }
+
+      @case ('scenarios') {
+        <app-project-wizard-scenarios-step />
+      }
+
+      @case ('userStories') {
+        <app-project-wizard-user-stories-step />
+      }
+    }
+  </div>
+
+  <div class="card-footer d-flex justify-content-between">
+    <button
+      type="button"
+      class="btn btn-outline-secondary"
+      [disabled]="currentStepIndex === 0"
+      (click)="previousStep()"
+    >
+      Back
+    </button>
+
+    @if (isLastStep) {
+      <button type="button" class="btn btn-primary" (click)="finish()">Create Project</button>
+    } @else {
+      <button type="button" class="btn btn-primary" (click)="nextStep()">Next</button>
+    }
+  </div>
+</div>
