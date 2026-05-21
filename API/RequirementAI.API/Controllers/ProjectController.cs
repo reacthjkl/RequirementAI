@@ -36,8 +36,8 @@ public class ProjectController(IProjectService projectService)
         return Ok(ResponseDto.Success());
     }
     
-    [HttpPut("mark-as-finished/{id:guid}")]
-    public async Task<IActionResult> MarkAsFinished([FromBody] Guid projectId, CancellationToken ct)
+    [HttpPut("mark-as-finished/{projectId:guid}")]
+    public async Task<IActionResult> MarkAsFinished([FromRoute] Guid projectId, CancellationToken ct)
     {
         await projectService.MarkAsFinished(projectId, ct);
         return Ok(ResponseDto.Success());
