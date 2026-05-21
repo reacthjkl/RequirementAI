@@ -1,10 +1,14 @@
 using Microsoft.Extensions.DependencyInjection;
 using RequirementAI.Business.Helpers;
 using RequirementAI.Business.Interfaces;
+using RequirementAI.Business.Interfaces.EntityRelated;
+using RequirementAI.Business.Interfaces.Refinement;
 using RequirementAI.Business.Providers;
 using RequirementAI.Business.Providers.LLM;
 using RequirementAI.Business.Services;
 using RequirementAI.Business.Services.Auth;
+using RequirementAI.Business.Services.EntityRelated;
+using RequirementAI.Business.Services.Refinement;
 using RequirementAI.Contract.Dto.LLMDtos;
 using RequirementAI.Persistence.Entities;
 
@@ -14,16 +18,19 @@ public static class DependencyInjection
 {
     public static IServiceCollection AddBusiness(this IServiceCollection services)
     {
-        services.AddScoped<IRefinementService, RefinementService>();
-
-        services.AddScoped<IPromptBuilder, PromptBuilder>();
-        
         // entity related services
+        services.AddScoped<IOrganizationService, OrganizationService>();
         services.AddScoped<IUserService, UserService>();
+        services.AddScoped<IProjectService, ProjectService>();
+        services.AddScoped<IPersonaService, PersonaService>();
+        services.AddScoped<IScenarioService, ScenarioService>();
         services.AddScoped<IUserStoryService, UserStoryService>();
+        services.AddScoped<IEdgeCaseService, EdgeCaseService>();
+        services.AddScoped<IAcceptanceCriteriaService, AcceptanceCriteriaService>();
         
         // refinement services
         services.AddScoped<IRefinementService, RefinementService>();
+        services.AddScoped<IRefinementTaskProvider, RefinementTaskProvider>();
         services.AddScoped<IRefinementMerger<Persona, PersonaForLLMDto>, PersonaRefinementMerger>();
         services.AddScoped<IRefinementMerger<Scenario, ScenarioForLLMDto>, ScenarioRefinementMerger>();
         services.AddScoped<IRefinementMerger<UserStory, UserStoryForLLMDto>, UserStoryRefinementMerger>();
@@ -39,11 +46,8 @@ public static class DependencyInjection
         services.AddSingleton<IPasswordHasher, Argon2PasswordHasher>();
         services.AddScoped<ICookiesHelper, CookiesHelper>();
         services.AddScoped<IPromptBuilder, PromptBuilder>();
-        services.AddScoped<IRefinementTaskProvider, RefinementTaskProvider>();
         services.AddHttpClient();
         
-        services.AddScoped<ITestService, TestService>();
-
         return services;
     }
 }

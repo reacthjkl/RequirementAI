@@ -1,9 +1,10 @@
 using AutoMapper;
 using RequirementAI.Business.Interfaces;
+using RequirementAI.Business.Interfaces.EntityRelated;
 using RequirementAI.Contract.Dto;
 using RequirementAI.Persistence.Interfaces;
 
-namespace RequirementAI.Business.Services;
+namespace RequirementAI.Business.Services.EntityRelated;
 
 public class UserService(IUserRepository userRepository, IMapper mapper) : IUserService
 {

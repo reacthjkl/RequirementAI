@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using RequirementAI.Business.Interfaces;
+using RequirementAI.Business.Interfaces.EntityRelated;
 using RequirementAI.Contract.Dto;
 using RequirementAI.Contract.Dto.ResponseWrappers;
 

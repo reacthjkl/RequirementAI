@@ -2,6 +2,7 @@ using Newtonsoft.Json.Schema;
 using RequirementAI.Contract.Dto;
 using NJsonSchema;
 using RequirementAI.Business.Interfaces;
+using RequirementAI.Business.Interfaces.Refinement;
 using RequirementAI.Contract.Dto.LLMDtos;
 using JsonSchema = NJsonSchema.JsonSchema;
 
