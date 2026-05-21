@@ -40,11 +40,7 @@ export class ProjectWizardScenariosStep {
     });
 
     effect(() => {
-      const personas = this.wizardState.personas();
-      const scenarios = this.wizardState.scenarios();
-      const key = `${this.currentPersona?.id ?? ''}:${personas.length}:${scenarios
-        .map((scenario) => scenario.id)
-        .join('|')}`;
+      const key = this.createSyncKey();
 
       if (this.form.dirty && this.syncedKey !== '') {
         return;
@@ -54,8 +50,7 @@ export class ProjectWizardScenariosStep {
         return;
       }
 
-      this.syncedKey = key;
-      this.rebuildForm(this.currentPersonaScenarios);
+      this.syncCurrentPersonaForm(key);
     });
   }
 
@@ -100,7 +95,7 @@ export class ProjectWizardScenariosStep {
 
     if (this.currentPersonaIndex < this.personas.length - 1) {
       this.currentPersonaIndex++;
-      this.rebuildForm(this.currentPersonaScenarios);
+      this.syncCurrentPersonaForm();
       return 'handled-internally';
     }
 
@@ -113,7 +108,7 @@ export class ProjectWizardScenariosStep {
     }
 
     this.currentPersonaIndex = index;
-    this.rebuildForm(this.currentPersonaScenarios);
+    this.syncCurrentPersonaForm();
   }
 
   isInvalid(index: number, controlName: keyof ScenarioForm['controls']): boolean {
@@ -174,7 +169,10 @@ export class ProjectWizardScenariosStep {
         return false;
       }
 
-      savedScenarios.push(savedScenario);
+      savedScenarios.push({
+        ...savedScenario,
+        personaId: persona.id,
+      });
     }
 
     this.wizardState.setScenarios([
@@ -182,8 +180,22 @@ export class ProjectWizardScenariosStep {
       ...savedScenarios,
     ]);
     this.form.markAsPristine();
+    this.syncedKey = this.createSyncKey();
 
     return true;
+  }
+
+  private createSyncKey(): string {
+    const persona = this.currentPersona;
+    const personaIds = this.personas.map((item) => item.id).join('|');
+    const scenarioIds = this.currentPersonaScenarios.map((scenario) => scenario.id).join('|');
+
+    return `${persona?.id ?? ''}:${personaIds}:${scenarioIds}`;
+  }
+
+  private syncCurrentPersonaForm(key = this.createSyncKey()): void {
+    this.syncedKey = key;
+    this.rebuildForm(this.currentPersonaScenarios);
   }
 
   private rebuildForm(scenarios: Scenario[]): void {

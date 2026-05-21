@@ -40,11 +40,7 @@ export class ProjectWizardUserStoriesStep {
     });
 
     effect(() => {
-      const scenarios = this.wizardState.scenarios();
-      const userStories = this.wizardState.userStories();
-      const key = `${this.currentScenario?.id ?? ''}:${scenarios.length}:${userStories
-        .map((userStory) => userStory.id)
-        .join('|')}`;
+      const key = this.createSyncKey();
 
       if (this.form.dirty && this.syncedKey !== '') {
         return;
@@ -54,8 +50,7 @@ export class ProjectWizardUserStoriesStep {
         return;
       }
 
-      this.syncedKey = key;
-      this.rebuildForm(this.currentScenarioUserStories);
+      this.syncCurrentScenarioForm(key);
     });
   }
 
@@ -65,6 +60,10 @@ export class ProjectWizardUserStoriesStep {
 
   get currentScenario(): Scenario | null {
     return this.scenarios[this.currentScenarioIndex] ?? null;
+  }
+
+  get isLastScenario(): boolean {
+    return this.currentScenarioIndex >= this.scenarios.length - 1;
   }
 
   get userStoryForms(): FormArray<UserStoryForm> {
@@ -102,7 +101,7 @@ export class ProjectWizardUserStoriesStep {
 
     if (this.currentScenarioIndex < this.scenarios.length - 1) {
       this.currentScenarioIndex++;
-      this.rebuildForm(this.currentScenarioUserStories);
+      this.syncCurrentScenarioForm();
       return 'handled-internally';
     }
 
@@ -115,7 +114,7 @@ export class ProjectWizardUserStoriesStep {
     }
 
     this.currentScenarioIndex = index;
-    this.rebuildForm(this.currentScenarioUserStories);
+    this.syncCurrentScenarioForm();
   }
 
   isInvalid(index: number, controlName: keyof UserStoryForm['controls']): boolean {
@@ -185,7 +184,10 @@ export class ProjectWizardUserStoriesStep {
         return false;
       }
 
-      savedUserStories.push(savedUserStory);
+      savedUserStories.push({
+        ...savedUserStory,
+        scenarioId: scenario.id,
+      });
     }
 
     this.wizardState.setUserStories([
@@ -193,8 +195,24 @@ export class ProjectWizardUserStoriesStep {
       ...savedUserStories,
     ]);
     this.form.markAsPristine();
+    this.syncedKey = this.createSyncKey();
 
     return true;
+  }
+
+  private createSyncKey(): string {
+    const scenario = this.currentScenario;
+    const scenarioIds = this.scenarios.map((item) => item.id).join('|');
+    const userStoryIds = this.currentScenarioUserStories
+      .map((userStory) => userStory.id)
+      .join('|');
+
+    return `${scenario?.id ?? ''}:${scenarioIds}:${userStoryIds}`;
+  }
+
+  private syncCurrentScenarioForm(key = this.createSyncKey()): void {
+    this.syncedKey = key;
+    this.rebuildForm(this.currentScenarioUserStories);
   }
 
   private rebuildForm(userStories: UserStory[]): void {

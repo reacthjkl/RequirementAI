@@ -1,6 +1,6 @@
 <form [formGroup]="form" class="d-flex flex-column gap-4">
   <div formArrayName="personas" class="d-flex flex-column gap-3">
-    @for (personaForm of personaForms.controls; track $index; let i = $index) {
+    @for (personaForm of personaForms.controls; track personaForm; let i = $index) {
       <section class="border rounded p-3" [formGroupName]="i">
         <div class="d-flex justify-content-between gap-3 mb-3">
           <h5 class="mb-0">Persona {{ i + 1 }}</h5>

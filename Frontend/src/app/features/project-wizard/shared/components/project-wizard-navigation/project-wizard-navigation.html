@@ -43,7 +43,7 @@
   </button>
 
   @if (isLastStep) {
-    <button type="button" class="btn btn-primary" (click)="finished.emit()">Create Project</button>
+    <button type="button" class="btn btn-primary" (click)="finished.emit()">Finish</button>
   } @else {
     <button type="button" class="btn btn-primary" (click)="next.emit()">Next</button>
   }

@@ -76,7 +76,15 @@ export class ProjectWizard {
   }
 
   get isLastStep(): boolean {
-    return this.currentStepIndex === this.steps.length - 1;
+    if (this.currentStepIndex !== this.steps.length - 1) {
+      return false;
+    }
+
+    if (this.currentStep.key !== 'userStories') {
+      return true;
+    }
+
+    return this.userStoriesStep?.isLastScenario ?? this.wizardState.scenarios().length <= 1;
   }
 
   async goToStep(index: number): Promise<void> {
