@@ -46,7 +46,7 @@ export class UserStoryService {
   }
 
   public async create(userStory: UserStoryForCreation): Promise<UserStory | null> {
-    const response: ApiResponse<UserStory | null> = await this.api.post(
+    const response: ApiResponse<UserStory> = await this.api.post<UserStoryForCreation, UserStory>(
       ApiController.UserStory,
       '',
       userStory,

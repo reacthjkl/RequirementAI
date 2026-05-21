@@ -28,15 +28,19 @@ export class Api {
     );
   }
 
-  public async post<T>(controller: ApiController, resource: string, body?: T) {
+  public async post<ReqT, ResT = null>(
+    controller: ApiController,
+    resource: string,
+    body?: ReqT,
+  ): Promise<ApiResponse<ResT>> {
     try {
       return await firstValueFrom(
-        this.http.post<ApiResponse<null>>(this.url(controller, resource), body, {
+        this.http.post<ApiResponse<ResT>>(this.url(controller, resource), body, {
           withCredentials: true,
         }),
       );
     } catch {
-      return { successful: false } as ApiResponse<null>;
+      return { successful: false, data: null, message: '' };
     }
   }
 

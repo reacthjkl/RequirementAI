@@ -1,18 +1,32 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { ProjectWizzard } from './project-wizzard';
+import { provideHttpClient } from '@angular/common/http';
+import { ActivatedRoute } from '@angular/router';
+import { ProjectWizard } from './project-wizard';
 
-describe('ProjectWizzard', () => {
-  let component: ProjectWizzard;
-  let fixture: ComponentFixture<ProjectWizzard>;
+describe('ProjectWizard', () => {
+  let component: ProjectWizard;
+  let fixture: ComponentFixture<ProjectWizard>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [ProjectWizzard]
-    })
-    .compileComponents();
+      imports: [ProjectWizard],
+      providers: [
+        provideHttpClient(),
+        {
+          provide: ActivatedRoute,
+          useValue: {
+            snapshot: {
+              paramMap: {
+                get: () => null,
+              },
+            },
+          },
+        },
+      ],
+    }).compileComponents();
 
-    fixture = TestBed.createComponent(ProjectWizzard);
+    fixture = TestBed.createComponent(ProjectWizard);
     component = fixture.componentInstance;
     await fixture.whenStable();
   });

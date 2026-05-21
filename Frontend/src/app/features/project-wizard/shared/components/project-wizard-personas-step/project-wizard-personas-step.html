@@ -1,1 +1,79 @@
-<p>project-wizard-personas-step works!</p>
+<form [formGroup]="form" class="d-flex flex-column gap-4">
+  <div formArrayName="personas" class="d-flex flex-column gap-3">
+    @for (personaForm of personaForms.controls; track $index; let i = $index) {
+      <section class="border rounded p-3" [formGroupName]="i">
+        <div class="d-flex justify-content-between gap-3 mb-3">
+          <h5 class="mb-0">Persona {{ i + 1 }}</h5>
+
+          <button
+            type="button"
+            class="btn btn-sm btn-outline-danger"
+            [disabled]="personaForms.length === 1"
+            (click)="removePersona(i)"
+          >
+            Remove
+          </button>
+        </div>
+
+        <div class="row g-3">
+          <div class="col-md-6">
+            <label class="form-label" [for]="'personaName' + i">Name</label>
+            <input
+              class="form-control"
+              [class.is-invalid]="isInvalid(i, 'name')"
+              [id]="'personaName' + i"
+              formControlName="name"
+            />
+          </div>
+
+          <div class="col-md-6">
+            <label class="form-label" [for]="'personaContext' + i">Context of use</label>
+            <input
+              class="form-control"
+              [class.is-invalid]="isInvalid(i, 'contextOfUse')"
+              [id]="'personaContext' + i"
+              formControlName="contextOfUse"
+            />
+          </div>
+
+          <div class="col-12">
+            <label class="form-label" [for]="'personaDescription' + i">Description</label>
+            <textarea
+              class="form-control"
+              [class.is-invalid]="isInvalid(i, 'description')"
+              [id]="'personaDescription' + i"
+              rows="3"
+              formControlName="description"
+            ></textarea>
+          </div>
+
+          <div class="col-md-6">
+            <label class="form-label" [for]="'personaGoals' + i">Goals</label>
+            <textarea
+              class="form-control"
+              [class.is-invalid]="isInvalid(i, 'goals')"
+              [id]="'personaGoals' + i"
+              rows="3"
+              formControlName="goals"
+            ></textarea>
+          </div>
+
+          <div class="col-md-6">
+            <label class="form-label" [for]="'personaFrustrations' + i">Frustrations</label>
+            <textarea
+              class="form-control"
+              [class.is-invalid]="isInvalid(i, 'frustrations')"
+              [id]="'personaFrustrations' + i"
+              rows="3"
+              formControlName="frustrations"
+            ></textarea>
+          </div>
+        </div>
+      </section>
+    }
+  </div>
+
+  <div>
+    <button type="button" class="btn btn-outline-primary" (click)="addPersona()">Add persona</button>
+  </div>
+</form>

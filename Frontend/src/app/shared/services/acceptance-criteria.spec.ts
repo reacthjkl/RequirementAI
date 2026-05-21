@@ -1,13 +1,14 @@
 import { TestBed } from '@angular/core/testing';
+import { provideHttpClient } from '@angular/common/http';
 
-import { AcceptanceCriteria } from './acceptance-criteria';
+import { AcceptanceCriteriaService } from './acceptance-criteria';
 
-describe('AcceptanceCriteria', () => {
-  let service: AcceptanceCriteria;
+describe('AcceptanceCriteriaService', () => {
+  let service: AcceptanceCriteriaService;
 
   beforeEach(() => {
-    TestBed.configureTestingModule({});
-    service = TestBed.inject(AcceptanceCriteria);
+    TestBed.configureTestingModule({ providers: [provideHttpClient()] });
+    service = TestBed.inject(AcceptanceCriteriaService);
   });
 
   it('should be created', () => {

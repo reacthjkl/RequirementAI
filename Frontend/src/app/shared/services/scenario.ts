@@ -28,7 +28,7 @@ export class ScenarioService {
   }
 
   public async create(scenario: ScenarioForCreation): Promise<Scenario | null> {
-    const response: ApiResponse<Scenario | null> = await this.api.post(
+    const response: ApiResponse<Scenario> = await this.api.post<ScenarioForCreation, Scenario>(
       ApiController.Scenario,
       '',
       scenario,

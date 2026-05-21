@@ -3,13 +3,15 @@
 }
 
 <div class="vh-100 d-flex flex-column">
-  <app-navbar />
+  @if (loggedIn()) {
+    <app-navbar />
+  }
 
   <div class="row g-0 flex-grow-1 overflow-hidden">
     <!-- Menu -->
-    <div class="col-auto">
-      <app-menu></app-menu>x
-    </div>
+    @if (loggedIn()) {
+      <div class="col-auto"><app-menu></app-menu>x</div>
+    }
 
     <!-- Content -->
     <main class="col overflow-auto">

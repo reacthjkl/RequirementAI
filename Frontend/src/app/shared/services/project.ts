@@ -25,7 +25,7 @@ export class ProjectService {
   }
 
   public async create(project: ProjectForCreation): Promise<Project | null> {
-    const response: ApiResponse<Project | null> = await this.api.post(
+    const response: ApiResponse<Project> = await this.api.post<ProjectForCreation, Project>(
       ApiController.Project,
       '',
       project,

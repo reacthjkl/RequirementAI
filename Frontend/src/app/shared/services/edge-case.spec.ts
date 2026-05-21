@@ -1,13 +1,14 @@
 import { TestBed } from '@angular/core/testing';
+import { provideHttpClient } from '@angular/common/http';
 
-import { EdgeCase } from './edge-case';
+import { EdgeCaseService } from './edge-case';
 
-describe('EdgeCase', () => {
-  let service: EdgeCase;
+describe('EdgeCaseService', () => {
+  let service: EdgeCaseService;
 
   beforeEach(() => {
-    TestBed.configureTestingModule({});
-    service = TestBed.inject(EdgeCase);
+    TestBed.configureTestingModule({ providers: [provideHttpClient()] });
+    service = TestBed.inject(EdgeCaseService);
   });
 
   it('should be created', () => {

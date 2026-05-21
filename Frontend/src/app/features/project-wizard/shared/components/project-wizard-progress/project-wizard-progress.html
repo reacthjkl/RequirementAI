@@ -1,0 +1,14 @@
+<div class="row justify-content-between mb-3">
+  <div class="col-auto">
+    <h3>{{ title }}</h3>
+  </div>
+
+  <div class="col-auto">
+    <span class="text-muted small"> Step {{ currentStepIndex + 1 }} of {{ stepCount }} </span>
+  </div>
+</div>
+
+<div class="progress mb-4" role="progressbar" [attr.aria-valuenow]="progress" aria-valuemin="0" aria-valuemax="100">
+  <div class="progress-bar" [style.width.%]="progress"></div>
+</div>
+
