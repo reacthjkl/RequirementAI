@@ -1,0 +1,25 @@
+<form [formGroup]="form" class="d-flex flex-column gap-3">
+  <div>
+    <label for="projectName" class="form-label">Project name</label>
+    <input
+      id="projectName"
+      type="text"
+      class="form-control"
+      [class.is-invalid]="isInvalid('name')"
+      formControlName="name"
+      placeholder="Enter project name"
+    />
+  </div>
+
+  <div>
+    <label for="projectDescription" class="form-label">Description</label>
+    <textarea
+      id="projectDescription"
+      class="form-control"
+      [class.is-invalid]="isInvalid('description')"
+      rows="5"
+      formControlName="description"
+      placeholder="Describe the project"
+    ></textarea>
+  </div>
+</form>
