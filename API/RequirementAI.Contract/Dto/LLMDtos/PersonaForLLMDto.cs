@@ -1,6 +1,6 @@
 namespace RequirementAI.Contract.Dto.LLMDtos;
 
-public class PersonaDto
+public class PersonaForLLMDto
 {
     public string Name { get; set; } = string.Empty;
 

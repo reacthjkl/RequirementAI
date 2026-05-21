@@ -1,73 +1,36 @@
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using Abstractions.Interfaces;
-using Abstractions.Providers;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using RequirementAI.API.Middleware;
-using RequirementAI.Business.Helpers;
+using RequirementAI.Business;
 using RequirementAI.Business.Interfaces;
 using RequirementAI.Business.MappingProfiles;
-using RequirementAI.Business.Providers;
 using RequirementAI.Business.Providers.Auth;
-using RequirementAI.Business.Providers.LLM;
-using RequirementAI.Business.Services;
-using RequirementAI.Business.Services.Auth;
 using RequirementAI.Contract.Settings;
 using RequirementAI.Persistence;
-using RequirementAI.Persistence.Interfaces;
-using RequirementAI.Persistence.Repositories;
 
 namespace RequirementAI.API;
 
 public static class AppSetup
 {
-    public static void SetupServices(WebApplicationBuilder builder)
+    public static void SetupLayers(WebApplicationBuilder builder)
     {
-        // entity related services
-        builder.Services.AddScoped<IUserService, UserService>();
-        builder.Services.AddScoped<IUserStoryService, UserStoryService>();
-        
-        // refinement services
-        builder.Services.AddScoped<IPersonaRefiner, PersonaRefiner>();
-        
-        // auth providers
-        builder.Services.AddScoped<IAuthService, AuthService>();
-        builder.Services.AddScoped<ICurrentUser, CurrentUser>();
-
-        // LLM providers
-        builder.Services.AddScoped<ILLMProvider, OpenAIProvider>();
-        
-        // helper services
-        builder.Services.AddScoped<IJwtTokenService, JwtTokenService>();
-        builder.Services.AddSingleton<IPasswordHasher, Argon2PasswordHasher>();
-        builder.Services.AddScoped<ICookiesHelper, CookiesHelper>();
-        builder.Services.AddScoped<IPromptProvider, PromptProvider>();
-        builder.Services.AddScoped<IRefinementTaskProvider, RefinementTaskProvider>();
-        builder.Services.AddHttpClient();
-        
-        builder.Services.AddScoped<ITestService, TestService>();
-    }
-
-    public static void SetupRepositories(WebApplicationBuilder builder)
-    {
-        builder.Services.AddScoped<IAcceptanceCriteriaRepository, AcceptanceCriteriaRepository>();
-        builder.Services.AddScoped<IEdgeCaseRepository, EdgeCaseRepository>();
-        builder.Services.AddScoped<IOrganizationRepository, OrganizationRepository>();
-        builder.Services.AddScoped<IPersonaRepository, PersonaRepository>();
-        builder.Services.AddScoped<IProjectRepository, ProjectRepository>();
-        builder.Services.AddScoped<IScenarioRepository, ScenarioRepository>();
-        builder.Services.AddScoped<IUserRepository, UserRepository>();
-        builder.Services.AddScoped<IUserStoryRepository, UserStoryRepository>();
+        builder.Services.AddBusiness();
+        builder.Services.AddPersistence();
     }
 
     public static void SetupAutoMapper(WebApplicationBuilder builder)
     {
         builder.Services.AddAutoMapper(_ => { },
             typeof(UserProfile),
-            typeof(PersonaProfile)
+            typeof(PersonaProfile),
+            typeof(ScenarioProfile),
+            typeof(UserStoryProfile),
+            typeof(AcceptanceCriteriaProfile),
+            typeof(EdgeCaseProfile)
         );
     }
 
