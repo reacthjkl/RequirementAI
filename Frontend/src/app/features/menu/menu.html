@@ -2,7 +2,7 @@
   <aside class="app-menu p-0 d-flex flex-column h-100 bg-body shadow-sm">
     <nav class="p-3 d-flex flex-column gap-3">
       @if (currentProject) {
-        <app-menu-dropdown #projectMenu [title]="currentProject.name" [icon]="faFolderOpen">
+        <app-menu-dropdown #projectMenu [title]="currentProject.name" [icon]="entityIcons.project">
           @if (otherProjects.length > 0) {
             @for (project of otherProjects; track project.id) {
               <button
@@ -10,7 +10,7 @@
                 class="dropdown-item d-flex align-items-center gap-2"
                 (click)="switchProject(project); projectMenu.close()"
               >
-                <fa-icon [icon]="faFolderOpen"></fa-icon>
+                <fa-icon [icon]="entityIcons.project"></fa-icon>
                 <span class="text-truncate">{{ project.name }}</span>
               </button>
             }
@@ -38,7 +38,7 @@
             routerLinkActive="text-primary bg-primary-subtle"
             class="list-group-item list-group-item-action border-0 rounded d-flex align-items-center gap-2"
           >
-            <fa-icon [icon]="faGear"></fa-icon>
+            <fa-icon [icon]="entityIcons.settings"></fa-icon>
             Settings
           </a>
         </div>
@@ -50,7 +50,7 @@
               routerLinkActive="text-primary bg-primary-subtle"
               class="list-group-item list-group-item-action border-0 rounded d-flex align-items-center gap-2"
             >
-              <fa-icon [icon]="faFolderOpen"></fa-icon>
+              <fa-icon [icon]="entityIcons.project"></fa-icon>
               <span class="text-truncate">{{ project.name }}</span>
             </a>
           }

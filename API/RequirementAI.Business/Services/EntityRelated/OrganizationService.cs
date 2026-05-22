@@ -16,7 +16,9 @@ public class OrganizationService(IOrganizationRepository organizationRepository,
 
     public async Task Update(OrganizationForUpdateDto organization, CancellationToken ct)
     {
-        var entity = mapper.Map<Organization>(organization);
+        var entity = await organizationRepository.GetById(organization.Id, ct);
+        
+        mapper.Map(organization, entity);
 
         await organizationRepository.Update(entity, ct);
     }

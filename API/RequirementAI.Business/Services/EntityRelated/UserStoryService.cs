@@ -45,7 +45,9 @@ public class UserStoryService(
 
     public async Task Update(UserStoryForUpdateDto userStory, CancellationToken ct)
     {
-        var entity = mapper.Map<UserStory>(userStory);
+        var entity = await userStoryRepository.GetById(userStory.Id, ct);
+        
+        mapper.Map(userStory, entity);
 
         await userStoryRepository.Update(entity, ct);
     }

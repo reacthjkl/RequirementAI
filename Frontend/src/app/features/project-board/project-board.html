@@ -21,12 +21,20 @@
               @if (column.userStories.length > 0) {
                 @for (userStory of column.userStories; track userStory.id) {
                   <article class="border rounded bg-body p-3 overflow-hidden">
-                    <h6 class="mb-2 text-truncate">{{ userStory.title }}</h6>
-                    <p class="mb-0 text-muted text-truncate">{{ userStory.description }}</p>
+                    <div class="d-flex align-items-start gap-2 overflow-hidden">
+                      <fa-icon
+                        class="text-primary flex-shrink-0"
+                        [icon]="entityIcons.userStory"
+                      ></fa-icon>
+                      <div class="overflow-hidden">
+                        <h6 class="mb-2 text-truncate">{{ userStory.title }}</h6>
+                        <p class="mb-0 text-muted text-truncate">{{ userStory.description }}</p>
+                      </div>
+                    </div>
                   </article>
                 }
               } @else {
-                <div class="border rounded p-3 text-secondary text-center">No user stories</div>
+                <div class="border rounded p-3 text-secondary text-center">Empty</div>
               }
             </div>
           </section>

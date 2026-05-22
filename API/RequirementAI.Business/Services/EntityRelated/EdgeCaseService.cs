@@ -1,6 +1,7 @@
 using AutoMapper;
 using RequirementAI.Business.Interfaces.EntityRelated;
 using RequirementAI.Contract.Dto;
+using RequirementAI.Persistence.Entities;
 using RequirementAI.Persistence.Interfaces;
 
 namespace RequirementAI.Business.Services.EntityRelated;
@@ -21,7 +22,7 @@ public class EdgeCaseService(IEdgeCaseRepository edgeCaseRepository, IMapper map
 
     public async Task<EdgeCaseResponseDto> Create(EdgeCaseForCreationDto edgeCase, CancellationToken ct)
     {
-        var entity = mapper.Map<Persistence.Entities.EdgeCase>(edgeCase);
+        var entity = mapper.Map<EdgeCase>(edgeCase);
 
         var created = await edgeCaseRepository.Create(entity, ct);
 
@@ -30,7 +31,9 @@ public class EdgeCaseService(IEdgeCaseRepository edgeCaseRepository, IMapper map
 
     public async Task Update(EdgeCaseForUpdateDto edgeCase, CancellationToken ct)
     {
-        var entity = mapper.Map<Persistence.Entities.EdgeCase>(edgeCase);
+        var entity = await edgeCaseRepository.GetById(edgeCase.Id, ct);
+        
+        mapper.Map(edgeCase, entity);
 
         await edgeCaseRepository.Update(entity, ct);
     }

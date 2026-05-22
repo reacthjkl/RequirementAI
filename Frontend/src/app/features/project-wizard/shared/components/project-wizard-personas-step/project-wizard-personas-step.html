@@ -1,79 +1,150 @@
 <form [formGroup]="form" class="d-flex flex-column gap-4">
   <div formArrayName="personas" class="d-flex flex-column gap-3">
     @for (personaForm of personaForms.controls; track personaForm; let i = $index) {
-      <section class="border rounded p-3" [formGroupName]="i">
-        <div class="d-flex justify-content-between gap-3 mb-3">
-          <h5 class="mb-0">Persona {{ i + 1 }}</h5>
+      @if (editingPersonaIndex === i) {
+        <section class="border rounded p-3" [formGroupName]="i">
+          <div class="d-flex justify-content-between gap-3 mb-3">
+            <h5 class="mb-0 d-flex align-items-center gap-2">
+              <fa-icon class="text-primary" [icon]="entityIcons.persona"></fa-icon>
+              Persona {{ i + 1 }}
+            </h5>
 
-          <button
-            type="button"
-            class="btn btn-sm btn-outline-danger"
-            [disabled]="personaForms.length === 1"
-            (click)="removePersona(i)"
-          >
-            Remove
-          </button>
-        </div>
-
-        <div class="row g-3">
-          <div class="col-md-6">
-            <label class="form-label" [for]="'personaName' + i">Name</label>
-            <input
-              class="form-control"
-              [class.is-invalid]="isInvalid(i, 'name')"
-              [id]="'personaName' + i"
-              formControlName="name"
-            />
+            <div class="d-flex gap-2">
+              <button
+                type="button"
+                class="btn btn-sm btn-outline-danger"
+                aria-label="Remove persona"
+                title="Remove"
+                (click)="removePersona(i)"
+              >
+                <fa-icon [icon]="faTrash"></fa-icon>
+              </button>
+            </div>
           </div>
 
-          <div class="col-md-6">
-            <label class="form-label" [for]="'personaContext' + i">Context of use</label>
-            <input
-              class="form-control"
-              [class.is-invalid]="isInvalid(i, 'contextOfUse')"
-              [id]="'personaContext' + i"
-              formControlName="contextOfUse"
-            />
+          <div class="row g-3">
+            <div class="col-md-6">
+              <label class="form-label" [for]="'personaName' + i">Name</label>
+              <input
+                class="form-control"
+                [class.is-invalid]="isInvalid(i, 'name')"
+                [id]="'personaName' + i"
+                formControlName="name"
+              />
+            </div>
+
+            <div class="col-md-6">
+              <label class="form-label" [for]="'personaContext' + i">Context of use</label>
+              <input
+                class="form-control"
+                [class.is-invalid]="isInvalid(i, 'contextOfUse')"
+                [id]="'personaContext' + i"
+                formControlName="contextOfUse"
+              />
+            </div>
+
+            <div class="col-12">
+              <label class="form-label" [for]="'personaDescription' + i">Description</label>
+              <textarea
+                class="form-control"
+                [class.is-invalid]="isInvalid(i, 'description')"
+                [id]="'personaDescription' + i"
+                rows="3"
+                formControlName="description"
+              ></textarea>
+            </div>
+
+            <div class="col-md-6">
+              <label class="form-label" [for]="'personaGoals' + i">Goals</label>
+              <textarea
+                class="form-control"
+                [class.is-invalid]="isInvalid(i, 'goals')"
+                [id]="'personaGoals' + i"
+                rows="3"
+                formControlName="goals"
+              ></textarea>
+            </div>
+
+            <div class="col-md-6">
+              <label class="form-label" [for]="'personaFrustrations' + i">Frustrations</label>
+              <textarea
+                class="form-control"
+                [class.is-invalid]="isInvalid(i, 'frustrations')"
+                [id]="'personaFrustrations' + i"
+                rows="3"
+                formControlName="frustrations"
+              ></textarea>
+            </div>
           </div>
 
-          <div class="col-12">
-            <label class="form-label" [for]="'personaDescription' + i">Description</label>
-            <textarea
-              class="form-control"
-              [class.is-invalid]="isInvalid(i, 'description')"
-              [id]="'personaDescription' + i"
-              rows="3"
-              formControlName="description"
-            ></textarea>
+          <div class="d-flex justify-content-end mt-3">
+            <button
+              type="button"
+              class="btn btn-outline-primary"
+              aria-label="Done editing persona"
+              title="Done"
+              (click)="doneEditingPersona()"
+            >
+              <fa-icon [icon]="faCheck"></fa-icon>
+            </button>
           </div>
+        </section>
+      } @else {
+        <article class="card shadow-sm">
+          <div class="card-body d-flex justify-content-between align-items-start gap-3">
+            <div class="d-flex align-items-start gap-3 overflow-hidden">
+              <span
+                class="rounded bg-primary-subtle text-primary d-inline-flex align-items-center justify-content-center p-2 flex-shrink-0"
+              >
+                <fa-icon [icon]="entityIcons.persona"></fa-icon>
+              </span>
 
-          <div class="col-md-6">
-            <label class="form-label" [for]="'personaGoals' + i">Goals</label>
-            <textarea
-              class="form-control"
-              [class.is-invalid]="isInvalid(i, 'goals')"
-              [id]="'personaGoals' + i"
-              rows="3"
-              formControlName="goals"
-            ></textarea>
-          </div>
+              <div class="overflow-hidden">
+                <h5 class="card-title mb-1 text-truncate">
+                  {{ personaForm.controls.name.value || 'Untitled persona' }}
+                </h5>
+                <p class="card-text text-secondary mb-0 text-truncate">
+                  {{ personaForm.controls.description.value || 'No description' }}
+                </p>
+              </div>
+            </div>
 
-          <div class="col-md-6">
-            <label class="form-label" [for]="'personaFrustrations' + i">Frustrations</label>
-            <textarea
-              class="form-control"
-              [class.is-invalid]="isInvalid(i, 'frustrations')"
-              [id]="'personaFrustrations' + i"
-              rows="3"
-              formControlName="frustrations"
-            ></textarea>
+            <div class="d-flex gap-2 flex-shrink-0">
+              <button
+                type="button"
+                class="btn btn-sm btn-outline-warning"
+                aria-label="Edit persona"
+                title="Edit"
+                (click)="editPersona(i)"
+              >
+                <fa-icon [icon]="faPen"></fa-icon>
+              </button>
+              <button
+                type="button"
+                class="btn btn-sm btn-outline-danger"
+                aria-label="Remove persona"
+                title="Remove"
+                (click)="removePersona(i)"
+              >
+                <fa-icon [icon]="faTrash"></fa-icon>
+              </button>
+            </div>
           </div>
-        </div>
-      </section>
+        </article>
+      }
+    } @empty {
+      <div class="border rounded p-3 text-secondary">No personas added yet.</div>
     }
   </div>
 
   <div>
-    <button type="button" class="btn btn-outline-primary" (click)="addPersona()">Add persona</button>
+    <button
+      type="button"
+      class="btn btn-outline-primary"
+      [disabled]="editingPersonaIndex !== null"
+      (click)="addPersona()"
+    >
+      Add persona
+    </button>
   </div>
 </form>

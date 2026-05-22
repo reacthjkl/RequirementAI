@@ -7,6 +7,11 @@ import {
   ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import { faCheck, faPen, faTrash } from '@fortawesome/free-solid-svg-icons';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { ConfirmationModal } from '../../../../../shared/components/confirmation-modal/confirmation-modal';
+import { ENTITY_ICONS } from '../../../../../shared/icons/entity-icons';
 import { Persona } from '../../../../../shared/models/persona.model';
 import { PersonaService } from '../../../../../shared/services/persona';
 import { StepNavigationResult } from '../../models/project-wizard-step.model';
@@ -23,16 +28,22 @@ type PersonaForm = FormGroup<{
 
 @Component({
   selector: 'app-project-wizard-personas-step',
-  imports: [ReactiveFormsModule],
+  imports: [ReactiveFormsModule, FontAwesomeModule],
   templateUrl: './project-wizard-personas-step.html',
   styleUrl: './project-wizard-personas-step.scss',
 })
 export class ProjectWizardPersonasStep {
   public readonly form;
+  public readonly faCheck = faCheck;
+  public readonly faPen = faPen;
+  public readonly faTrash = faTrash;
+  public readonly entityIcons = ENTITY_ICONS;
+  public editingPersonaIndex: number | null = null;
   private syncedPersonaIds = '';
 
   constructor(
     private readonly fb: FormBuilder,
+    private readonly modalService: NgbModal,
     private readonly personaService: PersonaService,
     private readonly wizardState: ProjectWizardState,
   ) {
@@ -62,12 +73,40 @@ export class ProjectWizardPersonasStep {
   }
 
   public addPersona(): void {
+    if (!this.closeCurrentPersonaForm()) {
+      return;
+    }
+
     this.personaForms.push(this.createPersonaForm());
+    this.editingPersonaIndex = this.personaForms.length - 1;
     this.form.markAsDirty();
   }
 
-  public removePersona(index: number): void {
+  public editPersona(index: number): void {
+    if (index === this.editingPersonaIndex) {
+      return;
+    }
+
+    if (!this.closeCurrentPersonaForm()) {
+      return;
+    }
+
+    this.editingPersonaIndex = index;
+  }
+
+  public doneEditingPersona(): void {
+    this.closeCurrentPersonaForm();
+  }
+
+  public async removePersona(index: number): Promise<void> {
+    const confirmed = await this.confirmRemovePersona(index);
+
+    if (!confirmed) {
+      return;
+    }
+
     this.personaForms.removeAt(index);
+    this.updateEditingIndexAfterRemove(index);
     this.form.markAsDirty();
   }
 
@@ -75,6 +114,7 @@ export class ProjectWizardPersonasStep {
     this.form.markAllAsTouched();
 
     if (this.personaForms.length === 0 || this.form.invalid) {
+      this.editingPersonaIndex = this.findFirstInvalidPersonaIndex();
       return 'stay';
     }
 
@@ -129,6 +169,7 @@ export class ProjectWizardPersonasStep {
 
     this.wizardState.setPersonas(savedPersonas);
     this.form.markAsPristine();
+    this.editingPersonaIndex = null;
 
     return 'next-main-step';
   }
@@ -145,10 +186,7 @@ export class ProjectWizardPersonasStep {
       this.personaForms.push(this.createPersonaForm(persona));
     }
 
-    if (this.personaForms.length === 0) {
-      this.personaForms.push(this.createPersonaForm());
-    }
-
+    this.editingPersonaIndex = this.personaForms.length === 0 ? null : null;
     this.form.markAsPristine();
   }
 
@@ -161,5 +199,58 @@ export class ProjectWizardPersonasStep {
       goals: [persona?.goals ?? '', Validators.required],
       frustrations: [persona?.frustrations ?? '', Validators.required],
     });
+  }
+
+  private closeCurrentPersonaForm(): boolean {
+    if (this.editingPersonaIndex === null) {
+      return true;
+    }
+
+    const personaForm = this.personaForms.at(this.editingPersonaIndex);
+    personaForm.markAllAsTouched();
+
+    if (personaForm.invalid) {
+      return false;
+    }
+
+    this.editingPersonaIndex = null;
+    return true;
+  }
+
+  private async confirmRemovePersona(index: number): Promise<boolean> {
+    const modalRef = this.modalService.open(ConfirmationModal, { centered: true });
+    const personaName = this.personaForms.at(index).controls.name.value || `Persona ${index + 1}`;
+
+    modalRef.componentInstance.title = 'Remove persona';
+    modalRef.componentInstance.message = `Remove "${personaName}"? This change will be saved when you continue.`;
+    modalRef.componentInstance.confirmText = 'Remove';
+    modalRef.componentInstance.confirmButtonClass = 'btn-danger';
+
+    try {
+      return await modalRef.result;
+    } catch {
+      return false;
+    }
+  }
+
+  private updateEditingIndexAfterRemove(removedIndex: number): void {
+    if (this.editingPersonaIndex === null) {
+      return;
+    }
+
+    if (this.editingPersonaIndex === removedIndex) {
+      this.editingPersonaIndex = null;
+      return;
+    }
+
+    if (this.editingPersonaIndex > removedIndex) {
+      this.editingPersonaIndex--;
+    }
+  }
+
+  private findFirstInvalidPersonaIndex(): number | null {
+    const invalidIndex = this.personaForms.controls.findIndex((personaForm) => personaForm.invalid);
+
+    return invalidIndex >= 0 ? invalidIndex : null;
   }
 }

@@ -1,18 +1,10 @@
 import { Component, effect } from '@angular/core';
 import { Router, RouterModule } from '@angular/router';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-import {
-  faFileLines,
-  faFolderOpen,
-  faGear,
-  faHouse,
-  faPlus,
-  faRightFromBracket,
-  faTableColumns,
-  faUsers,
-} from '@fortawesome/free-solid-svg-icons';
+import { faPlus, faRightFromBracket } from '@fortawesome/free-solid-svg-icons';
 import { CurrentUserService } from '../../core/services/current-user.service';
 import { MenuDropdown } from '../../shared/components/menu-dropdown/menu-dropdown';
+import { ENTITY_COLLECTION_ICONS, ENTITY_ICONS } from '../../shared/icons/entity-icons';
 import { Project } from '../../shared/models/project.model';
 import { User } from '../../shared/models/user.model';
 import { AuthService } from '../../shared/services/auth';
@@ -33,20 +25,16 @@ export class Menu {
   public currentProjectPage: ProjectPageKey = 'overview';
 
   // icons
-  public readonly faFileLines = faFileLines;
-  public readonly faFolderOpen = faFolderOpen;
-  public readonly faGear = faGear;
-  public readonly faHouse = faHouse;
+  public readonly entityCollectionIcons = ENTITY_COLLECTION_ICONS;
+  public readonly entityIcons = ENTITY_ICONS;
   public readonly faPlus = faPlus;
   public readonly faRightFromBracket = faRightFromBracket;
-  public readonly faTableColumns = faTableColumns;
-  public readonly faUsers = faUsers;
 
   public readonly projectPages = [
-    { key: 'overview', label: 'Overview', icon: faHouse },
-    { key: 'personas', label: 'Personas', icon: faUsers },
-    { key: 'scenarios', label: 'Scenarios', icon: faFileLines },
-    { key: 'board', label: 'Board', icon: faTableColumns },
+    { key: 'overview', label: 'Overview', icon: ENTITY_ICONS.overview },
+    { key: 'personas', label: 'Personas', icon: ENTITY_COLLECTION_ICONS.personas },
+    { key: 'scenarios', label: 'Scenarios', icon: ENTITY_COLLECTION_ICONS.scenarios },
+    { key: 'board', label: 'Board', icon: ENTITY_ICONS.board },
   ] as const;
 
   constructor(
