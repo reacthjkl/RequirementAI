@@ -34,7 +34,9 @@ public class ScenarioService(
 
     public async Task Update(ScenarioForUpdateDto scenario, CancellationToken ct)
     {
-        var entity = mapper.Map<Scenario>(scenario);
+        var entity = await scenarioRepository.GetById(scenario.Id, ct);
+        
+        mapper.Map(scenario, entity);
 
         await scenarioRepository.Update(entity, ct);
     }

@@ -1,12 +1,10 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import { IconDefinition } from '@fortawesome/fontawesome-svg-core';
 import {
-  faBookOpen,
-  faFolderOpen,
-  faListCheck,
-  faUsers,
-  IconDefinition,
-} from '@fortawesome/free-solid-svg-icons';
+  ENTITY_COLLECTION_ICONS,
+  ENTITY_ICONS,
+} from '../../../../../shared/icons/entity-icons';
 
 export interface ProjectWizardNavigationStep {
   key: string;
@@ -31,14 +29,14 @@ export class ProjectWizardNavigation {
   @Output() public finished = new EventEmitter<void>();
 
   public readonly icons: Record<string, IconDefinition> = {
-    project: faFolderOpen,
-    personas: faUsers,
-    scenarios: faListCheck,
-    userStories: faBookOpen,
+    project: ENTITY_ICONS.project,
+    personas: ENTITY_COLLECTION_ICONS.personas,
+    scenarios: ENTITY_COLLECTION_ICONS.scenarios,
+    userStories: ENTITY_ICONS.userStory,
   };
 
   public getStepIcon(step: ProjectWizardNavigationStep): IconDefinition {
-    return this.icons[step.key] ?? faFolderOpen;
+    return this.icons[step.key] ?? ENTITY_ICONS.project;
   }
 
   public isCompleted(index: number): boolean {

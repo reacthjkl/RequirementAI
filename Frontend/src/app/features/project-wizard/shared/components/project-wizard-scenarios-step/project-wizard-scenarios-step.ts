@@ -7,6 +7,11 @@ import {
   ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import { faCheck, faPen, faTrash } from '@fortawesome/free-solid-svg-icons';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { ConfirmationModal } from '../../../../../shared/components/confirmation-modal/confirmation-modal';
+import { ENTITY_ICONS } from '../../../../../shared/icons/entity-icons';
 import { Persona } from '../../../../../shared/models/persona.model';
 import { Scenario } from '../../../../../shared/models/scenario.model';
 import { ScenarioService } from '../../../../../shared/services/scenario';
@@ -21,7 +26,7 @@ type ScenarioForm = FormGroup<{
 
 @Component({
   selector: 'app-project-wizard-scenarios-step',
-  imports: [ReactiveFormsModule],
+  imports: [ReactiveFormsModule, FontAwesomeModule],
   templateUrl: './project-wizard-scenarios-step.html',
   styleUrl: './project-wizard-scenarios-step.scss',
 })
@@ -29,11 +34,17 @@ export class ProjectWizardScenariosStep implements OnChanges {
   @Input() public initialPersonaIndex = 0;
 
   public readonly form;
+  public readonly faCheck = faCheck;
+  public readonly faPen = faPen;
+  public readonly faTrash = faTrash;
+  public readonly entityIcons = ENTITY_ICONS;
   public currentPersonaIndex = 0;
+  public editingScenarioIndex: number | null = null;
   private syncedKey = '';
 
   constructor(
     private readonly fb: FormBuilder,
+    private readonly modalService: NgbModal,
     private readonly scenarioService: ScenarioService,
     public readonly wizardState: ProjectWizardState,
   ) {
@@ -87,12 +98,40 @@ export class ProjectWizardScenariosStep implements OnChanges {
   }
 
   public addScenario(): void {
+    if (!this.closeCurrentScenarioForm()) {
+      return;
+    }
+
     this.scenarioForms.push(this.createScenarioForm());
+    this.editingScenarioIndex = this.scenarioForms.length - 1;
     this.form.markAsDirty();
   }
 
-  public removeScenario(index: number): void {
+  public editScenario(index: number): void {
+    if (index === this.editingScenarioIndex) {
+      return;
+    }
+
+    if (!this.closeCurrentScenarioForm()) {
+      return;
+    }
+
+    this.editingScenarioIndex = index;
+  }
+
+  public doneEditingScenario(): void {
+    this.closeCurrentScenarioForm();
+  }
+
+  public async removeScenario(index: number): Promise<void> {
+    const confirmed = await this.confirmRemoveScenario(index);
+
+    if (!confirmed) {
+      return;
+    }
+
     this.scenarioForms.removeAt(index);
+    this.updateEditingIndexAfterRemove(index);
     this.form.markAsDirty();
   }
 
@@ -113,7 +152,7 @@ export class ProjectWizardScenariosStep implements OnChanges {
   }
 
   public goToPersona(index: number): void {
-    if (index === this.currentPersonaIndex || this.form.dirty) {
+    if (index === this.currentPersonaIndex || this.form.dirty || !this.closeCurrentScenarioForm()) {
       return;
     }
 
@@ -136,6 +175,7 @@ export class ProjectWizardScenariosStep implements OnChanges {
     }
 
     if (this.scenarioForms.length === 0 || this.form.invalid) {
+      this.editingScenarioIndex = this.findFirstInvalidScenarioIndex();
       return false;
     }
 
@@ -190,6 +230,7 @@ export class ProjectWizardScenariosStep implements OnChanges {
       ...savedScenarios,
     ]);
     this.form.markAsPristine();
+    this.editingScenarioIndex = null;
     this.syncedKey = this.createSyncKey();
 
     return true;
@@ -225,10 +266,7 @@ export class ProjectWizardScenariosStep implements OnChanges {
       this.scenarioForms.push(this.createScenarioForm(scenario));
     }
 
-    if (this.currentPersona && this.scenarioForms.length === 0) {
-      this.scenarioForms.push(this.createScenarioForm());
-    }
-
+    this.editingScenarioIndex = null;
     this.form.markAsPristine();
   }
 
@@ -238,5 +276,58 @@ export class ProjectWizardScenariosStep implements OnChanges {
       title: [scenario?.title ?? '', Validators.required],
       content: [scenario?.content ?? '', Validators.required],
     });
+  }
+
+  private closeCurrentScenarioForm(): boolean {
+    if (this.editingScenarioIndex === null) {
+      return true;
+    }
+
+    const scenarioForm = this.scenarioForms.at(this.editingScenarioIndex);
+    scenarioForm.markAllAsTouched();
+
+    if (scenarioForm.invalid) {
+      return false;
+    }
+
+    this.editingScenarioIndex = null;
+    return true;
+  }
+
+  private async confirmRemoveScenario(index: number): Promise<boolean> {
+    const modalRef = this.modalService.open(ConfirmationModal, { centered: true });
+    const scenarioTitle = this.scenarioForms.at(index).controls.title.value || `Scenario ${index + 1}`;
+
+    modalRef.componentInstance.title = 'Remove scenario';
+    modalRef.componentInstance.message = `Remove "${scenarioTitle}"? This change will be saved when you continue.`;
+    modalRef.componentInstance.confirmText = 'Remove';
+    modalRef.componentInstance.confirmButtonClass = 'btn-danger';
+
+    try {
+      return await modalRef.result;
+    } catch {
+      return false;
+    }
+  }
+
+  private updateEditingIndexAfterRemove(removedIndex: number): void {
+    if (this.editingScenarioIndex === null) {
+      return;
+    }
+
+    if (this.editingScenarioIndex === removedIndex) {
+      this.editingScenarioIndex = null;
+      return;
+    }
+
+    if (this.editingScenarioIndex > removedIndex) {
+      this.editingScenarioIndex--;
+    }
+  }
+
+  private findFirstInvalidScenarioIndex(): number | null {
+    const invalidIndex = this.scenarioForms.controls.findIndex((scenarioForm) => scenarioForm.invalid);
+
+    return invalidIndex >= 0 ? invalidIndex : null;
   }
 }

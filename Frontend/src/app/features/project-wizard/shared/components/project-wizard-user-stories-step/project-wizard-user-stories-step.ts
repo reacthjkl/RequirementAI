@@ -7,6 +7,11 @@ import {
   ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import { faCheck, faPen, faTrash } from '@fortawesome/free-solid-svg-icons';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { ConfirmationModal } from '../../../../../shared/components/confirmation-modal/confirmation-modal';
+import { ENTITY_ICONS } from '../../../../../shared/icons/entity-icons';
 import { Scenario } from '../../../../../shared/models/scenario.model';
 import { UserStory } from '../../../../../shared/models/user-story.model';
 import { UserStoryService } from '../../../../../shared/services/user-story';
@@ -21,7 +26,7 @@ type UserStoryForm = FormGroup<{
 
 @Component({
   selector: 'app-project-wizard-user-stories-step',
-  imports: [ReactiveFormsModule],
+  imports: [ReactiveFormsModule, FontAwesomeModule],
   templateUrl: './project-wizard-user-stories-step.html',
   styleUrl: './project-wizard-user-stories-step.scss',
 })
@@ -29,11 +34,17 @@ export class ProjectWizardUserStoriesStep implements OnChanges {
   @Input() public initialScenarioIndex = 0;
 
   public readonly form;
+  public readonly faCheck = faCheck;
+  public readonly faPen = faPen;
+  public readonly faTrash = faTrash;
+  public readonly entityIcons = ENTITY_ICONS;
   public currentScenarioIndex = 0;
+  public editingUserStoryIndex: number | null = null;
   private syncedKey = '';
 
   constructor(
     private readonly fb: FormBuilder,
+    private readonly modalService: NgbModal,
     private readonly userStoryService: UserStoryService,
     public readonly wizardState: ProjectWizardState,
   ) {
@@ -93,12 +104,40 @@ export class ProjectWizardUserStoriesStep implements OnChanges {
   }
 
   public addUserStory(): void {
+    if (!this.closeCurrentUserStoryForm()) {
+      return;
+    }
+
     this.userStoryForms.push(this.createUserStoryForm());
+    this.editingUserStoryIndex = this.userStoryForms.length - 1;
     this.form.markAsDirty();
   }
 
-  public removeUserStory(index: number): void {
+  public editUserStory(index: number): void {
+    if (index === this.editingUserStoryIndex) {
+      return;
+    }
+
+    if (!this.closeCurrentUserStoryForm()) {
+      return;
+    }
+
+    this.editingUserStoryIndex = index;
+  }
+
+  public doneEditingUserStory(): void {
+    this.closeCurrentUserStoryForm();
+  }
+
+  public async removeUserStory(index: number): Promise<void> {
+    const confirmed = await this.confirmRemoveUserStory(index);
+
+    if (!confirmed) {
+      return;
+    }
+
     this.userStoryForms.removeAt(index);
+    this.updateEditingIndexAfterRemove(index);
     this.form.markAsDirty();
   }
 
@@ -119,7 +158,7 @@ export class ProjectWizardUserStoriesStep implements OnChanges {
   }
 
   public goToScenario(index: number): void {
-    if (index === this.currentScenarioIndex || this.form.dirty) {
+    if (index === this.currentScenarioIndex || this.form.dirty || !this.closeCurrentUserStoryForm()) {
       return;
     }
 
@@ -142,6 +181,7 @@ export class ProjectWizardUserStoriesStep implements OnChanges {
     }
 
     if (this.userStoryForms.length === 0 || this.form.invalid) {
+      this.editingUserStoryIndex = this.findFirstInvalidUserStoryIndex();
       return false;
     }
 
@@ -205,6 +245,7 @@ export class ProjectWizardUserStoriesStep implements OnChanges {
       ...savedUserStories,
     ]);
     this.form.markAsPristine();
+    this.editingUserStoryIndex = null;
     this.syncedKey = this.createSyncKey();
 
     return true;
@@ -242,10 +283,7 @@ export class ProjectWizardUserStoriesStep implements OnChanges {
       this.userStoryForms.push(this.createUserStoryForm(userStory));
     }
 
-    if (this.currentScenario && this.userStoryForms.length === 0) {
-      this.userStoryForms.push(this.createUserStoryForm());
-    }
-
+    this.editingUserStoryIndex = null;
     this.form.markAsPristine();
   }
 
@@ -255,5 +293,61 @@ export class ProjectWizardUserStoriesStep implements OnChanges {
       title: [userStory?.title ?? '', Validators.required],
       description: [userStory?.description ?? '', Validators.required],
     });
+  }
+
+  private closeCurrentUserStoryForm(): boolean {
+    if (this.editingUserStoryIndex === null) {
+      return true;
+    }
+
+    const userStoryForm = this.userStoryForms.at(this.editingUserStoryIndex);
+    userStoryForm.markAllAsTouched();
+
+    if (userStoryForm.invalid) {
+      return false;
+    }
+
+    this.editingUserStoryIndex = null;
+    return true;
+  }
+
+  private async confirmRemoveUserStory(index: number): Promise<boolean> {
+    const modalRef = this.modalService.open(ConfirmationModal, { centered: true });
+    const userStoryTitle =
+      this.userStoryForms.at(index).controls.title.value || `User story ${index + 1}`;
+
+    modalRef.componentInstance.title = 'Remove user story';
+    modalRef.componentInstance.message = `Remove "${userStoryTitle}"? This change will be saved when you continue.`;
+    modalRef.componentInstance.confirmText = 'Remove';
+    modalRef.componentInstance.confirmButtonClass = 'btn-danger';
+
+    try {
+      return await modalRef.result;
+    } catch {
+      return false;
+    }
+  }
+
+  private updateEditingIndexAfterRemove(removedIndex: number): void {
+    if (this.editingUserStoryIndex === null) {
+      return;
+    }
+
+    if (this.editingUserStoryIndex === removedIndex) {
+      this.editingUserStoryIndex = null;
+      return;
+    }
+
+    if (this.editingUserStoryIndex > removedIndex) {
+      this.editingUserStoryIndex--;
+    }
+  }
+
+  private findFirstInvalidUserStoryIndex(): number | null {
+    const invalidIndex = this.userStoryForms.controls.findIndex(
+      (userStoryForm) => userStoryForm.invalid,
+    );
+
+    return invalidIndex >= 0 ? invalidIndex : null;
   }
 }

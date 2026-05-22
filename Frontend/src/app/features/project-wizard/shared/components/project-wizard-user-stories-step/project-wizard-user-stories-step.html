@@ -8,6 +8,9 @@
           Scenario {{ currentScenarioIndex + 1 }} of {{ scenarios.length }}
         </div>
         <h5 class="mb-0 text-truncate">{{ currentScenario?.title }}</h5>
+        @if (currentScenario?.content) {
+          <div class="text-secondary small text-truncate">{{ currentScenario?.content }}</div>
+        }
       </div>
 
       <div class="btn-group flex-shrink-0" role="group" aria-label="User story scenario navigation">
@@ -29,48 +32,115 @@
     <form [formGroup]="form" class="d-flex flex-column gap-4">
       <div formArrayName="userStories" class="d-flex flex-column gap-3">
         @for (userStoryForm of userStoryForms.controls; track userStoryForm; let i = $index) {
-          <section class="border rounded p-3" [formGroupName]="i">
-            <div class="d-flex justify-content-between gap-3 mb-3">
-              <h6 class="mb-0">User story {{ i + 1 }}</h6>
+          @if (editingUserStoryIndex === i) {
+            <section class="border rounded p-3" [formGroupName]="i">
+              <div class="d-flex justify-content-between gap-3 mb-3">
+                <h6 class="mb-0 d-flex align-items-center gap-2">
+                  <fa-icon class="text-primary" [icon]="entityIcons.userStory"></fa-icon>
+                  User story {{ i + 1 }}
+                </h6>
 
-              <button
-                type="button"
-                class="btn btn-sm btn-outline-danger"
-                [disabled]="userStoryForms.length === 1"
-                (click)="removeUserStory(i)"
-              >
-                Remove
-              </button>
-            </div>
-
-            <div class="d-flex flex-column gap-3">
-              <div>
-                <label class="form-label" [for]="'userStoryTitle' + i">Title</label>
-                <input
-                  class="form-control"
-                  [class.is-invalid]="isInvalid(i, 'title')"
-                  [id]="'userStoryTitle' + i"
-                  formControlName="title"
-                />
+                <button
+                  type="button"
+                  class="btn btn-sm btn-outline-danger"
+                  aria-label="Remove user story"
+                  title="Remove"
+                  (click)="removeUserStory(i)"
+                >
+                  <fa-icon [icon]="faTrash"></fa-icon>
+                </button>
               </div>
 
-              <div>
-                <label class="form-label" [for]="'userStoryDescription' + i">Description</label>
-                <textarea
-                  class="form-control"
-                  [class.is-invalid]="isInvalid(i, 'description')"
-                  [id]="'userStoryDescription' + i"
-                  rows="4"
-                  formControlName="description"
-                ></textarea>
+              <div class="d-flex flex-column gap-3">
+                <div>
+                  <label class="form-label" [for]="'userStoryTitle' + i">Title</label>
+                  <input
+                    class="form-control"
+                    [class.is-invalid]="isInvalid(i, 'title')"
+                    [id]="'userStoryTitle' + i"
+                    formControlName="title"
+                  />
+                </div>
+
+                <div>
+                  <label class="form-label" [for]="'userStoryDescription' + i">Description</label>
+                  <textarea
+                    class="form-control"
+                    [class.is-invalid]="isInvalid(i, 'description')"
+                    [id]="'userStoryDescription' + i"
+                    rows="4"
+                    formControlName="description"
+                  ></textarea>
+                </div>
               </div>
-            </div>
-          </section>
+
+              <div class="d-flex justify-content-end mt-3">
+                <button
+                  type="button"
+                  class="btn btn-outline-primary"
+                  aria-label="Done editing user story"
+                  title="Done"
+                  (click)="doneEditingUserStory()"
+                >
+                  <fa-icon [icon]="faCheck"></fa-icon>
+                </button>
+              </div>
+            </section>
+          } @else {
+            <article class="card shadow-sm">
+              <div class="card-body d-flex justify-content-between align-items-start gap-3">
+                <div class="d-flex align-items-start gap-3 overflow-hidden">
+                  <span
+                    class="rounded bg-primary-subtle text-primary d-inline-flex align-items-center justify-content-center p-2 flex-shrink-0"
+                  >
+                    <fa-icon [icon]="entityIcons.userStory"></fa-icon>
+                  </span>
+
+                  <div class="overflow-hidden">
+                    <h5 class="card-title mb-1 text-truncate">
+                      {{ userStoryForm.controls.title.value || 'Untitled user story' }}
+                    </h5>
+                    <p class="card-text text-secondary mb-0 text-truncate">
+                      {{ userStoryForm.controls.description.value || 'No description' }}
+                    </p>
+                  </div>
+                </div>
+
+                <div class="d-flex gap-2 flex-shrink-0">
+                  <button
+                    type="button"
+                    class="btn btn-sm btn-outline-warning"
+                    aria-label="Edit user story"
+                    title="Edit"
+                    (click)="editUserStory(i)"
+                  >
+                    <fa-icon [icon]="faPen"></fa-icon>
+                  </button>
+                  <button
+                    type="button"
+                    class="btn btn-sm btn-outline-danger"
+                    aria-label="Remove user story"
+                    title="Remove"
+                    (click)="removeUserStory(i)"
+                  >
+                    <fa-icon [icon]="faTrash"></fa-icon>
+                  </button>
+                </div>
+              </div>
+            </article>
+          }
+        } @empty {
+          <div class="border rounded p-3 text-secondary">No user stories added yet.</div>
         }
       </div>
 
       <div>
-        <button type="button" class="btn btn-outline-primary" (click)="addUserStory()">
+        <button
+          type="button"
+          class="btn btn-outline-primary"
+          [disabled]="editingUserStoryIndex !== null"
+          (click)="addUserStory()"
+        >
           Add user story
         </button>
       </div>

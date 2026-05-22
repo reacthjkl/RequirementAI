@@ -50,7 +50,9 @@ public class ProjectService(
 
     public async Task Update(ProjectForUpdateDto project, CancellationToken ct)
     {
-        var entity = mapper.Map<Project>(project);
+        var entity = await projectRepository.GetById(project.Id, ct);
+        
+        mapper.Map(project, entity);
 
         await projectRepository.Update(entity, ct);
     }

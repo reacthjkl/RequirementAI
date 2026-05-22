@@ -35,8 +35,10 @@ public class AcceptanceCriteriaService(IAcceptanceCriteriaRepository acceptanceC
         AcceptanceCriteriaForUpdateDto dto,
         CancellationToken ct)
     {
-        var entity = mapper.Map<AcceptanceCriteria>(dto);
-
+        var entity = await acceptanceCriteriaRepository.GetById(dto.Id, ct);
+        
+        mapper.Map(dto, entity);
+        
         await acceptanceCriteriaRepository.Update(entity, ct);
     }
 

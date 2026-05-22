@@ -54,7 +54,7 @@
                 <span
                   class="rounded bg-primary-subtle text-primary d-inline-flex align-items-center justify-content-center p-2"
                 >
-                  <fa-icon [icon]="faFolderOpen"></fa-icon>
+                  <fa-icon [icon]="entityIcons.project"></fa-icon>
                 </span>
               </span>
 
@@ -87,9 +87,16 @@
           >
             <div class="card-body d-flex flex-column gap-3">
               <div class="d-flex align-items-start justify-content-between gap-3 overflow-hidden">
-                <h5 class="card-title mb-0 text-truncate flex-grow-1 overflow-hidden">
-                  {{ project.name }}
-                </h5>
+                <div class="d-flex align-items-center gap-2 flex-grow-1 overflow-hidden">
+                  <span
+                    class="rounded bg-primary-subtle text-primary d-inline-flex align-items-center justify-content-center p-2 flex-shrink-0"
+                  >
+                    <fa-icon [icon]="entityIcons.project"></fa-icon>
+                  </span>
+                  <h5 class="card-title mb-0 text-truncate overflow-hidden">
+                    {{ project.name }}
+                  </h5>
+                </div>
                 <app-project-status
                   class="flex-shrink-0"
                   [status]="project.status"

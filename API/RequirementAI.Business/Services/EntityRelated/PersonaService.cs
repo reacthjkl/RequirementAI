@@ -1,6 +1,7 @@
 using AutoMapper;
 using RequirementAI.Business.Interfaces.EntityRelated;
 using RequirementAI.Contract.Dto;
+using RequirementAI.Persistence.Entities;
 using RequirementAI.Persistence.Interfaces;
 
 namespace RequirementAI.Business.Services.EntityRelated;
@@ -21,7 +22,7 @@ public class PersonaService(IPersonaRepository personaRepository, IMapper mapper
 
     public async Task<PersonaResponseDto> Create(PersonaForCreationDto persona, CancellationToken ct)
     {
-        var entity = mapper.Map<Persistence.Entities.Persona>(persona);
+        var entity = mapper.Map<Persona>(persona);
 
         var created = await personaRepository.Create(entity, ct);
 
@@ -30,9 +31,11 @@ public class PersonaService(IPersonaRepository personaRepository, IMapper mapper
 
     public async Task Update(PersonaForUpdateDto persona, CancellationToken ct)
     {
-        var entity = mapper.Map<Persistence.Entities.Persona>(persona);
+        var existingPersona = await personaRepository.GetById(persona.Id, ct);
 
-        await personaRepository.Update(entity, ct);
+        mapper.Map(persona, existingPersona);
+
+        await personaRepository.Update(existingPersona, ct);
     }
 
     public async Task Delete(Guid id, CancellationToken ct)
