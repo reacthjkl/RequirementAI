@@ -1,12 +1,13 @@
 import { Component } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import { UserStoryStage } from '../../shared/enums/user-story-stage.enum';
 import { ENTITY_ICONS } from '../../shared/icons/entity-icons';
 import { UserStory } from '../../shared/models/user-story.model';
 import { UserStoryService } from '../../shared/services/user-story';
 
 interface BoardColumn {
-  key: string;
+  key: UserStoryStage;
   label: string;
   userStories: UserStory[];
 }
@@ -20,10 +21,10 @@ interface BoardColumn {
 export class ProjectBoard {
   public readonly entityIcons = ENTITY_ICONS;
   public readonly columns: BoardColumn[] = [
-    { key: 'new', label: 'New', userStories: [] },
-    { key: 'active', label: 'Active', userStories: [] },
-    { key: 'testing', label: 'Testing', userStories: [] },
-    { key: 'closed', label: 'Closed', userStories: [] },
+    { key: UserStoryStage.New, label: 'New', userStories: [] },
+    { key: UserStoryStage.Active, label: 'Active', userStories: [] },
+    { key: UserStoryStage.Testing, label: 'Testing', userStories: [] },
+    { key: UserStoryStage.Closed, label: 'Closed', userStories: [] },
   ];
 
   public projectId: string | null = null;
@@ -44,7 +45,10 @@ export class ProjectBoard {
 
     const userStories = await this.userStoryService.getByProjectId(this.projectId);
 
-    this.columns[0].userStories = userStories;
+    for (const column of this.columns) {
+      column.userStories = userStories.filter((x) => x.stage === column.key);
+    }
+
     this.loading = false;
   }
 }

@@ -158,7 +158,11 @@ export class ProjectWizardUserStoriesStep implements OnChanges {
   }
 
   public goToScenario(index: number): void {
-    if (index === this.currentScenarioIndex || this.form.dirty || !this.closeCurrentUserStoryForm()) {
+    if (
+      index === this.currentScenarioIndex ||
+      this.form.dirty ||
+      !this.closeCurrentUserStoryForm()
+    ) {
       return;
     }
 
@@ -209,18 +213,22 @@ export class ProjectWizardUserStoriesStep implements OnChanges {
 
     for (const userStory of formUserStories) {
       if (userStory.id) {
+        const existingUserStory = existingUserStories.find((x) => x.id === userStory.id);
+
+        if (!existingUserStory) {
+          return false;
+        }
+
         await this.userStoryService.update(userStory);
+
         savedUserStories.push({
-          ...existingUserStories.find(
-            (existingUserStory) => existingUserStory.id === userStory.id,
-          ),
+          ...existingUserStory,
           ...userStory,
           scenarioId: scenario.id,
-          createdAt:
-            existingUserStories.find(
-              (existingUserStory) => existingUserStory.id === userStory.id,
-            )?.createdAt ?? new Date().toISOString(),
+          stage: existingUserStory.stage,
+          createdAt: existingUserStory.createdAt,
         });
+
         continue;
       }
 
@@ -254,9 +262,7 @@ export class ProjectWizardUserStoriesStep implements OnChanges {
   private createSyncKey(): string {
     const scenario = this.currentScenario;
     const scenarioIds = this.scenarios.map((item) => item.id).join('|');
-    const userStoryIds = this.currentScenarioUserStories
-      .map((userStory) => userStory.id)
-      .join('|');
+    const userStoryIds = this.currentScenarioUserStories.map((userStory) => userStory.id).join('|');
 
     return `${scenario?.id ?? ''}:${scenarioIds}:${userStoryIds}`;
   }

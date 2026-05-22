@@ -1,3 +1,4 @@
+using RequirementAI.Contract.Enums;
 using RequirementAI.Persistence.Interfaces;
 
 namespace RequirementAI.Persistence.Entities;
@@ -12,4 +13,5 @@ public class UserStory: ICreatable
     public IList<EdgeCase> EdgeCases { get; set; } =  new List<EdgeCase>();
     public Guid ScenarioId { get; set; }
     public Scenario Scenario { get; set; } = null!;
+    public UserStoryStage Stage { get; set; } = UserStoryStage.New;
 }
