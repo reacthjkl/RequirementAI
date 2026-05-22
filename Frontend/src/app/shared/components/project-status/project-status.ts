@@ -24,12 +24,12 @@ interface ProjectStatusViewModel {
   styleUrl: './project-status.scss',
 })
 export class ProjectStatusComponent {
-  @Input({ required: true }) status!: ProjectStatus;
-  @Input({ required: true }) refinementStatus!: RefinementStatus;
+  @Input({ required: true }) public status!: ProjectStatus;
+  @Input({ required: true }) public refinementStatus!: RefinementStatus;
 
-  readonly projectStatus = ProjectStatus;
+  public readonly projectStatus = ProjectStatus;
 
-  get viewModel(): ProjectStatusViewModel {
+  public get viewModel(): ProjectStatusViewModel {
     if (this.refinementStatus === RefinementStatus.InProcess) {
       return {
         icon: faSpinner,

@@ -20,33 +20,33 @@ type ProjectViewMode = 'list' | 'cards';
 export class Projects {
   public projects: Project[] = [];
 
-  readonly viewModeStorageKey: string = 'projects-view-mode';
+  public readonly viewModeStorageKey: string = 'projects-view-mode';
   public viewMode: ProjectViewMode =
     (localStorage.getItem(this.viewModeStorageKey) as ProjectViewMode) ?? 'list';
 
   //icons
-  faGrip = faGrip;
-  faList = faList;
-  faPlus = faPlus;
+  public readonly faGrip = faGrip;
+  public readonly faList = faList;
+  public readonly faPlus = faPlus;
 
   constructor(
-    private projectSvc: ProjectService,
-    private personaSvc: PersonaService,
-    private scenarioSvc: ScenarioService,
-    private userStorySvc: UserStoryService,
-    private router: Router,
+    private readonly projectSvc: ProjectService,
+    private readonly personaSvc: PersonaService,
+    private readonly scenarioSvc: ScenarioService,
+    private readonly userStorySvc: UserStoryService,
+    private readonly router: Router,
   ) {}
 
-  async ngOnInit() {
+  public async ngOnInit(): Promise<void> {
     this.projects = await this.projectSvc.get();
   }
 
-  setViewMode(viewMode: ProjectViewMode): void {
+  public setViewMode(viewMode: ProjectViewMode): void {
     this.viewMode = viewMode;
     localStorage.setItem(this.viewModeStorageKey, this.viewMode);
   }
 
-  async openProject(project: Project): Promise<void> {
+  public async openProject(project: Project): Promise<void> {
     if (!this.isIncompleteStatus(project.status)) {
       await this.router.navigate(['/projects', project.id, 'board']);
       return;
@@ -64,7 +64,9 @@ export class Projects {
     });
   }
 
-  private async resolveIncompleteTarget(projectId: string) {
+  private async resolveIncompleteTarget(
+    projectId: string,
+  ): Promise<{ step: string; personaIndex?: number; scenarioIndex?: number } | null> {
     const personas = await this.personaSvc.getByProjectId(projectId);
 
     if (personas.length === 0) {

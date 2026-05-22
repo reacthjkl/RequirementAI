@@ -26,16 +26,16 @@ type ScenarioForm = FormGroup<{
   styleUrl: './project-wizard-scenarios-step.scss',
 })
 export class ProjectWizardScenariosStep implements OnChanges {
-  @Input() initialPersonaIndex = 0;
+  @Input() public initialPersonaIndex = 0;
 
-  readonly form;
-  currentPersonaIndex = 0;
+  public readonly form;
+  public currentPersonaIndex = 0;
   private syncedKey = '';
 
   constructor(
     private readonly fb: FormBuilder,
     private readonly scenarioService: ScenarioService,
-    readonly wizardState: ProjectWizardState,
+    public readonly wizardState: ProjectWizardState,
   ) {
     this.form = this.fb.nonNullable.group({
       scenarios: this.fb.array<ScenarioForm>([]),
@@ -56,7 +56,7 @@ export class ProjectWizardScenariosStep implements OnChanges {
     });
   }
 
-  ngOnChanges(changes: SimpleChanges): void {
+  public ngOnChanges(changes: SimpleChanges): void {
     if (!changes['initialPersonaIndex']) {
       return;
     }
@@ -64,19 +64,19 @@ export class ProjectWizardScenariosStep implements OnChanges {
     this.goToInitialPersona();
   }
 
-  get personas(): Persona[] {
+  public get personas(): Persona[] {
     return this.wizardState.personas();
   }
 
-  get currentPersona(): Persona | null {
+  public get currentPersona(): Persona | null {
     return this.personas[this.currentPersonaIndex] ?? null;
   }
 
-  get scenarioForms(): FormArray<ScenarioForm> {
+  public get scenarioForms(): FormArray<ScenarioForm> {
     return this.form.controls.scenarios;
   }
 
-  get currentPersonaScenarios(): Scenario[] {
+  public get currentPersonaScenarios(): Scenario[] {
     const persona = this.currentPersona;
 
     if (!persona) {
@@ -86,17 +86,17 @@ export class ProjectWizardScenariosStep implements OnChanges {
     return this.wizardState.scenarios().filter((scenario) => scenario.personaId === persona.id);
   }
 
-  addScenario(): void {
+  public addScenario(): void {
     this.scenarioForms.push(this.createScenarioForm());
     this.form.markAsDirty();
   }
 
-  removeScenario(index: number): void {
+  public removeScenario(index: number): void {
     this.scenarioForms.removeAt(index);
     this.form.markAsDirty();
   }
 
-  async canGoNext(): Promise<StepNavigationResult> {
+  public async canGoNext(): Promise<StepNavigationResult> {
     const saved = await this.saveCurrentPersonaScenarios();
 
     if (!saved) {
@@ -112,7 +112,7 @@ export class ProjectWizardScenariosStep implements OnChanges {
     return 'next-main-step';
   }
 
-  goToPersona(index: number): void {
+  public goToPersona(index: number): void {
     if (index === this.currentPersonaIndex || this.form.dirty) {
       return;
     }
@@ -121,7 +121,7 @@ export class ProjectWizardScenariosStep implements OnChanges {
     this.syncCurrentPersonaForm();
   }
 
-  isInvalid(index: number, controlName: keyof ScenarioForm['controls']): boolean {
+  public isInvalid(index: number, controlName: keyof ScenarioForm['controls']): boolean {
     const control = this.scenarioForms.at(index).controls[controlName];
     return control.touched && control.invalid;
   }

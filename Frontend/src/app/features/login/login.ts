@@ -15,9 +15,9 @@ import { AuthService } from '../../shared/services/auth';
 })
 export class Login {
   //icons
-  lock = faLock;
+  public readonly lock = faLock;
 
-  loginForm = new FormGroup({
+  public readonly loginForm = new FormGroup({
     email: new FormControl<string>('', {
       validators: [Validators.required, Validators.maxLength(255)],
     }),
@@ -27,11 +27,11 @@ export class Login {
   });
 
   constructor(
-    private auth: AuthService,
-    private router: Router,
+    private readonly auth: AuthService,
+    private readonly router: Router,
   ) {}
 
-  public async login() {
+  public async login(): Promise<void> {
     if (this.loginForm.invalid) return;
 
     const value: AuthRequest = this.loginForm.value as AuthRequest;
@@ -43,6 +43,6 @@ export class Login {
       return;
     }
 
-    this.router.navigate(['projects']);
+    await this.router.navigate(['projects']);
   }
 }

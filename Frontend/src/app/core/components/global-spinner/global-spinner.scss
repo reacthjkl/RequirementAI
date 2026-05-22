@@ -1,37 +1,18 @@
 .spinner-background {
-	background-color: rgba(0, 0, 0, 0.4);
-	width: 100%;
-	height: 100%;
-	position: fixed;
-	top: 0;
-	z-index: 9999;
-	animation: fadeIn 1s ease-in-out;
-
-	display: flex;
-	justify-content: center;
-	align-items: center;
+  animation: fadeIn 1s ease-in-out;
 }
 
-.spinner-content {
-	display: flex;
-	flex-direction: column;
-	justify-content: center;
-	align-items: center;
-}
-
-.spinner-border {
-	font-size: 4vh;
-	width: 10vh;
-	height: 10vh;
-	opacity: 1;
+.spinner-border-lg {
+  width: 5rem;
+  height: 5rem;
 }
 
 @keyframes fadeIn {
-	from {
-		opacity: 0;
-	}
+  from {
+    opacity: 0;
+  }
 
-	to {
-		opacity: 1;
-	}
+  to {
+    opacity: 1;
+  }
 }

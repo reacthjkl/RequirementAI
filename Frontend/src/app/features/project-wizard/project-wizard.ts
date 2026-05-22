@@ -1,6 +1,5 @@
 import { Component, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { ProjectService } from '../../shared/services/project';
 import { ProjectWizardNavigation } from './shared/components/project-wizard-navigation/project-wizard-navigation';
 import { ProjectWizardPersonasStep } from './shared/components/project-wizard-personas-step/project-wizard-personas-step';
 import { ProjectWizardProjectStep } from './shared/components/project-wizard-project-step/project-wizard-project-step';
@@ -35,27 +34,26 @@ export class ProjectWizard {
   @ViewChild(ProjectWizardUserStoriesStep)
   private userStoriesStep?: ProjectWizardUserStoriesStep;
 
-  steps = [
+  public readonly steps = [
     { key: 'project', label: 'Project' },
     { key: 'personas', label: 'Personas' },
     { key: 'scenarios', label: 'Scenarios' },
     { key: 'userStories', label: 'User Stories' },
   ] as const;
 
-  currentStepIndex = 0;
-  maxAllowedStepIndex = 0;
-  initialPersonaIndex = 0;
-  initialScenarioIndex = 0;
+  public currentStepIndex = 0;
+  public maxAllowedStepIndex = 0;
+  public initialPersonaIndex = 0;
+  public initialScenarioIndex = 0;
 
   constructor(
     private readonly route: ActivatedRoute,
     private readonly router: Router,
     private readonly wizardState: ProjectWizardState,
     private readonly wizardLoader: ProjectWizardLoader,
-    private readonly projectService: ProjectService,
   ) {}
 
-  async ngOnInit() {
+  public async ngOnInit(): Promise<void> {
     const projectId = this.route.snapshot.paramMap.get('projectId');
 
     if (!projectId) {
@@ -67,15 +65,15 @@ export class ProjectWizard {
     this.applyInitialNavigation();
   }
 
-  get currentStep() {
+  public get currentStep() {
     return this.steps[this.currentStepIndex];
   }
 
-  get progress(): number {
+  public get progress(): number {
     return ((this.currentStepIndex + 1) / this.steps.length) * 100;
   }
 
-  get isLastStep(): boolean {
+  public get isLastStep(): boolean {
     if (this.currentStepIndex !== this.steps.length - 1) {
       return false;
     }
@@ -87,7 +85,7 @@ export class ProjectWizard {
     return this.userStoriesStep?.isLastScenario ?? this.wizardState.scenarios().length <= 1;
   }
 
-  async goToStep(index: number): Promise<void> {
+  public async goToStep(index: number): Promise<void> {
     if (index > this.maxAllowedStepIndex) {
       return;
     }
@@ -103,7 +101,7 @@ export class ProjectWizard {
     this.currentStepIndex = index;
   }
 
-  async nextStep(): Promise<void> {
+  public async nextStep(): Promise<void> {
     if (this.isLastStep) {
       return;
     }
@@ -117,7 +115,7 @@ export class ProjectWizard {
     this.moveNext();
   }
 
-  previousStep(): void {
+  public previousStep(): void {
     if (this.currentStepIndex === 0) {
       return;
     }
@@ -125,7 +123,7 @@ export class ProjectWizard {
     this.currentStepIndex--;
   }
 
-  async finish(): Promise<void> {
+  public async finish(): Promise<void> {
     const result = await this.askCurrentStepToLeave();
 
     if (result === 'stay' || result === 'handled-internally') {

@@ -1,5 +1,5 @@
 @if (currentUser) {
-  <aside class="app-menu p-0 d-flex flex-column h-100">
+  <aside class="app-menu p-0 d-flex flex-column h-100 bg-body shadow-sm">
     <nav class="p-3 d-flex flex-column gap-3">
       @if (currentProject) {
         <app-menu-dropdown #projectMenu [title]="currentProject.name" [icon]="faFolderOpen">
@@ -23,8 +23,8 @@
           @for (page of projectPages; track page.key) {
             <a
               [routerLink]="['/projects', currentProject.id, page.key]"
-              routerLinkActive="active"
-              class="list-group-item list-group-item-action border-0 rounded bg-transparent d-flex align-items-center gap-2"
+              routerLinkActive="text-primary bg-primary-subtle"
+              class="list-group-item list-group-item-action border-0 rounded d-flex align-items-center gap-2"
             >
               <fa-icon [icon]="page.icon"></fa-icon>
               {{ page.label }}
@@ -35,8 +35,8 @@
 
           <a
             [routerLink]="['/projects', currentProject.id, 'settings']"
-            routerLinkActive="active"
-            class="list-group-item list-group-item-action border-0 rounded bg-transparent d-flex align-items-center gap-2"
+            routerLinkActive="text-primary bg-primary-subtle"
+            class="list-group-item list-group-item-action border-0 rounded d-flex align-items-center gap-2"
           >
             <fa-icon [icon]="faGear"></fa-icon>
             Settings
@@ -47,8 +47,8 @@
           @for (project of projects; track project.id) {
             <a
               [routerLink]="['/projects', project.id, 'overview']"
-              routerLinkActive="active"
-              class="list-group-item list-group-item-action border-0 rounded bg-transparent d-flex align-items-center gap-2"
+              routerLinkActive="text-primary bg-primary-subtle"
+              class="list-group-item list-group-item-action border-0 rounded d-flex align-items-center gap-2"
             >
               <fa-icon [icon]="faFolderOpen"></fa-icon>
               <span class="text-truncate">{{ project.name }}</span>
@@ -57,7 +57,7 @@
 
           <a
             [routerLink]="['/projects', 'wizard']"
-            class="list-group-item list-group-item-action border-0 rounded bg-transparent d-flex align-items-center gap-2"
+            class="list-group-item list-group-item-action border-0 rounded d-flex align-items-center gap-2"
           >
             <fa-icon [icon]="faPlus"></fa-icon>
             New project

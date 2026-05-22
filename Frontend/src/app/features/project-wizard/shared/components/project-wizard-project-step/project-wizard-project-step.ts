@@ -12,9 +12,9 @@ import { ProjectWizardState } from '../../services/project-wizard-state';
   styleUrl: './project-wizard-project-step.scss',
 })
 export class ProjectWizardProjectStep {
-  readonly form;
+  public readonly form;
 
-  submitAttempted = false;
+  public submitAttempted = false;
   private patchedProjectId: string | null = null;
 
   constructor(
@@ -43,7 +43,7 @@ export class ProjectWizardProjectStep {
     });
   }
 
-  async canGoNext(): Promise<StepNavigationResult> {
+  public async canGoNext(): Promise<StepNavigationResult> {
     this.form.markAllAsTouched();
 
     if (this.form.invalid) {
@@ -82,7 +82,7 @@ export class ProjectWizardProjectStep {
     return 'next-main-step';
   }
 
-  isInvalid(controlName: string): boolean {
+  public isInvalid(controlName: string): boolean {
     const control = this.form.get(controlName);
     return !!control && control.touched && control.invalid;
   }

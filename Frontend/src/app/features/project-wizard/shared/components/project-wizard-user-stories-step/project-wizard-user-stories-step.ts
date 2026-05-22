@@ -26,16 +26,16 @@ type UserStoryForm = FormGroup<{
   styleUrl: './project-wizard-user-stories-step.scss',
 })
 export class ProjectWizardUserStoriesStep implements OnChanges {
-  @Input() initialScenarioIndex = 0;
+  @Input() public initialScenarioIndex = 0;
 
-  readonly form;
-  currentScenarioIndex = 0;
+  public readonly form;
+  public currentScenarioIndex = 0;
   private syncedKey = '';
 
   constructor(
     private readonly fb: FormBuilder,
     private readonly userStoryService: UserStoryService,
-    readonly wizardState: ProjectWizardState,
+    public readonly wizardState: ProjectWizardState,
   ) {
     this.form = this.fb.nonNullable.group({
       userStories: this.fb.array<UserStoryForm>([]),
@@ -56,7 +56,7 @@ export class ProjectWizardUserStoriesStep implements OnChanges {
     });
   }
 
-  ngOnChanges(changes: SimpleChanges): void {
+  public ngOnChanges(changes: SimpleChanges): void {
     if (!changes['initialScenarioIndex']) {
       return;
     }
@@ -64,23 +64,23 @@ export class ProjectWizardUserStoriesStep implements OnChanges {
     this.goToInitialScenario();
   }
 
-  get scenarios(): Scenario[] {
+  public get scenarios(): Scenario[] {
     return this.wizardState.scenarios();
   }
 
-  get currentScenario(): Scenario | null {
+  public get currentScenario(): Scenario | null {
     return this.scenarios[this.currentScenarioIndex] ?? null;
   }
 
-  get isLastScenario(): boolean {
+  public get isLastScenario(): boolean {
     return this.currentScenarioIndex >= this.scenarios.length - 1;
   }
 
-  get userStoryForms(): FormArray<UserStoryForm> {
+  public get userStoryForms(): FormArray<UserStoryForm> {
     return this.form.controls.userStories;
   }
 
-  get currentScenarioUserStories(): UserStory[] {
+  public get currentScenarioUserStories(): UserStory[] {
     const scenario = this.currentScenario;
 
     if (!scenario) {
@@ -92,17 +92,17 @@ export class ProjectWizardUserStoriesStep implements OnChanges {
       .filter((userStory) => userStory.scenarioId === scenario.id);
   }
 
-  addUserStory(): void {
+  public addUserStory(): void {
     this.userStoryForms.push(this.createUserStoryForm());
     this.form.markAsDirty();
   }
 
-  removeUserStory(index: number): void {
+  public removeUserStory(index: number): void {
     this.userStoryForms.removeAt(index);
     this.form.markAsDirty();
   }
 
-  async canGoNext(): Promise<StepNavigationResult> {
+  public async canGoNext(): Promise<StepNavigationResult> {
     const saved = await this.saveCurrentScenarioUserStories();
 
     if (!saved) {
@@ -118,7 +118,7 @@ export class ProjectWizardUserStoriesStep implements OnChanges {
     return 'next-main-step';
   }
 
-  goToScenario(index: number): void {
+  public goToScenario(index: number): void {
     if (index === this.currentScenarioIndex || this.form.dirty) {
       return;
     }
@@ -127,7 +127,7 @@ export class ProjectWizardUserStoriesStep implements OnChanges {
     this.syncCurrentScenarioForm();
   }
 
-  isInvalid(index: number, controlName: keyof UserStoryForm['controls']): boolean {
+  public isInvalid(index: number, controlName: keyof UserStoryForm['controls']): boolean {
     const control = this.userStoryForms.at(index).controls[controlName];
     return control.touched && control.invalid;
   }
