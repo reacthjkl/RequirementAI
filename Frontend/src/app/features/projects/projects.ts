@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { Router, RouterModule } from '@angular/router';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-import { faGrip, faList, faPlus } from '@fortawesome/free-solid-svg-icons';
+import { faFolderOpen, faGrip, faList, faPlus } from '@fortawesome/free-solid-svg-icons';
 import { ProjectStatusComponent } from '../../shared/components/project-status/project-status';
 import { ProjectStatus } from '../../shared/enums/project-status.enum';
 import { Project } from '../../shared/models/project.model';
@@ -25,6 +25,7 @@ export class Projects {
     (localStorage.getItem(this.viewModeStorageKey) as ProjectViewMode) ?? 'list';
 
   //icons
+  public readonly faFolderOpen = faFolderOpen;
   public readonly faGrip = faGrip;
   public readonly faList = faList;
   public readonly faPlus = faPlus;
