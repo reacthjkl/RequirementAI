@@ -7,5 +7,4 @@ import { Component } from '@angular/core';
   styleUrl: './global-spinner.scss',
 })
 export class GlobalSpinner {
-
 }

@@ -7,15 +7,13 @@
   >
     @if (icon) {
       <span
-        class="d-inline-flex align-items-center justify-content-center rounded bg-primary-subtle text-primary flex-shrink-0"
-        style="width: 2.75rem; height: 2.75rem"
+        class="d-inline-flex align-items-center justify-content-center rounded bg-primary-subtle text-primary flex-shrink-0 p-3"
       >
         <fa-icon [icon]="icon"></fa-icon>
       </span>
     } @else if (iconText) {
       <span
-        class="d-inline-flex align-items-center justify-content-center rounded-circle bg-primary-subtle text-primary flex-shrink-0"
-        style="width: 2.25rem; height: 2.25rem"
+        class="d-inline-flex align-items-center justify-content-center rounded-circle bg-primary-subtle text-primary flex-shrink-0 p-2 lh-1"
       >
         {{ iconText }}
       </span>

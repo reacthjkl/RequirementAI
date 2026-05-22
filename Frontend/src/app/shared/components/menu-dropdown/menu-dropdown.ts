@@ -9,28 +9,28 @@ import { faChevronDown, faChevronUp } from '@fortawesome/free-solid-svg-icons';
   templateUrl: './menu-dropdown.html',
 })
 export class MenuDropdown {
-  @Input({ required: true }) title!: string;
-  @Input() subtitle?: string;
-  @Input() icon?: IconDefinition;
-  @Input() iconText?: string;
-  @Input() dropup = false;
+  @Input({ required: true }) public title!: string;
+  @Input() public subtitle?: string;
+  @Input() public icon?: IconDefinition;
+  @Input() public iconText?: string;
+  @Input() public dropup = false;
 
-  isOpen = false;
-  faChevronDown = faChevronDown;
-  faChevronUp = faChevronUp;
+  public isOpen = false;
+  public readonly faChevronDown = faChevronDown;
+  public readonly faChevronUp = faChevronUp;
 
   constructor(private readonly elementRef: ElementRef<HTMLElement>) {}
 
-  toggle(): void {
+  public toggle(): void {
     this.isOpen = !this.isOpen;
   }
 
-  close(): void {
+  public close(): void {
     this.isOpen = false;
   }
 
   @HostListener('document:click', ['$event'])
-  closeOnOutsideClick(event: MouseEvent): void {
+  public closeOnOutsideClick(event: MouseEvent): void {
     if (!this.isOpen) {
       return;
     }

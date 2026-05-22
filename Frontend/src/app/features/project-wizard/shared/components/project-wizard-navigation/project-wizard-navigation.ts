@@ -20,32 +20,32 @@ export interface ProjectWizardNavigationStep {
   styleUrl: './project-wizard-navigation.scss',
 })
 export class ProjectWizardNavigation {
-  @Input({ required: true }) steps: readonly ProjectWizardNavigationStep[] = [];
-  @Input({ required: true }) currentStepIndex = 0;
-  @Input({ required: true }) maxAllowedStepIndex = 0;
-  @Input({ required: true }) isLastStep = false;
+  @Input({ required: true }) public steps: readonly ProjectWizardNavigationStep[] = [];
+  @Input({ required: true }) public currentStepIndex = 0;
+  @Input({ required: true }) public maxAllowedStepIndex = 0;
+  @Input({ required: true }) public isLastStep = false;
 
-  @Output() stepSelected = new EventEmitter<number>();
-  @Output() previous = new EventEmitter<void>();
-  @Output() next = new EventEmitter<void>();
-  @Output() finished = new EventEmitter<void>();
+  @Output() public stepSelected = new EventEmitter<number>();
+  @Output() public previous = new EventEmitter<void>();
+  @Output() public next = new EventEmitter<void>();
+  @Output() public finished = new EventEmitter<void>();
 
-  readonly icons: Record<string, IconDefinition> = {
+  public readonly icons: Record<string, IconDefinition> = {
     project: faFolderOpen,
     personas: faUsers,
     scenarios: faListCheck,
     userStories: faBookOpen,
   };
 
-  getStepIcon(step: ProjectWizardNavigationStep): IconDefinition {
+  public getStepIcon(step: ProjectWizardNavigationStep): IconDefinition {
     return this.icons[step.key] ?? faFolderOpen;
   }
 
-  isCompleted(index: number): boolean {
+  public isCompleted(index: number): boolean {
     return index < this.currentStepIndex;
   }
 
-  isConnectorPrimary(index: number): boolean {
+  public isConnectorPrimary(index: number): boolean {
     return index <= this.currentStepIndex;
   }
 }

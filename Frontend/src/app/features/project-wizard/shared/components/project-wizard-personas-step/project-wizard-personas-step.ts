@@ -28,7 +28,7 @@ type PersonaForm = FormGroup<{
   styleUrl: './project-wizard-personas-step.scss',
 })
 export class ProjectWizardPersonasStep {
-  readonly form;
+  public readonly form;
   private syncedPersonaIds = '';
 
   constructor(
@@ -57,21 +57,21 @@ export class ProjectWizardPersonasStep {
     });
   }
 
-  get personaForms(): FormArray<PersonaForm> {
+  public get personaForms(): FormArray<PersonaForm> {
     return this.form.controls.personas;
   }
 
-  addPersona(): void {
+  public addPersona(): void {
     this.personaForms.push(this.createPersonaForm());
     this.form.markAsDirty();
   }
 
-  removePersona(index: number): void {
+  public removePersona(index: number): void {
     this.personaForms.removeAt(index);
     this.form.markAsDirty();
   }
 
-  async canGoNext(): Promise<StepNavigationResult> {
+  public async canGoNext(): Promise<StepNavigationResult> {
     this.form.markAllAsTouched();
 
     if (this.personaForms.length === 0 || this.form.invalid) {
@@ -133,7 +133,7 @@ export class ProjectWizardPersonasStep {
     return 'next-main-step';
   }
 
-  isInvalid(index: number, controlName: keyof PersonaForm['controls']): boolean {
+  public isInvalid(index: number, controlName: keyof PersonaForm['controls']): boolean {
     const control = this.personaForms.at(index).controls[controlName];
     return control.touched && control.invalid;
   }

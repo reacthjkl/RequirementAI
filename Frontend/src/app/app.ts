@@ -17,8 +17,8 @@ export class App {
   public loading = signal(false);
 
   constructor(
-    private auth: AuthService,
-    private loadingSvc: LoadingService,
+    private readonly auth: AuthService,
+    private readonly loadingSvc: LoadingService,
   ) {
     this.loggedIn = this.auth.loggedIn;
     this.loading = this.loadingSvc.isLoading;

@@ -1,5 +1,5 @@
-import { Component } from '@angular/core';
-import { NavigationEnd, Router, RouterModule } from '@angular/router';
+import { Component, effect } from '@angular/core';
+import { Router, RouterModule } from '@angular/router';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import {
   faFileLines,
@@ -11,7 +11,6 @@ import {
   faTableColumns,
   faUsers,
 } from '@fortawesome/free-solid-svg-icons';
-import { filter } from 'rxjs';
 import { CurrentUserService } from '../../core/services/current-user.service';
 import { MenuDropdown } from '../../shared/components/menu-dropdown/menu-dropdown';
 import { Project } from '../../shared/models/project.model';
@@ -34,16 +33,16 @@ export class Menu {
   public currentProjectPage: ProjectPageKey = 'overview';
 
   // icons
-  faFileLines = faFileLines;
-  faFolderOpen = faFolderOpen;
-  faGear = faGear;
-  faHouse = faHouse;
-  faPlus = faPlus;
-  faRightFromBracket = faRightFromBracket;
-  faTableColumns = faTableColumns;
-  faUsers = faUsers;
+  public readonly faFileLines = faFileLines;
+  public readonly faFolderOpen = faFolderOpen;
+  public readonly faGear = faGear;
+  public readonly faHouse = faHouse;
+  public readonly faPlus = faPlus;
+  public readonly faRightFromBracket = faRightFromBracket;
+  public readonly faTableColumns = faTableColumns;
+  public readonly faUsers = faUsers;
 
-  readonly projectPages = [
+  public readonly projectPages = [
     { key: 'overview', label: 'Overview', icon: faHouse },
     { key: 'personas', label: 'Personas', icon: faUsers },
     { key: 'scenarios', label: 'Scenarios', icon: faFileLines },
@@ -51,38 +50,39 @@ export class Menu {
   ] as const;
 
   constructor(
-    private userSvc: CurrentUserService,
-    private authSvc: AuthService,
-    private projectSvc: ProjectService,
-    private router: Router,
+    private readonly userSvc: CurrentUserService,
+    private readonly authSvc: AuthService,
+    private readonly projectSvc: ProjectService,
+    private readonly router: Router,
   ) {
-    this.router.events
-      .pipe(filter((event): event is NavigationEnd => event instanceof NavigationEnd))
-      .subscribe(() => this.syncCurrentProject());
+    effect(() => {
+      this.router.currentNavigation();
+      this.syncCurrentProject();
+    });
   }
 
-  async ngOnInit() {
+  public async ngOnInit(): Promise<void> {
     const [user, projects] = await Promise.all([this.userSvc.get(), this.projectSvc.get()]);
     this.currentUser = user ?? undefined;
     this.projects = projects;
     this.syncCurrentProject();
   }
 
-  async logout(): Promise<void> {
+  public async logout(): Promise<void> {
     await this.authSvc.logout();
     this.currentUser = undefined;
     await this.router.navigate(['/login']);
   }
 
-  async switchProject(project: Project): Promise<void> {
+  public async switchProject(project: Project): Promise<void> {
     await this.router.navigate(['/projects', project.id, this.currentProjectPage]);
   }
 
-  get otherProjects(): Project[] {
+  public get otherProjects(): Project[] {
     return this.projects.filter((project) => project.id !== this.currentProject?.id);
   }
 
-  userInitials(user: User): string {
+  public userInitials(user: User): string {
     const initials = user.name
       .split(' ')
       .filter(Boolean)
