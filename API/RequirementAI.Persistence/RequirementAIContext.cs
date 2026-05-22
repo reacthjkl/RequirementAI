@@ -197,6 +197,10 @@ public class RequirementAIContext(DbContextOptions<RequirementAIContext> options
                 .WithOne(e => e.UserStory)
                 .HasForeignKey(e => e.UserStoryId);
             
+            entity.Property(e => e.Stage)
+                .HasMaxLength(255)
+                .HasConversion<string>();
+            
             entity.Property(e => e.CreatedAt)
                 .HasColumnType("timestamptz")
                 .HasDefaultValueSql("CURRENT_TIMESTAMP")
