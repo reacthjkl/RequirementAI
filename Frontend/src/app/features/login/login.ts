@@ -39,7 +39,7 @@ export class Login {
     const result: ApiResponse<null> = await this.auth.authenticate(value);
 
     if (!result.successful) {
-      this.loginForm.setErrors({ wrongCredentials: 'Die Eingegebenen Zugangsdaten sind falsch' });
+      this.loginForm.setErrors({ wrongCredentials: 'Invalid email or password.' });
       return;
     }
 
