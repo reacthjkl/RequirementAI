@@ -7,6 +7,7 @@ import { faChevronDown, faChevronUp } from '@fortawesome/free-solid-svg-icons';
   selector: 'app-menu-dropdown',
   imports: [FontAwesomeModule],
   templateUrl: './menu-dropdown.html',
+  styleUrl: './menu-dropdown.scss',
 })
 export class MenuDropdown {
   @Input({ required: true }) public title!: string;
