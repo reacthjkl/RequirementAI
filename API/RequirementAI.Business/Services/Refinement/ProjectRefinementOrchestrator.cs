@@ -1,4 +1,5 @@
 using RequirementAI.Business.Interfaces.Refinement;
+using RequirementAI.Contract.Enums;
 using RequirementAI.Persistence.Entities;
 using RequirementAI.Persistence.Interfaces;
 
@@ -24,7 +25,7 @@ public class ProjectRefinementOrchestrator(IProjectRepository projectRepository,
                 }
             }
         }
-        
+
         await projectRepository.Update(project, ct);
     }
 }

@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { ActivatedRoute, RouterLink } from '@angular/router';
+import { ActivatedRoute } from '@angular/router';
 import { Project } from '../../shared/models/project.model';
 import { UserStory } from '../../shared/models/user-story.model';
 import { ProjectService } from '../../shared/services/project';
@@ -13,7 +13,7 @@ interface BoardColumn {
 
 @Component({
   selector: 'app-project-board',
-  imports: [RouterLink],
+  imports: [],
   templateUrl: './project-board.html',
   styleUrl: './project-board.scss',
 })
@@ -53,4 +53,3 @@ export class ProjectBoard {
     this.loading = false;
   }
 }
-

@@ -13,6 +13,38 @@ public class ProjectRepository(RequirementAIContext context): IProjectRepository
             ?? throw new EntityNotFoundException<Project>(id);
     }
 
+    public async Task<Dictionary<Guid, bool>> GetCompletenessByProjectIds(List<Guid> projectIds, CancellationToken ct)
+    {
+        var projectsWithPersonas = await context.Personas
+            .Where(p => projectIds.Contains(p.ProjectId))
+            .Select(p => p.ProjectId)
+            .Distinct()
+            .ToListAsync(ct);
+
+        var projectsWithPersonaWithoutScenarios = await context.Personas
+            .Where(p => projectIds.Contains(p.ProjectId) && !p.Scenarios.Any())
+            .Select(p => p.ProjectId)
+            .Distinct()
+            .ToListAsync(ct);
+
+        var projectsWithScenarioWithoutUserStories = await context.Scenarios
+            .Where(s => projectIds.Contains(s.Persona.ProjectId) && !s.UserStories.Any())
+            .Select(s => s.Persona.ProjectId)
+            .Distinct()
+            .ToListAsync(ct);
+
+        var hasPersonas = projectsWithPersonas.ToHashSet();
+        var hasPersonaWithoutScenarios = projectsWithPersonaWithoutScenarios.ToHashSet();
+        var hasScenarioWithoutUserStories = projectsWithScenarioWithoutUserStories.ToHashSet();
+
+        return projectIds.ToDictionary(
+            projectId => projectId,
+            projectId =>
+                hasPersonas.Contains(projectId)
+                && !hasPersonaWithoutScenarios.Contains(projectId)
+                && !hasScenarioWithoutUserStories.Contains(projectId));    
+    }
+
     public async Task<Project> GetFullProjectById(Guid id, CancellationToken ct)
     {
         return await context.Projects

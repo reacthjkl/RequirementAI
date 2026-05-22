@@ -1,10 +1,10 @@
 namespace RequirementAI.Contract.Enums;
 
-public enum JobStatus
+public enum RefinementStatus
 {
     Pending,
-    Running,
-    Completed,
+    InProcess,
     Failed,
+    Completed,
     None
 }

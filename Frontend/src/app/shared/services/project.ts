@@ -38,10 +38,6 @@ export class ProjectService {
     await this.api.put(ApiController.Project, '', project);
   }
 
-  public async markAsFinished(id: string): Promise<void> {
-    await this.api.put<void, null>(ApiController.Project, `mark-as-finished/${id}`);
-  }
-
   public async refine(id: string): Promise<void> {
     await this.api.put<void, null>(ApiController.Project, `refine/${id}`);
   }
