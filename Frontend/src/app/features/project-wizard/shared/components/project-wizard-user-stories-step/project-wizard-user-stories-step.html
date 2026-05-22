@@ -3,14 +3,14 @@
 } @else {
   <div class="d-flex flex-column gap-4">
     <div class="d-flex justify-content-between align-items-center gap-3">
-      <div>
+      <div class="overflow-hidden">
         <div class="text-muted small">
           Scenario {{ currentScenarioIndex + 1 }} of {{ scenarios.length }}
         </div>
-        <h5 class="mb-0">{{ currentScenario?.title }}</h5>
+        <h5 class="mb-0 text-truncate">{{ currentScenario?.title }}</h5>
       </div>
 
-      <div class="btn-group" role="group" aria-label="User story scenario navigation">
+      <div class="btn-group flex-shrink-0" role="group" aria-label="User story scenario navigation">
         @for (scenario of scenarios; track scenario.id; let i = $index) {
           <button
             type="button"

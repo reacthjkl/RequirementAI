@@ -20,9 +20,9 @@
             <div class="card-body d-flex flex-column gap-3">
               @if (column.userStories.length > 0) {
                 @for (userStory of column.userStories; track userStory.id) {
-                  <article class="border rounded bg-body p-3">
-                    <h6 class="mb-2">{{ userStory.title }}</h6>
-                    <p class="mb-0 text-muted">{{ userStory.description }}</p>
+                  <article class="border rounded bg-body p-3 overflow-hidden">
+                    <h6 class="mb-2 text-truncate">{{ userStory.title }}</h6>
+                    <p class="mb-0 text-muted text-truncate">{{ userStory.description }}</p>
                   </article>
                 }
               } @else {
