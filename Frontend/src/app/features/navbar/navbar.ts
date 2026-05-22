@@ -12,6 +12,4 @@ import { faBell } from '@fortawesome/free-solid-svg-icons';
 export class Navbar {
   // icons
   public readonly faBell = faBell;
-
-  public notifications: string[] = [];
 }
