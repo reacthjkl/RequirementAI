@@ -233,6 +233,9 @@ public class RequirementAIContext(DbContextOptions<RequirementAIContext> options
                 .WithMany()
                 .HasForeignKey(e => e.ProjectId)
                 .OnDelete(DeleteBehavior.Cascade);
+
+            entity.Property(e => e.CustomInstructions)
+                .HasMaxLength(2048);
         });
     }
 }

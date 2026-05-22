@@ -57,12 +57,13 @@ public class ProjectService(
         await projectRepository.Update(entity, ct);
     }
 
-    public async Task<Guid> Refine(Guid projectId, CancellationToken ct)
+    public async Task<Guid> Refine(Guid projectId, string? customInstructions, CancellationToken ct)
     {
         var job = await projectRefinementJobRepository.Create(
             new ProjectRefinementJob
             {
-                ProjectId = projectId
+                ProjectId = projectId,
+                CustomInstructions = customInstructions,
             }, 
             ct);
         
