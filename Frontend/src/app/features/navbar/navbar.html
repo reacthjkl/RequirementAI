@@ -2,20 +2,4 @@
   <a class="navbar-brand d-flex align-items-center gap-2 mb-0" routerLink="/projects">
     <span class="fw-semibold">RequirementAI</span>
   </a>
-
-  <a class="position-relative link-secondary text-decoration-none">
-    <fa-icon [icon]="faBell"></fa-icon>
-
-    @if (notifications.length > 0) {
-      <span
-        class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger p-1"
-      >
-        @if (notifications.length > 9) {
-          9+
-        } @else {
-          {{ notifications.length }}
-        }
-      </span>
-    }
-  </a>
 </nav>
