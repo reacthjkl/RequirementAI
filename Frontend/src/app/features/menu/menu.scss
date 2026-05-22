@@ -1,60 +1,11 @@
 .app-menu {
-  position: relative;
-  z-index: 1;
+  width: 18rem;
   background: var(--bs-body-bg);
   box-shadow: 0.125rem 0 0.5rem rgb(0 0 0 / 5%);
 }
 
 .list-group-item.active {
   color: var(--bs-primary);
-}
-
-.user-menu {
-  position: relative;
-}
-
-.user-menu-trigger {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  width: 100%;
-  padding: 0;
-  color: var(--bs-secondary-color);
-  background: transparent;
-  border: 0;
-}
-
-.user-menu-trigger:hover,
-.user-menu-trigger:focus {
-  color: #000;
-}
-
-.user-menu-chevron {
-  font-size: 0.75rem;
-}
-
-.user-menu-dropdown {
-  position: absolute;
-  right: 1rem;
-  bottom: calc(100% + 0.5rem);
-  left: 1rem;
-  z-index: 10;
-  padding: 0.5rem;
-  border: 1px solid var(--bs-border-color);
-  border-radius: 0.375rem;
-  background: var(--bs-body-bg);
-  box-shadow: var(--bs-box-shadow);
-}
-
-.dropdown-item {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  border-radius: 0.25rem;
-}
-
-.dropdown-item:hover,
-.dropdown-item:focus {
-  color: inherit;
-  background: var(--bs-tertiary-bg);
+  background-color: var(--bs-primary-bg-subtle) !important;
+  border-color: transparent;
 }

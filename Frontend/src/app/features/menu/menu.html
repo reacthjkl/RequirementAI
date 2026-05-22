@@ -1,43 +1,88 @@
 @if (currentUser) {
-  <aside class="app-menu p-0 d-flex flex-column" style="height: 100%">
-    <nav class="p-3">
-      <div class="list-group list-group-flush">
-        <a
-          routerLink="/projects"
-          routerLinkActive="active"
-          class="list-group-item list-group-item-action bg-transparent cursor-pointer"
-        >
-          <fa-icon [icon]="faFolderOpen"></fa-icon>
-          Projects
-        </a>
-      </div>
-    </nav>
+  <aside class="app-menu p-0 d-flex flex-column h-100">
+    <nav class="p-3 d-flex flex-column gap-3">
+      @if (currentProject) {
+        <app-menu-dropdown #projectMenu [title]="currentProject.name" [icon]="faFolderOpen">
+          @if (otherProjects.length > 0) {
+            @for (project of otherProjects; track project.id) {
+              <button
+                type="button"
+                class="dropdown-item d-flex align-items-center gap-2"
+                (click)="switchProject(project); projectMenu.close()"
+              >
+                <fa-icon [icon]="faFolderOpen"></fa-icon>
+                <span class="text-truncate">{{ project.name }}</span>
+              </button>
+            }
+          } @else {
+            <span class="dropdown-item-text text-secondary">No other projects</span>
+          }
+        </app-menu-dropdown>
 
-    <div class="p-3 border-top mt-auto user-menu">
-      @if (userMenuOpen) {
-        <div class="user-menu-dropdown">
-          <button type="button" class="dropdown-item" (click)="logout()">
-            <fa-icon [icon]="faRightFromBracket"></fa-icon>
-            Logout
-          </button>
+        <div class="list-group list-group-flush gap-1">
+          @for (page of projectPages; track page.key) {
+            <a
+              [routerLink]="['/projects', currentProject.id, page.key]"
+              routerLinkActive="active"
+              class="list-group-item list-group-item-action border-0 rounded bg-transparent d-flex align-items-center gap-2"
+            >
+              <fa-icon [icon]="page.icon"></fa-icon>
+              {{ page.label }}
+            </a>
+          }
+
+          <hr class="my-3" />
+
+          <a
+            [routerLink]="['/projects', currentProject.id, 'settings']"
+            routerLinkActive="active"
+            class="list-group-item list-group-item-action border-0 rounded bg-transparent d-flex align-items-center gap-2"
+          >
+            <fa-icon [icon]="faGear"></fa-icon>
+            Settings
+          </a>
+        </div>
+      } @else {
+        <div class="list-group list-group-flush gap-1">
+          @for (project of projects; track project.id) {
+            <a
+              [routerLink]="['/projects', project.id, 'overview']"
+              routerLinkActive="active"
+              class="list-group-item list-group-item-action border-0 rounded bg-transparent d-flex align-items-center gap-2"
+            >
+              <fa-icon [icon]="faFolderOpen"></fa-icon>
+              <span class="text-truncate">{{ project.name }}</span>
+            </a>
+          }
+
+          <a
+            [routerLink]="['/projects', 'wizard']"
+            class="list-group-item list-group-item-action border-0 rounded bg-transparent d-flex align-items-center gap-2"
+          >
+            <fa-icon [icon]="faPlus"></fa-icon>
+            New project
+          </a>
         </div>
       }
+    </nav>
 
-      <button
-        type="button"
-        class="user-menu-trigger"
-        [attr.aria-expanded]="userMenuOpen"
-        (click)="toggleUserMenu()"
+    <div class="p-3 border-top mt-auto">
+      <app-menu-dropdown
+        #userMenu
+        [title]="currentUser.name"
+        [subtitle]="currentUser.email"
+        [iconText]="userInitials(currentUser)"
+        [dropup]="true"
       >
-        <fa-icon [icon]="faUserCircle"></fa-icon>
-
-        <div class="small text-start min-w-0">
-          <div class="fw-semibold">{{ currentUser.name }}</div>
-          <div class="text-muted">{{ currentUser.email }}</div>
-        </div>
-
-        <fa-icon class="ms-auto user-menu-chevron" [icon]="faChevronUp"></fa-icon>
-      </button>
+        <button
+          type="button"
+          class="dropdown-item d-flex align-items-center gap-2"
+          (click)="logout(); userMenu.close()"
+        >
+          <fa-icon [icon]="faRightFromBracket"></fa-icon>
+          Logout
+        </button>
+      </app-menu-dropdown>
     </div>
   </aside>
 }

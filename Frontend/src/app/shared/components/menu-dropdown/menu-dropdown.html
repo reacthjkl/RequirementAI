@@ -1,0 +1,45 @@
+<div class="dropdown w-100" [class.dropup]="dropup">
+  <button
+    type="button"
+    class="btn btn-link link-body-emphasis text-decoration-none w-100 d-flex align-items-center gap-2 p-0 text-start"
+    [attr.aria-expanded]="isOpen"
+    (click)="toggle()"
+  >
+    @if (icon) {
+      <span
+        class="d-inline-flex align-items-center justify-content-center rounded bg-primary-subtle text-primary flex-shrink-0"
+        style="width: 2.75rem; height: 2.75rem"
+      >
+        <fa-icon [icon]="icon"></fa-icon>
+      </span>
+    } @else if (iconText) {
+      <span
+        class="d-inline-flex align-items-center justify-content-center rounded-circle bg-primary-subtle text-primary flex-shrink-0"
+        style="width: 2.25rem; height: 2.25rem"
+      >
+        {{ iconText }}
+      </span>
+    }
+
+    <span class="min-w-0 flex-grow-1">
+      <span class="d-block fw-semibold text-truncate">{{ title }}</span>
+      @if (subtitle) {
+        <span class="d-block small text-secondary text-truncate">{{ subtitle }}</span>
+      }
+    </span>
+
+    <fa-icon class="small text-secondary" [icon]="dropup ? faChevronUp : faChevronDown"></fa-icon>
+  </button>
+
+  @if (isOpen) {
+    <div
+      class="dropdown-menu show w-100 shadow start-0"
+      [class.top-100]="!dropup"
+      [class.mt-2]="!dropup"
+      [class.bottom-100]="dropup"
+      [class.mb-2]="dropup"
+    >
+      <ng-content></ng-content>
+    </div>
+  }
+</div>

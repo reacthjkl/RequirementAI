@@ -138,7 +138,7 @@ export class ProjectWizard {
       return;
     }
 
-    await this.router.navigate(['/board', projectId]);
+    await this.router.navigate(['/projects', projectId, 'board']);
   }
 
   private moveNext(): void {

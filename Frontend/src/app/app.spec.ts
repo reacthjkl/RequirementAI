@@ -4,6 +4,7 @@ import { provideRouter } from '@angular/router';
 import { CurrentUserService } from './core/services/current-user.service';
 import { App } from './app';
 import { AuthService } from './shared/services/auth';
+import { ProjectService } from './shared/services/project';
 
 describe('App', () => {
   beforeEach(async () => {
@@ -21,6 +22,12 @@ describe('App', () => {
           provide: CurrentUserService,
           useValue: {
             get: async () => null,
+          },
+        },
+        {
+          provide: ProjectService,
+          useValue: {
+            get: async () => [],
           },
         },
       ],
