@@ -2,10 +2,11 @@ import { Component, ElementRef, HostListener, Input } from '@angular/core';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { IconDefinition } from '@fortawesome/fontawesome-svg-core';
 import { faChevronDown, faChevronUp } from '@fortawesome/free-solid-svg-icons';
+import { NgbTooltip } from '@ng-bootstrap/ng-bootstrap';
 
 @Component({
   selector: 'app-menu-dropdown',
-  imports: [FontAwesomeModule],
+  imports: [FontAwesomeModule, NgbTooltip],
   templateUrl: './menu-dropdown.html',
   styleUrl: './menu-dropdown.scss',
 })
@@ -15,6 +16,8 @@ export class MenuDropdown {
   @Input() public icon?: IconDefinition;
   @Input() public iconText?: string;
   @Input() public dropup = false;
+  @Input() public iconOnly = false;
+  @Input() public tooltip?: string;
 
   public isOpen = false;
   public readonly faChevronDown = faChevronDown;

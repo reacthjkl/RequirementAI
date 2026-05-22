@@ -2,12 +2,19 @@
   <button
     type="button"
     class="btn btn-link link-body-emphasis text-decoration-none w-100 d-flex align-items-center gap-2 p-0 text-start"
+    [class.justify-content-center]="iconOnly"
     [attr.aria-expanded]="isOpen"
-    (click)="toggle()"
+    [attr.aria-label]="iconOnly ? title : null"
+    [ngbTooltip]="iconOnly ? tooltip || title : null"
+    placement="end"
+    container="body"
+    (click)="$event.stopPropagation(); toggle()"
   >
     @if (icon) {
       <span
-        class="d-inline-flex align-items-center justify-content-center rounded bg-primary-subtle text-primary flex-shrink-0 p-3"
+        class="d-inline-flex align-items-center justify-content-center rounded bg-primary-subtle text-primary flex-shrink-0"
+        [class.p-3]="!iconOnly"
+        [class.p-2]="iconOnly"
       >
         <fa-icon [icon]="icon"></fa-icon>
       </span>
@@ -19,19 +26,23 @@
       </span>
     }
 
-    <span class="overflow-hidden flex-grow-1">
-      <span class="d-block fw-semibold text-truncate">{{ title }}</span>
-      @if (subtitle) {
-        <span class="d-block small text-secondary text-truncate">{{ subtitle }}</span>
-      }
-    </span>
+    @if (!iconOnly) {
+      <span class="overflow-hidden flex-grow-1">
+        <span class="d-block fw-semibold text-truncate">{{ title }}</span>
+        @if (subtitle) {
+          <span class="d-block small text-secondary text-truncate">{{ subtitle }}</span>
+        }
+      </span>
 
-    <fa-icon class="small text-secondary" [icon]="dropup ? faChevronUp : faChevronDown"></fa-icon>
+      <fa-icon class="small text-secondary" [icon]="dropup ? faChevronUp : faChevronDown"></fa-icon>
+    }
   </button>
 
   @if (isOpen) {
     <div
-      class="dropdown-menu show w-100 shadow start-0"
+      class="dropdown-menu show shadow start-0"
+      [class.w-100]="!iconOnly"
+      [class.menu-dropdown-wide]="iconOnly"
       [class.top-100]="!dropup"
       [class.mt-2]="!dropup"
       [class.bottom-100]="dropup"

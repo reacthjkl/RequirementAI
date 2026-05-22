@@ -1,3 +1,9 @@
 .app-menu {
   width: 18rem;
+  transition: width 0.15s ease-in-out;
+}
+
+.app-menu-minimized {
+  cursor: pointer;
+  width: 4.5rem;
 }

@@ -1,22 +1,42 @@
-<aside class="app-menu p-0 d-flex flex-column h-100 bg-body shadow-sm">
+<aside
+  class="app-menu p-0 d-flex flex-column h-100 bg-body shadow-sm"
+  [class.app-menu-minimized]="isMinimized"
+  (click)="expandFromMinimized($event)"
+>
   <nav class="p-3 d-flex flex-column gap-3">
+    @if (!isMinimized) {
+      <div class="d-flex justify-content-end">
+        <button
+          type="button"
+          class="btn btn-sm btn-link link-secondary text-decoration-none p-0"
+          aria-label="Collapse menu"
+          title="Collapse menu"
+          (click)="$event.stopPropagation(); toggleMinimized()"
+        >
+          <fa-icon [icon]="faAnglesLeft"></fa-icon>
+        </button>
+      </div>
+    }
+
     @if (currentProject) {
-      <app-menu-dropdown #projectMenu [title]="currentProject.name" [icon]="entityIcons.project">
-        @if (otherProjects.length > 0) {
-          @for (project of otherProjects; track project.id) {
-            <button
-              type="button"
-              class="dropdown-item d-flex align-items-center gap-2"
-              (click)="switchProject(project); projectMenu.close()"
-            >
-              <fa-icon [icon]="entityIcons.project"></fa-icon>
-              <span class="text-truncate">{{ project.name }}</span>
-            </button>
+      @if (!isMinimized) {
+        <app-menu-dropdown #projectMenu [title]="currentProject.name" (click)="$event.stopPropagation()">
+          @if (otherProjects.length > 0) {
+            @for (project of otherProjects; track project.id) {
+              <button
+                type="button"
+                class="dropdown-item d-flex align-items-center gap-2"
+                (click)="$event.stopPropagation(); switchProject(project); projectMenu.close()"
+              >
+                <fa-icon [icon]="entityIcons.project"></fa-icon>
+                <span class="text-truncate">{{ project.name }}</span>
+              </button>
+            }
+          } @else {
+            <span class="dropdown-item-text text-secondary">No other projects</span>
           }
-        } @else {
-          <span class="dropdown-item-text text-secondary">No other projects</span>
-        }
-      </app-menu-dropdown>
+        </app-menu-dropdown>
+      }
 
       <div class="list-group list-group-flush gap-1">
         @for (page of projectPages; track page.key) {
@@ -24,9 +44,16 @@
             [routerLink]="['/projects', currentProject.id, page.key]"
             routerLinkActive="text-primary bg-primary-subtle"
             class="list-group-item list-group-item-action border-0 rounded d-flex align-items-center gap-2"
+            [class.justify-content-center]="isMinimized"
+            [ngbTooltip]="isMinimized ? page.label : null"
+            placement="end"
+            container="body"
+            (click)="$event.stopPropagation()"
           >
             <fa-icon [icon]="page.icon"></fa-icon>
-            {{ page.label }}
+            @if (!isMinimized) {
+              {{ page.label }}
+            }
           </a>
         }
 
@@ -36,9 +63,16 @@
           [routerLink]="['/projects', currentProject.id, 'settings']"
           routerLinkActive="text-primary bg-primary-subtle"
           class="list-group-item list-group-item-action border-0 rounded d-flex align-items-center gap-2"
+          [class.justify-content-center]="isMinimized"
+          [ngbTooltip]="isMinimized ? 'Settings' : null"
+          placement="end"
+          container="body"
+          (click)="$event.stopPropagation()"
         >
           <fa-icon [icon]="entityIcons.settings"></fa-icon>
-          Settings
+          @if (!isMinimized) {
+            Settings
+          }
         </a>
       </div>
     } @else {
@@ -48,18 +82,32 @@
             [routerLink]="['/projects', project.id, 'overview']"
             routerLinkActive="text-primary bg-primary-subtle"
             class="list-group-item list-group-item-action border-0 rounded d-flex align-items-center gap-2"
+            [class.justify-content-center]="isMinimized"
+            [ngbTooltip]="isMinimized ? project.name : null"
+            placement="end"
+            container="body"
+            (click)="$event.stopPropagation()"
           >
             <fa-icon [icon]="entityIcons.project"></fa-icon>
-            <span class="text-truncate">{{ project.name }}</span>
+            @if (!isMinimized) {
+              <span class="text-truncate">{{ project.name }}</span>
+            }
           </a>
         }
 
         <a
           [routerLink]="['/projects', 'wizard']"
           class="list-group-item list-group-item-action border-0 rounded d-flex align-items-center gap-2"
+          [class.justify-content-center]="isMinimized"
+          [ngbTooltip]="isMinimized ? 'New project' : null"
+          placement="end"
+          container="body"
+          (click)="$event.stopPropagation()"
         >
           <fa-icon [icon]="faPlus"></fa-icon>
-          New project
+          @if (!isMinimized) {
+            New project
+          }
         </a>
       </div>
     }
@@ -73,11 +121,14 @@
         [subtitle]="currentUser.email"
         [iconText]="userInitials(currentUser)"
         [dropup]="true"
+        [iconOnly]="isMinimized"
+        tooltip="User menu"
+        (click)="$event.stopPropagation()"
       >
         <button
           type="button"
           class="dropdown-item d-flex align-items-center gap-2"
-          (click)="logout(); userMenu.close()"
+          (click)="$event.stopPropagation(); logout(); userMenu.close()"
         >
           <fa-icon [icon]="faRightFromBracket"></fa-icon>
           Logout
