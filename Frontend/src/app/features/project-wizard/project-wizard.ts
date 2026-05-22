@@ -1,5 +1,6 @@
 import { Component, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
+import { ProjectService } from '../../shared/services/project';
 import { ProjectWizardNavigation } from './shared/components/project-wizard-navigation/project-wizard-navigation';
 import { ProjectWizardPersonasStep } from './shared/components/project-wizard-personas-step/project-wizard-personas-step';
 import { ProjectWizardProjectStep } from './shared/components/project-wizard-project-step/project-wizard-project-step';
@@ -8,7 +9,6 @@ import { ProjectWizardUserStoriesStep } from './shared/components/project-wizard
 import { ProjectWizardStep, StepNavigationResult } from './shared/models/project-wizard-step.model';
 import { ProjectWizardLoader } from './shared/services/project-wizard-loader';
 import { ProjectWizardState } from './shared/services/project-wizard-state';
-import { ProjectService } from '../../shared/services/project';
 
 @Component({
   selector: 'app-project-wizard',
@@ -138,7 +138,6 @@ export class ProjectWizard {
       return;
     }
 
-    await this.projectService.markAsFinished(projectId);
     await this.router.navigate(['/board', projectId]);
   }
 

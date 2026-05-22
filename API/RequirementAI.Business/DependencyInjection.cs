@@ -25,6 +25,7 @@ public static class DependencyInjection
         services.AddScoped<IOrganizationService, OrganizationService>();
         services.AddScoped<IUserService, UserService>();
         services.AddScoped<IProjectService, ProjectService>();
+        services.AddScoped<IProjectStatusEnricher, ProjectStatusEnricher>();
         services.AddScoped<IPersonaService, PersonaService>();
         services.AddScoped<IScenarioService, ScenarioService>();
         services.AddScoped<IUserStoryService, UserStoryService>();

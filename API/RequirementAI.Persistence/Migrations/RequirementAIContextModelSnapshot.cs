@@ -45,7 +45,7 @@ namespace RequirementAI.Persistence.Migrations
 
                     b.HasIndex("UserStoryId");
 
-                    b.ToTable("AcceptanceCriteria");
+                    b.ToTable("AcceptanceCriteria", (string)null);
                 });
 
             modelBuilder.Entity("RequirementAI.Persistence.Entities.EdgeCase", b =>
@@ -81,7 +81,7 @@ namespace RequirementAI.Persistence.Migrations
 
                     b.HasIndex("UserStoryId");
 
-                    b.ToTable("EdgeCases");
+                    b.ToTable("EdgeCases", (string)null);
                 });
 
             modelBuilder.Entity("RequirementAI.Persistence.Entities.Organization", b =>
@@ -102,7 +102,7 @@ namespace RequirementAI.Persistence.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Organizations");
+                    b.ToTable("Organizations", (string)null);
                 });
 
             modelBuilder.Entity("RequirementAI.Persistence.Entities.Persona", b =>
@@ -148,7 +148,7 @@ namespace RequirementAI.Persistence.Migrations
 
                     b.HasIndex("ProjectId");
 
-                    b.ToTable("Personas");
+                    b.ToTable("Personas", (string)null);
                 });
 
             modelBuilder.Entity("RequirementAI.Persistence.Entities.Project", b =>
@@ -184,7 +184,7 @@ namespace RequirementAI.Persistence.Migrations
 
                     b.HasIndex("OrganizationId");
 
-                    b.ToTable("Projects");
+                    b.ToTable("Projects", (string)null);
                 });
 
             modelBuilder.Entity("RequirementAI.Persistence.Entities.ProjectRefinementJob", b =>
@@ -220,7 +220,7 @@ namespace RequirementAI.Persistence.Migrations
 
                     b.HasIndex("ProjectId");
 
-                    b.ToTable("ProjectRefinementJobs");
+                    b.ToTable("ProjectRefinementJobs", (string)null);
                 });
 
             modelBuilder.Entity("RequirementAI.Persistence.Entities.Scenario", b =>
@@ -251,7 +251,7 @@ namespace RequirementAI.Persistence.Migrations
 
                     b.HasIndex("PersonaId");
 
-                    b.ToTable("Scenarios");
+                    b.ToTable("Scenarios", (string)null);
                 });
 
             modelBuilder.Entity("RequirementAI.Persistence.Entities.User", b =>
@@ -296,7 +296,7 @@ namespace RequirementAI.Persistence.Migrations
 
                     b.HasIndex("OrganizationId");
 
-                    b.ToTable("Users");
+                    b.ToTable("Users", (string)null);
                 });
 
             modelBuilder.Entity("RequirementAI.Persistence.Entities.UserStory", b =>
@@ -327,7 +327,7 @@ namespace RequirementAI.Persistence.Migrations
 
                     b.HasIndex("ScenarioId");
 
-                    b.ToTable("UserStories");
+                    b.ToTable("UserStories", (string)null);
                 });
 
             modelBuilder.Entity("RequirementAI.Persistence.Entities.AcceptanceCriteria", b =>

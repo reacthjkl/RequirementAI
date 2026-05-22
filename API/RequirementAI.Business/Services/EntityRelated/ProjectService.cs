@@ -1,9 +1,7 @@
-using System.Text;
 using AutoMapper;
+using RequirementAI.Business.Interfaces;
 using RequirementAI.Business.Interfaces.EntityRelated;
 using RequirementAI.Contract.Dto;
-using RequirementAI.Contract.Enums;
-using RequirementAI.Contract.Exceptions;
 using RequirementAI.Persistence.Entities;
 using RequirementAI.Persistence.Interfaces;
 
@@ -12,19 +10,30 @@ namespace RequirementAI.Business.Services.EntityRelated;
 public class ProjectService(
     IProjectRepository projectRepository,
     IProjectRefinementJobRepository projectRefinementJobRepository,
+    IProjectStatusEnricher projectStatusEnricher,
     IMapper mapper)
     : IProjectService
 {
     public async Task<ProjectResponseDto> GetById(Guid id, CancellationToken ct)
     {
         var entity = await projectRepository.GetById(id, ct);
-        return mapper.Map<ProjectResponseDto>(entity);
+        
+        var dto =  mapper.Map<ProjectResponseDto>(entity);
+        
+        await projectStatusEnricher.EnrichAsync(dto, ct);
+        
+        return dto;
     }
 
     public async Task<List<ProjectResponseDto>> GetByOrganizationId(Guid organizationId, CancellationToken ct)
     {
         var entities = await projectRepository.GetByOrganization(organizationId, ct);
-        return mapper.Map<List<ProjectResponseDto>>(entities);
+        
+        var dtos = mapper.Map<List<ProjectResponseDto>>(entities);
+        
+        await projectStatusEnricher.EnrichRangeAsync(dtos, ct);
+        
+        return dtos;
     }
 
     public async Task<ProjectResponseDto> Create(ProjectForCreationDto project, Guid organizationId,
@@ -48,26 +57,14 @@ public class ProjectService(
 
     public async Task<Guid> Refine(Guid projectId, CancellationToken ct)
     {
-        var job = await projectRefinementJobRepository.Create(new ProjectRefinementJob { ProjectId = projectId }, ct);
-        
-        var project = await projectRepository.GetById(projectId, ct);
-        project.Status = ProjectStatus.RefinementInProgress;
-        await projectRepository.Update(project, ct);
+        var job = await projectRefinementJobRepository.Create(
+            new ProjectRefinementJob
+            {
+                ProjectId = projectId
+            }, 
+            ct);
         
         return job.Id;
-    }
-
-    public async Task MarkAsFinished(Guid projectId, CancellationToken ct)
-    {
-        var entity = await projectRepository.GetFullProjectById(projectId, ct);
-
-        var isReady = entity.Personas.All(p => p.Scenarios.All(s => s.UserStories.Any()));
-        
-        if(!isReady) throw new BusinessException("Project is still incomplete");
-
-        entity.Status = ProjectStatus.ReadyForRefinement;
-        
-        await projectRepository.Update(entity, ct);
     }
 
     public async Task Delete(Guid id, CancellationToken ct)

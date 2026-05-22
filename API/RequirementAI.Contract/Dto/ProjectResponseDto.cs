@@ -9,4 +9,5 @@ public class ProjectResponseDto
     public string Description { get; set; } = null!;
     public DateTimeOffset CreatedAt { get; set; }
     public ProjectStatus Status { get; set; }
+    public RefinementStatus RefinementStatus { get; set; }
 }

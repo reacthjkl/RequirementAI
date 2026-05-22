@@ -9,6 +9,5 @@ public interface IProjectService
     public Task<ProjectResponseDto> Create(ProjectForCreationDto project, Guid organizationId, CancellationToken ct);
     public Task Update(ProjectForUpdateDto project, CancellationToken ct);
     public Task<Guid> Refine(Guid projectId, CancellationToken ct);
-    public Task MarkAsFinished(Guid projectId, CancellationToken ct);
     public Task Delete(Guid id, CancellationToken ct);
 }
