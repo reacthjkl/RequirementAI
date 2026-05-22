@@ -18,7 +18,17 @@ public class RefinementService(
 {
     public async Task<Persona> RefinePersona(Persona persona, CancellationToken ct)
     {
-        var context = persona.Project.Description;
+        var context = $"""
+                       Project description:
+                       {persona.Project.Description}
+                       
+                       Other personas:
+                       {
+                           JsonSerializer.Serialize(
+                               mapper.Map<List<PersonaForLLMDto>>(
+                                   persona.Project.Personas.Where(p => p.Id != persona.Id)))
+                       }
+                       """;
 
         return await Refine<Persona, PersonaForLLMDto>(persona, context, ct);
     }
@@ -32,8 +42,12 @@ public class RefinementService(
                       Persona for this scenario:
                       {JsonSerializer.Serialize(mapper.Map<PersonaForLLMDto>(scenario.Persona))}
                       
-                      Other personas:
-                      {JsonSerializer.Serialize(mapper.Map<List<PersonaForLLMDto>>(scenario.Persona.Project.Personas))}
+                      Other scenarios:
+                      {
+                          JsonSerializer.Serialize(
+                              mapper.Map<List<ScenarioForLLMDto>>(
+                                  scenario.Persona.Scenarios.Where(p => p.Id != scenario.Id)))
+                      }
                       """;
         
         return await Refine<Scenario, ScenarioForLLMDto>(scenario, context, ct);
@@ -52,7 +66,11 @@ public class RefinementService(
                        {JsonSerializer.Serialize(mapper.Map<PersonaForLLMDto>(userStory.Scenario.Persona))}
 
                        Other user stories:
-                       {JsonSerializer.Serialize(mapper.Map<List<UserStoryForLLMDto>>(userStory.Scenario.UserStories))}
+                       {
+                           JsonSerializer.Serialize(
+                            mapper.Map<List<UserStoryForLLMDto>>(
+                                userStory.Scenario.UserStories.Where(us => us.Id != userStory.Id)))
+                       }
                        """;
         
         return await Refine<UserStory, UserStoryForLLMDto>(userStory, context, ct);
