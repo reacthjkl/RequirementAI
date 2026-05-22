@@ -40,6 +40,8 @@ public static class DependencyInjection
         services.AddScoped<IRefinementMerger<UserStory, UserStoryForLLMDto>, UserStoryRefinementMerger>();
         services.AddScoped<IProjectRefinementOrchestrator, ProjectRefinementOrchestrator>();
         services.AddScoped<IProjectRefinementJobProcessor, ProjectRefinementJobProcessor>();
+        services.AddScoped<IPromptBuilder, PromptBuilder>();
+        services.AddScoped<IRefinementContextBuilder, RefinementContextBuilder>();
         
         // auth providers
         services.AddScoped<IAuthService, AuthService>();
@@ -53,7 +55,6 @@ public static class DependencyInjection
         services.AddScoped<IJwtTokenService, JwtTokenService>();
         services.AddSingleton<IPasswordHasher, Argon2PasswordHasher>();
         services.AddScoped<ICookiesHelper, CookiesHelper>();
-        services.AddScoped<IPromptBuilder, PromptBuilder>();
         services.AddHttpClient();
         
         // validators

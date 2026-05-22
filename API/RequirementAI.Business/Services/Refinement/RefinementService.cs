@@ -13,78 +13,30 @@ namespace RequirementAI.Business.Services.Refinement;
 public class RefinementService(
     IPromptBuilder promptBuilder, 
     ILLMProvider llmProvider, 
-    IMapper mapper,
     IServiceProvider serviceProvider): IRefinementService
 {
-    public async Task<Persona> RefinePersona(Persona persona, CancellationToken ct)
+    public async Task<Persona> RefinePersona(Persona persona, string? customInstructions, CancellationToken ct)
     {
-        var context = $"""
-                       Project description:
-                       {persona.Project.Description}
-                       
-                       Other personas:
-                       {
-                           JsonSerializer.Serialize(
-                               mapper.Map<List<PersonaForLLMDto>>(
-                                   persona.Project.Personas.Where(p => p.Id != persona.Id)))
-                       }
-                       """;
-
-        return await Refine<Persona, PersonaForLLMDto>(persona, context, ct);
+        return await Refine<Persona, PersonaForLLMDto>(persona, customInstructions, ct);
     }
     
-    public async Task<Scenario> RefineScenario(Scenario scenario, CancellationToken ct)
+    public async Task<Scenario> RefineScenario(Scenario scenario, string? customInstructions, CancellationToken ct)
     {
-        var context = $"""
-                      Project description:
-                      {scenario.Persona.Project.Description}
-                      
-                      Persona for this scenario:
-                      {JsonSerializer.Serialize(mapper.Map<PersonaForLLMDto>(scenario.Persona))}
-                      
-                      Other scenarios:
-                      {
-                          JsonSerializer.Serialize(
-                              mapper.Map<List<ScenarioForLLMDto>>(
-                                  scenario.Persona.Scenarios.Where(p => p.Id != scenario.Id)))
-                      }
-                      """;
-        
-        return await Refine<Scenario, ScenarioForLLMDto>(scenario, context, ct);
+        return await Refine<Scenario, ScenarioForLLMDto>(scenario, customInstructions, ct);
     }
 
-    public async Task<UserStory> RefineUserStory(UserStory userStory, CancellationToken ct)
-    {
-        var context = $"""
-                       Project description:
-                       {userStory.Scenario.Persona.Project.Description}
-                       
-                       Scenario for this user story:
-                       {JsonSerializer.Serialize(mapper.Map<ScenarioForLLMDto>(userStory.Scenario))}
-
-                       Persona for this user story:
-                       {JsonSerializer.Serialize(mapper.Map<PersonaForLLMDto>(userStory.Scenario.Persona))}
-
-                       Other user stories:
-                       {
-                           JsonSerializer.Serialize(
-                            mapper.Map<List<UserStoryForLLMDto>>(
-                                userStory.Scenario.UserStories.Where(us => us.Id != userStory.Id)))
-                       }
-                       """;
-        
-        return await Refine<UserStory, UserStoryForLLMDto>(userStory, context, ct);
-    }
-    
-    private async Task<TEntity> Refine<TEntity, TDto>(
-        TEntity entity,
-        string context,
+    public async Task<UserStory> RefineUserStory(UserStory userStory, string? customInstructions,
         CancellationToken ct)
     {
-        var input = JsonSerializer.Serialize(mapper.Map<TDto>(entity));
-
+        return await Refine<UserStory, UserStoryForLLMDto>(userStory, customInstructions, ct);
+    }
+    
+    private async Task<TEntity> Refine<TEntity, TDto>(TEntity entity,
+        string? customInstructions,
+        CancellationToken ct)
+    {
         var response = await llmProvider.GetResponse(
-            promptBuilder.Build<TDto>(input, context),
+            promptBuilder.Build<TEntity, TDto>(entity, customInstructions),
             ct);
 
         var refined = JsonSerializer.Deserialize<TDto>(response) 

@@ -13,15 +13,15 @@ public class ProjectRefinementOrchestrator(IProjectRepository projectRepository,
         
         foreach (var persona in project.Personas)
         {
-            await refinementService.RefinePersona(persona, ct);
+            await refinementService.RefinePersona(persona, job.CustomInstructions, ct);
 
             foreach (var scenario in persona.Scenarios)
             {
-                await refinementService.RefineScenario(scenario, ct);
+                await refinementService.RefineScenario(scenario, job.CustomInstructions, ct);
 
                 foreach (var userStory in scenario.UserStories)
                 {
-                    await refinementService.RefineUserStory(userStory, ct);
+                    await refinementService.RefineUserStory(userStory, job.CustomInstructions, ct);
                 }
             }
         }

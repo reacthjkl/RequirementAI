@@ -37,9 +37,9 @@ public class ProjectController(IProjectService projectService)
     }
     
     [HttpPut("refine/{projectId:guid}")]
-    public async Task<IActionResult> Refine([FromRoute] Guid projectId, CancellationToken ct)
+    public async Task<IActionResult> Refine([FromRoute] Guid projectId, [FromBody] string? customInstructions, CancellationToken ct)
     {
-        await projectService.Refine(projectId, ct);
+        await projectService.Refine(projectId, customInstructions, ct);
         return Ok(ResponseDto.Success());
     }
     
