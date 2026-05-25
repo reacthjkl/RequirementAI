@@ -15,6 +15,10 @@
   table-layout: fixed;
 }
 
+.acceptance-criteria-table thead {
+  display: none;
+}
+
 .user-story-child-table :is(th, td) {
   padding-bottom: 0.65rem;
   padding-top: 0.65rem;

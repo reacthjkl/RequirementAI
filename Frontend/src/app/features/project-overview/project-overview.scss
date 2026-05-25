@@ -48,3 +48,38 @@
   font-weight: 700;
   line-height: 1.1;
 }
+
+.quality-score-card,
+.quality-lowest-item {
+  background: var(--bs-tertiary-bg);
+  border: 1px solid var(--bs-border-color);
+  border-radius: var(--bs-border-radius);
+  padding: 1rem;
+}
+
+.quality-score-value {
+  font-size: 1.75rem;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.quality-progress {
+  height: 0.5rem;
+}
+
+.quality-chart {
+  height: 20rem;
+  min-height: 20rem;
+  position: relative;
+}
+
+.quality-chart canvas {
+  display: block;
+  height: 100% !important;
+  width: 100% !important;
+}
+
+.quality-low-score {
+  font-weight: 700;
+  white-space: nowrap;
+}

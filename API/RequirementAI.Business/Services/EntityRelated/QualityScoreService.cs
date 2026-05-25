@@ -26,64 +26,69 @@ public class QualityScoreService(IQualityScoreRepository repository, IMapper map
     }
 
     public async Task<ProjectQualityOverviewDto> GetProjectQualityOverview(Guid projectId, CancellationToken ct)
+{
+    var personaScores = await repository.GetLatestPersonaQualityScoresByProjectId(projectId, ct);
+    var scenarioScores = await repository.GetLatestScenarioQualityScoresByProjectId(projectId, ct);
+    var userStoryScores = await repository.GetLatestUserStoryQualityScoresByProjectId(projectId, ct);
+
+    var averagePersonaScore = AverageOrZero(personaScores.Select(x => x.OverallScore));
+    var averageScenarioScore = AverageOrZero(scenarioScores.Select(x => x.OverallScore));
+    var averageUserStoryScore = AverageOrZero(userStoryScores.Select(x => x.OverallScore));
+
+    var totalProjectScore = AverageOrZero(new[]
     {
-        var personaScores = await repository.GetLatestPersonaQualityScoresByProjectId(projectId, ct);
-        var scenarioScores = await repository.GetLatestScenarioQualityScoresByProjectId(projectId, ct);
-        var userStoryScores = await repository.GetLatestUserStoryQualityScoresByProjectId(projectId, ct);
+        averagePersonaScore,
+        averageScenarioScore,
+        averageUserStoryScore
+    }.Where(x => x > 0));
 
-        var allScores = personaScores.Select(x => x.OverallScore)
-            .Concat(scenarioScores.Select(x => x.OverallScore))
-            .Concat(userStoryScores.Select(x => x.OverallScore))
-            .ToList();
+    return new ProjectQualityOverviewDto
+    {
+        TotalProjectScore = totalProjectScore,
 
-        return new ProjectQualityOverviewDto
-        {
-            TotalProjectScore = allScores.Count == 0 ? 0 : Math.Round(allScores.Average(), 1),
+        AveragePersonaScore = averagePersonaScore,
+        AverageScenarioScore = averageScenarioScore,
+        AverageUserStoryScore = averageUserStoryScore,
 
-            AveragePersonaScore = personaScores.Count == 0 ? 0 : Math.Round(personaScores.Average(x => x.OverallScore), 1),
-            AverageScenarioScore = scenarioScores.Count == 0 ? 0 : Math.Round(scenarioScores.Average(x => x.OverallScore), 1),
-            AverageUserStoryScore = userStoryScores.Count == 0 ? 0 : Math.Round(userStoryScores.Average(x => x.OverallScore), 1),
+        LowestPersona = personaScores
+            .OrderBy(x => x.OverallScore)
+            .Select(x => new LowestScoreItemDto
+            {
+                ItemId = x.PersonaId,
+                ItemType = "Persona",
+                Title = x.Persona.Name,
+                Score = x.OverallScore,
+                EvaluatedAt = x.CreatedAt
+            })
+            .FirstOrDefault(),
 
-            LowestPersona = personaScores
-                .OrderBy(x => x.OverallScore)
-                .Select(x => new LowestScoreItemDto
-                {
-                    ItemId = x.PersonaId,
-                    ItemType = "Persona",
-                    Title = x.Persona.Name,
-                    Score = x.OverallScore,
-                    EvaluatedAt = x.CreatedAt
-                })
-                .FirstOrDefault(),
+        LowestScenario = scenarioScores
+            .OrderBy(x => x.OverallScore)
+            .Select(x => new LowestScoreItemDto
+            {
+                ItemId = x.ScenarioId,
+                ItemType = "Scenario",
+                Title = x.Scenario.Title,
+                Score = x.OverallScore,
+                EvaluatedAt = x.CreatedAt
+            })
+            .FirstOrDefault(),
 
-            LowestScenario = scenarioScores
-                .OrderBy(x => x.OverallScore)
-                .Select(x => new LowestScoreItemDto
-                {
-                    ItemId = x.ScenarioId,
-                    ItemType = "Scenario",
-                    Title = x.Scenario.Title,
-                    Score = x.OverallScore,
-                    EvaluatedAt = x.CreatedAt
-                })
-                .FirstOrDefault(),
+        LowestUserStory = userStoryScores
+            .OrderBy(x => x.OverallScore)
+            .Select(x => new LowestScoreItemDto
+            {
+                ItemId = x.UserStoryId,
+                ItemType = "UserStory",
+                Title = x.UserStory.Title,
+                Score = x.OverallScore,
+                EvaluatedAt = x.CreatedAt
+            })
+            .FirstOrDefault(),
 
-            LowestUserStory = userStoryScores
-                .OrderBy(x => x.OverallScore)
-                .Select(x => new LowestScoreItemDto
-                {
-                    ItemId = x.UserStoryId,
-                    ItemType = "UserStory",
-                    Title = x.UserStory.Title,
-                    Score = x.OverallScore,
-                    EvaluatedAt = x.CreatedAt
-                })
-                .FirstOrDefault(),
-
-            ScoreTrend = await GetProjectScoreTrend(projectId, ct)
-        };
-    }
-    
+        ScoreTrend = await GetProjectScoreTrend(projectId, ct)
+    };
+}
     private async Task<List<ProjectScoreTrendPointDto>> GetProjectScoreTrend(Guid projectId, CancellationToken ct)
     {
         var scores = await repository.GetAllQualityScoresByProjectId(projectId, ct);
@@ -91,12 +96,35 @@ public class QualityScoreService(IQualityScoreRepository repository, IMapper map
         return scores
             .GroupBy(x => x.CreatedAt.Date)
             .OrderBy(x => x.Key)
-            .Select(x => new ProjectScoreTrendPointDto
+            .Select(day =>
             {
-                Date = x.Key,
-                Score = Math.Round(x.Average(s => s.OverallScore), 1),
-                Label = x.Key.ToString("dd.MM")
+                var projectScore = AverageOrZero(day.Select(x => x.OverallScore));
+
+                return new ProjectScoreTrendPointDto
+                {
+                    Date = day.Key,
+                    Score = Convert.ToDouble(projectScore),
+                    Label = day.Key.ToString("dd.MM")
+                };
             })
             .ToList();
+    }
+
+    private static decimal AverageOrZero(IEnumerable<int> scores)
+    {
+        var list = scores.ToList();
+
+        return list.Count == 0
+            ? 0
+            : Math.Round((decimal)list.Average(), 1);
+    }
+
+    private static decimal AverageOrZero(IEnumerable<decimal> scores)
+    {
+        var list = scores.ToList();
+
+        return list.Count == 0
+            ? 0
+            : Math.Round(list.Average(), 1);
     }
 }

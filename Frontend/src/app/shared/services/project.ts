@@ -5,6 +5,7 @@ import { ApiController } from '../enums/api-controller.enum';
 import { ApiResponse } from '../models/api-response.model';
 import { ProjectForCreation } from '../models/project-for-creation.model';
 import { ProjectForUpdate } from '../models/project-for-update.model';
+import { ProjectQualityOverview } from '../models/project-quality-overview.model';
 import { Project } from '../models/project.model';
 
 @Injectable({
@@ -45,6 +46,19 @@ export class ProjectService {
   public async update(project: ProjectForUpdate): Promise<void> {
     await this.api.put(ApiController.Project, '', project);
     this.projectsChangedSubject.next();
+  }
+
+  public async getQualityOverview(projectId: string): Promise<ProjectQualityOverview | null> {
+    const response: ApiResponse<ProjectQualityOverview | null> = await this.api.get(
+      ApiController.Project,
+      `${projectId}/overview`,
+    );
+
+    return response.data;
+  }
+
+  public async analyze(projectId: string): Promise<void> {
+    await this.api.put(ApiController.Project, `analyze/${projectId}`);
   }
 
   public async refine(id: string, customInstructions: string | null): Promise<void> {
