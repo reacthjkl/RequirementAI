@@ -1,6 +1,13 @@
-<aside class="app-menu p-0 d-flex flex-column h-100 bg-body shadow-sm" [class.app-menu-minimized]="isMinimized">
+<aside
+  class="app-menu p-0 d-flex flex-column h-100 bg-body shadow-sm"
+  [class.app-menu-minimized]="isMinimized"
+>
   <nav class="p-3 d-flex flex-column gap-3">
-    <div class="d-flex" [class.justify-content-end]="!isMinimized" [class.justify-content-center]="isMinimized">
+    <div
+      class="d-flex"
+      [class.justify-content-end]="!isMinimized"
+      [class.justify-content-center]="isMinimized"
+    >
       <button
         type="button"
         class="btn btn-sm btn-link link-secondary text-decoration-none p-0"
@@ -65,30 +72,17 @@
       </div>
     } @else {
       <div class="list-group list-group-flush gap-1">
-        @for (project of projects; track project.id) {
-          <a
-            [routerLink]="['/projects', project.id, 'overview']"
-            routerLinkActive="text-primary bg-primary-subtle"
-            class="list-group-item list-group-item-action border-0 rounded d-flex align-items-center gap-2"
-            [class.justify-content-center]="isMinimized"
-            [title]="isMinimized ? project.name : null"
-          >
-            <fa-icon [icon]="entityIcons.project"></fa-icon>
-            @if (!isMinimized) {
-              <span class="text-truncate">{{ project.name }}</span>
-            }
-          </a>
-        }
-
         <a
-          [routerLink]="['/projects', 'wizard']"
+          [routerLink]="['/projects']"
+          routerLinkActive="text-primary bg-primary-subtle"
+          [routerLinkActiveOptions]="{ exact: true }"
           class="list-group-item list-group-item-action border-0 rounded d-flex align-items-center gap-2"
           [class.justify-content-center]="isMinimized"
-          [title]="isMinimized ? 'New project' : null"
+          [title]="isMinimized ? 'Projects' : null"
         >
-          <fa-icon [icon]="faPlus"></fa-icon>
+          <fa-icon [icon]="entityIcons.project"></fa-icon>
           @if (!isMinimized) {
-            New project
+            Projects
           }
         </a>
       </div>
