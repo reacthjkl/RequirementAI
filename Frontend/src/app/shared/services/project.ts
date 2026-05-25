@@ -39,10 +39,10 @@ export class ProjectService {
   }
 
   public async refine(id: string, customInstructions: string | null): Promise<void> {
-    await this.api.put<{ customInstructions: string | null }, null>(
+    await this.api.put<string | null, null>(
       ApiController.Project,
       `refine/${id}`,
-      { customInstructions },
+      customInstructions,
     );
   }
 
