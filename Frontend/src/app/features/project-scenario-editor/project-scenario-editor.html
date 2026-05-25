@@ -36,36 +36,51 @@
             </div>
           }
 
-          @if (isEditing) {
-            <div>
-              <label class="form-label">Persona</label>
-              <div class="form-control bg-body-tertiary">
-                {{ currentPersona?.name ?? 'Unknown persona' }}
-              </div>
-            </div>
-          } @else {
-            <div>
-              <label class="form-label" for="scenarioPersona">Persona</label>
-              <select
-                id="scenarioPersona"
-                class="form-select"
-                [class.is-invalid]="isPersonaInvalid()"
-                [formControl]="personaControl"
+          <div>
+            <div class="d-flex justify-content-between align-items-center gap-2">
+              <label class="form-label mb-0" for="scenarioPersona">Persona</label>
+              <button
+                type="button"
+                class="btn btn-sm btn-link link-secondary p-0 meta-details-button"
+                [disabled]="!currentPersona"
+                (click)="openPersonaDetails()"
               >
-                @for (persona of personas; track persona.id) {
-                  <option [value]="persona.id">{{ persona.name }}</option>
-                }
-              </select>
+                Details
+              </button>
             </div>
-          }
+
+            @if (isEditing) {
+              <button
+                id="scenarioPersona"
+                type="button"
+                class="meta-control"
+                [disabled]="!currentPersona"
+                (click)="openPersonaDetails()"
+              >
+                <span class="text-truncate">{{ currentPersona?.name ?? 'Unknown persona' }}</span>
+              </button>
+            } @else {
+              <app-meta-dropdown
+                id="scenarioPersona"
+                [value]="personaControl.value"
+                [options]="personaDropdownOptions"
+                placeholder="Select persona"
+                [disabled]="personas.length === 0"
+                [invalid]="isPersonaInvalid()"
+                (valueChange)="selectPersonaValue($event)"
+              />
+            }
+          </div>
 
           <app-scenario-form-fields [form]="form" idPrefix="scenarioEditor" />
 
           <div class="d-flex justify-content-end gap-2">
-            <button type="button" class="btn btn-outline-secondary" (click)="cancel()">
-              <fa-icon [icon]="faTimes"></fa-icon>
-              Cancel
-            </button>
+            @if (!isModal) {
+              <button type="button" class="btn btn-outline-secondary" (click)="cancel()">
+                <fa-icon [icon]="faTimes"></fa-icon>
+                Cancel
+              </button>
+            }
 
             <button type="submit" class="btn btn-primary" [disabled]="saving">
               <fa-icon [icon]="faCheck"></fa-icon>

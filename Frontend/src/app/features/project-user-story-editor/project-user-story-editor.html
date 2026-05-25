@@ -16,115 +16,106 @@
   } @else if (isEditing && !userStory) {
     <div class="text-secondary">User Story not found</div>
   } @else {
-    <form id="userStoryEditorForm" [formGroup]="form" class="d-flex flex-column gap-4" (ngSubmit)="save()">
+    <form
+      id="userStoryEditorForm"
+      [formGroup]="form"
+      class="d-flex flex-column gap-4"
+      (ngSubmit)="save()"
+    >
       <section class="card border-0 shadow-sm">
-        <div class="card-body d-flex flex-column gap-3">
-          <div class="row g-3 align-items-end">
-            <div class="col-sm-4 col-lg-3">
+        <div class="card-body">
+          <div class="row g-3">
+            <div class="col-md-4">
               <label class="form-label" for="userStoryStage">Stage</label>
-              <div ngbDropdown class="stage-dropdown">
-                @if (selectedStageMeta) {
+              <app-meta-dropdown
+                id="userStoryStage"
+                [value]="stageControl.value"
+                [options]="stageDropdownOptions"
+                [invalid]="isStageInvalid()"
+                (valueChange)="selectStageValue($event)"
+              />
+            </div>
+
+            <div class="col-md-4">
+              @if (isEditing) {
+                <span class="form-label d-block">Persona</span>
+                <button
+                  type="button"
+                  class="meta-control"
+                  [disabled]="!currentScenarioOption"
+                  (click)="openPersonaDetails()"
+                >
+                  <span class="fw-semibold text-truncate">
+                    {{ currentScenarioOption?.persona?.name ?? 'Unknown persona' }}
+                  </span>
+                </button>
+              } @else {
+                <div class="d-flex justify-content-between align-items-center gap-2">
+                  <label class="form-label mb-0" for="userStoryPersona">Persona</label>
                   <button
-                    id="userStoryStage"
                     type="button"
-                    class="btn btn-outline-secondary btn-sm stage-dropdown-toggle"
-                    [class.is-invalid]="isStageInvalid()"
-                    ngbDropdownToggle
+                    class="btn btn-sm btn-link link-secondary p-0 meta-details-button"
+                    [disabled]="!currentPersona"
+                    (click)="openPersonaDetails()"
                   >
-                    <span [class]="'stage-dot ' + selectedStageMeta.colorClass"></span>
-                    <span>{{ selectedStageMeta.label }}</span>
+                    Details
                   </button>
-                }
-                <div ngbDropdownMenu aria-labelledby="userStoryStage" class="stage-dropdown-menu">
-                  @for (stage of stageOptions; track stage.value) {
-                    <button
-                      type="button"
-                      class="dropdown-item stage-option"
-                      [class.active]="stage.value === stageControl.value"
-                      ngbDropdownItem
-                      (click)="selectStage(stage.value)"
-                    >
-                      <span [class]="'stage-dot ' + stage.colorClass"></span>
-                      <span>{{ stage.label }}</span>
-                    </button>
-                  }
                 </div>
-              </div>
-            </div>
-          </div>
-
-          @if (isEditing) {
-            <button
-              type="button"
-              class="scenario-summary"
-              (click)="toggleScenarioDetails()"
-            >
-              <span class="text-secondary small">Persona</span>
-              <span class="fw-semibold text-truncate">
-                {{ currentScenarioOption?.persona?.name ?? 'Unknown persona' }}
-              </span>
-              <span class="text-secondary small">Scenario</span>
-              <span class="text-truncate">
-                {{ currentScenarioOption?.scenario?.title ?? 'Unknown scenario' }}
-              </span>
-            </button>
-          } @else {
-            <div class="row g-3">
-              <div class="col-md-6">
-                <label class="form-label" for="userStoryPersona">Persona</label>
-                <select
+                <app-meta-dropdown
                   id="userStoryPersona"
-                  class="form-select form-select-sm"
-                  [class.is-invalid]="isPersonaInvalid()"
-                  [formControl]="personaControl"
-                  (change)="onPersonaChange()"
-                >
-                  @for (persona of personaOptions; track persona.id) {
-                    <option [value]="persona.id">{{ persona.name }}</option>
-                  }
-                </select>
-              </div>
+                  [value]="personaControl.value"
+                  [options]="personaDropdownOptions"
+                  placeholder="Select persona"
+                  [disabled]="personaOptions.length === 0"
+                  [invalid]="isPersonaInvalid()"
+                  (valueChange)="selectPersonaValue($event)"
+                />
+              }
+            </div>
 
-              <div class="col-md-6">
-                <label class="form-label" for="userStoryScenario">Scenario</label>
-                <select
+            <div class="col-md-4">
+              @if (isEditing) {
+                <span class="form-label d-block">Scenario</span>
+                <button
+                  type="button"
+                  class="meta-control"
+                  [disabled]="!currentScenarioOption"
+                  (click)="openScenarioDetails()"
+                >
+                  <span class="text-truncate">
+                    {{ currentScenarioOption?.scenario?.title ?? 'Unknown scenario' }}
+                  </span>
+                </button>
+              } @else {
+                <div class="d-flex justify-content-between align-items-center gap-2">
+                  <label class="form-label mb-0" for="userStoryScenario">Scenario</label>
+                  <button
+                    type="button"
+                    class="btn btn-sm btn-link link-secondary p-0 meta-details-button"
+                    [disabled]="!currentScenarioOption"
+                    (click)="openScenarioDetails()"
+                  >
+                    Details
+                  </button>
+                </div>
+                <app-meta-dropdown
                   id="userStoryScenario"
-                  class="form-select form-select-sm"
-                  [class.is-invalid]="isScenarioInvalid()"
-                  [formControl]="scenarioControl"
-                  (change)="showScenarioDetails = false"
-                >
-                  @for (option of filteredScenarioOptions; track option.scenario.id) {
-                    <option [value]="option.scenario.id">{{ option.scenario.title }}</option>
-                  }
-                </select>
-              </div>
+                  [value]="scenarioControl.value"
+                  [options]="scenarioDropdownOptions"
+                  placeholder="Select scenario"
+                  [disabled]="filteredScenarioOptions.length === 0"
+                  [invalid]="isScenarioInvalid()"
+                  (valueChange)="selectScenarioValue($event)"
+                />
+              }
             </div>
-
-            @if (currentScenarioOption) {
-              <button
-                type="button"
-                class="btn btn-sm btn-link link-secondary align-self-start p-0"
-                (click)="toggleScenarioDetails()"
-              >
-                {{ showScenarioDetails ? 'Hide scenario' : 'Show scenario' }}
-              </button>
-            }
-          }
-
-          @if (showScenarioDetails && currentScenarioOption) {
-            <div class="scenario-details">
-              <div class="fw-semibold mb-1">
-                {{ currentScenarioOption.persona.name }}:
-                {{ currentScenarioOption.scenario.title }}
-              </div>
-              <p class="mb-0 text-secondary">{{ currentScenarioOption.scenario.content }}</p>
-            </div>
-          }
-
-          <div class="user-story-primary-fields">
-            <app-user-story-form-fields [form]="userStoryFieldsForm" idPrefix="userStoryEditor" />
           </div>
+        </div>
+      </section>
+
+      <section class="card border-primary shadow-sm user-story-details-card">
+        <div class="card-body">
+          <app-user-story-form-fields [form]="userStoryFieldsForm" idPrefix="userStoryEditor" />
         </div>
       </section>
 
@@ -132,41 +123,33 @@
         <div class="card-body d-flex flex-column gap-3">
           <div class="d-flex justify-content-between align-items-center gap-3">
             <h5 class="mb-0">Acceptance Criteria</h5>
-            <button type="button" class="btn btn-sm btn-outline-primary" (click)="addAcceptanceCriteria()">
+            <button
+              type="button"
+              class="btn btn-sm btn-outline-primary"
+              (click)="addAcceptanceCriteria()"
+            >
               <fa-icon [icon]="faPlus"></fa-icon>
               Add
             </button>
           </div>
 
-          <div formArrayName="acceptanceCriteria" class="d-flex flex-column gap-3">
+          <ul formArrayName="acceptanceCriteria" class="compact-list mb-0">
             @for (criteriaForm of acceptanceCriteriaForms.controls; track criteriaForm; let i = $index) {
-              <div class="border rounded p-3" [formGroupName]="i">
-                <div class="d-flex justify-content-between gap-3 mb-3">
-                  <h6 class="mb-0">Acceptance Criteria {{ i + 1 }}</h6>
+              <li class="compact-list-item" [formGroupName]="i">
+                <div class="compact-list-row">
                   <button
                     type="button"
-                    class="btn btn-sm btn-outline-danger"
-                    aria-label="Remove acceptance criteria"
-                    title="Remove"
-                    (click)="removeAcceptanceCriteria(i)"
+                    class="compact-list-button"
+                    (click)="editAcceptanceCriteria(i)"
                   >
-                    <fa-icon [icon]="faTrash"></fa-icon>
+                    {{ acceptanceCriteriaText(i) || 'Untitled acceptance criteria' }}
                   </button>
                 </div>
-
-                <label class="form-label" [for]="'acceptanceCriteria' + i">Wording</label>
-                <textarea
-                  class="form-control"
-                  [class.is-invalid]="isAcceptanceCriteriaInvalid(i)"
-                  [id]="'acceptanceCriteria' + i"
-                  rows="3"
-                  formControlName="wording"
-                ></textarea>
-              </div>
+              </li>
             } @empty {
-              <div class="border rounded p-3 text-secondary">No Acceptance Criteria added yet.</div>
+              <li class="compact-list-empty">No Acceptance Criteria added yet.</li>
             }
-          </div>
+          </ul>
         </div>
       </section>
 
@@ -180,63 +163,19 @@
             </button>
           </div>
 
-          <div formArrayName="edgeCases" class="d-flex flex-column gap-3">
+          <ul formArrayName="edgeCases" class="compact-list mb-0">
             @for (edgeCaseForm of edgeCaseForms.controls; track edgeCaseForm; let i = $index) {
-              <div class="border rounded p-3" [formGroupName]="i">
-                <div class="d-flex justify-content-between gap-3 mb-3">
-                  <h6 class="mb-0">Edge Case {{ i + 1 }}</h6>
-                  <button
-                    type="button"
-                    class="btn btn-sm btn-outline-danger"
-                    aria-label="Remove edge case"
-                    title="Remove"
-                    (click)="removeEdgeCase(i)"
-                  >
-                    <fa-icon [icon]="faTrash"></fa-icon>
+              <li class="compact-list-item" [formGroupName]="i">
+                <div class="compact-list-row">
+                  <button type="button" class="compact-list-button" (click)="editEdgeCase(i)">
+                    {{ edgeCasePreconditions(i) || 'Untitled edge case' }}
                   </button>
                 </div>
-
-                <div class="row g-3">
-                  <div class="col-12">
-                    <label class="form-label" [for]="'edgeCasePreconditions' + i">Preconditions</label>
-                    <textarea
-                      class="form-control"
-                      [class.is-invalid]="isEdgeCaseInvalid(i, 'preconditions')"
-                      [id]="'edgeCasePreconditions' + i"
-                      rows="2"
-                      formControlName="preconditions"
-                    ></textarea>
-                  </div>
-
-                  <div class="col-md-6">
-                    <label class="form-label" [for]="'edgeCaseTriggerAction' + i">Trigger action</label>
-                    <textarea
-                      class="form-control"
-                      [class.is-invalid]="isEdgeCaseInvalid(i, 'triggerAction')"
-                      [id]="'edgeCaseTriggerAction' + i"
-                      rows="2"
-                      formControlName="triggerAction"
-                    ></textarea>
-                  </div>
-
-                  <div class="col-md-6">
-                    <label class="form-label" [for]="'edgeCaseExpectedBehavior' + i">
-                      Expected behavior
-                    </label>
-                    <textarea
-                      class="form-control"
-                      [class.is-invalid]="isEdgeCaseInvalid(i, 'expectedBehavior')"
-                      [id]="'edgeCaseExpectedBehavior' + i"
-                      rows="2"
-                      formControlName="expectedBehavior"
-                    ></textarea>
-                  </div>
-                </div>
-              </div>
+              </li>
             } @empty {
-              <div class="border rounded p-3 text-secondary">No Edge Cases added yet.</div>
+              <li class="compact-list-empty">No Edge Cases added yet.</li>
             }
-          </div>
+          </ul>
         </div>
       </section>
     </form>
@@ -244,11 +183,6 @@
 </div>
 
 <div class="modal-footer">
-  <button type="button" class="btn btn-outline-secondary" (click)="cancel()">
-    <fa-icon [icon]="faTimes"></fa-icon>
-    Cancel
-  </button>
-
   <button type="submit" form="userStoryEditorForm" class="btn btn-primary" [disabled]="saving || loading">
     <fa-icon [icon]="faCheck"></fa-icon>
     {{ saving ? 'Saving...' : 'Save' }}

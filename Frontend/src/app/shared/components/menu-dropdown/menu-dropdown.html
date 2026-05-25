@@ -1,8 +1,10 @@
-<div class="dropdown w-100" [class.dropup]="dropup">
+<div class="dropdown w-100" [class.dropup]="dropup" [class.menu-dropdown-compact]="compact">
   <button
     type="button"
     class="btn btn-link link-body-emphasis text-decoration-none w-100 d-flex align-items-center gap-2 p-0 text-start"
+    [class.justify-content-center]="compact"
     [attr.aria-expanded]="isOpen"
+    [attr.aria-label]="compact ? title : null"
     (click)="toggle()"
   >
     @if (icon) {
@@ -19,19 +21,24 @@
       </span>
     }
 
-    <span class="overflow-hidden flex-grow-1">
-      <span class="d-block fw-semibold text-truncate">{{ title }}</span>
-      @if (subtitle) {
-        <span class="d-block small text-secondary text-truncate">{{ subtitle }}</span>
-      }
-    </span>
+    @if (!compact) {
+      <span class="overflow-hidden flex-grow-1">
+        <span class="d-block fw-semibold text-truncate">{{ title }}</span>
+        @if (subtitle) {
+          <span class="d-block small text-secondary text-truncate">{{ subtitle }}</span>
+        }
+      </span>
 
-    <fa-icon class="small text-secondary" [icon]="dropup ? faChevronUp : faChevronDown"></fa-icon>
+      <fa-icon class="small text-secondary" [icon]="dropup ? faChevronUp : faChevronDown"></fa-icon>
+    }
   </button>
 
   @if (isOpen) {
     <div
-      class="dropdown-menu show w-100 shadow start-0"
+      class="dropdown-menu show shadow"
+      [class.w-100]="!compact"
+      [class.start-0]="!compact"
+      [class.menu-dropdown-compact-menu]="compact"
       [class.top-100]="!dropup"
       [class.mt-2]="!dropup"
       [class.bottom-100]="dropup"

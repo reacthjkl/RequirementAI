@@ -9,11 +9,16 @@ import {
 } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-import { faCheck, faPlus, faTimes, faTrash } from '@fortawesome/free-solid-svg-icons';
-import { NgbActiveModal, NgbDropdownModule } from '@ng-bootstrap/ng-bootstrap';
+import { faCheck, faPlus } from '@fortawesome/free-solid-svg-icons';
+import { NgbActiveModal, NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { Notification } from '../../core/services/notification.service';
 import { USER_STORY_STAGE_META } from '../../shared/constants/user-story-stage-meta';
 import { UserStoryStage } from '../../shared/enums/user-story-stage.enum';
+import {
+  MetaDropdown,
+  MetaDropdownOption,
+  MetaDropdownValue,
+} from '../../shared/components/meta-dropdown/meta-dropdown';
 import {
   UserStoryFormFields,
   UserStoryFormGroup,
@@ -29,6 +34,15 @@ import { EdgeCaseService } from '../../shared/services/edge-case';
 import { PersonaService } from '../../shared/services/persona';
 import { ScenarioService } from '../../shared/services/scenario';
 import { UserStoryService } from '../../shared/services/user-story';
+import {
+  UserStoryAcceptanceCriteriaModal,
+  UserStoryAcceptanceCriteriaModalResult,
+} from './user-story-acceptance-criteria-modal';
+import { UserStoryContextModal } from './user-story-context-modal';
+import {
+  UserStoryEdgeCaseModal,
+  UserStoryEdgeCaseModalResult,
+} from './user-story-edge-case-modal';
 
 type AcceptanceCriteriaForm = FormGroup<{
   id: FormControl<string>;
@@ -49,7 +63,7 @@ interface ScenarioOption {
 
 @Component({
   selector: 'app-project-user-story-editor',
-  imports: [ReactiveFormsModule, FontAwesomeModule, NgbDropdownModule, UserStoryFormFields],
+  imports: [ReactiveFormsModule, FontAwesomeModule, MetaDropdown, UserStoryFormFields],
   templateUrl: './project-user-story-editor.html',
   styleUrl: './project-user-story-editor.scss',
 })
@@ -76,14 +90,17 @@ export class ProjectUserStoryEditor {
   public loading = true;
   public saving = false;
   public loadFailed = false;
-  public showScenarioDetails = false;
 
   public readonly entityIcons = ENTITY_ICONS;
   public readonly faCheck = faCheck;
   public readonly faPlus = faPlus;
-  public readonly faTimes = faTimes;
-  public readonly faTrash = faTrash;
-  public readonly stageOptions = USER_STORY_STAGE_META;
+  public readonly stageDropdownOptions: MetaDropdownOption[] = USER_STORY_STAGE_META.map(
+    (stage) => ({
+      value: stage.value,
+      label: stage.label,
+      colorClass: stage.colorClass,
+    }),
+  );
 
   private initialAcceptanceCriteria: AcceptanceCriteria[] = [];
   private initialEdgeCases: EdgeCase[] = [];
@@ -94,6 +111,7 @@ export class ProjectUserStoryEditor {
     @Optional() private readonly activeModal: NgbActiveModal | null,
     private readonly cdr: ChangeDetectorRef,
     private readonly fb: FormBuilder,
+    private readonly modalService: NgbModal,
     private readonly personaService: PersonaService,
     private readonly scenarioService: ScenarioService,
     private readonly userStoryService: UserStoryService,
@@ -179,23 +197,49 @@ export class ProjectUserStoryEditor {
     return [...personas.values()];
   }
 
+  public get personaDropdownOptions(): MetaDropdownOption[] {
+    return this.personaOptions.map((persona) => ({
+      value: persona.id,
+      label: persona.name,
+    }));
+  }
+
   public get filteredScenarioOptions(): ScenarioOption[] {
     return this.scenarioOptions.filter((option) => option.persona.id === this.personaControl.value);
+  }
+
+  public get scenarioDropdownOptions(): MetaDropdownOption[] {
+    return this.filteredScenarioOptions.map((option) => ({
+      value: option.scenario.id,
+      label: option.scenario.title,
+    }));
+  }
+
+  public get currentPersona(): Persona | undefined {
+    return this.personaOptions.find((persona) => persona.id === this.personaControl.value);
   }
 
   public get currentScenarioOption(): ScenarioOption | undefined {
     return this.scenarioOptions.find((option) => option.scenario.id === this.scenarioControl.value);
   }
 
-  public onPersonaChange(): void {
+  public selectPersona(personaId: string): void {
+    this.personaControl.setValue(personaId);
+    this.personaControl.markAsDirty();
+    this.personaControl.markAsTouched();
+    this.selectFirstScenarioForPersona();
+  }
+
+  public selectScenario(scenarioId: string): void {
+    this.scenarioControl.setValue(scenarioId);
+    this.scenarioControl.markAsDirty();
+    this.scenarioControl.markAsTouched();
+  }
+
+  private selectFirstScenarioForPersona(): void {
     const firstScenario = this.filteredScenarioOptions[0];
     this.scenarioControl.setValue(firstScenario?.scenario.id ?? '');
     this.scenarioControl.markAsDirty();
-    this.showScenarioDetails = false;
-  }
-
-  public toggleScenarioDetails(): void {
-    this.showScenarioDetails = !this.showScenarioDetails;
   }
 
   public selectStage(stage: UserStoryStage): void {
@@ -204,9 +248,20 @@ export class ProjectUserStoryEditor {
     this.stageControl.markAsTouched();
   }
 
-  public addAcceptanceCriteria(): void {
-    this.acceptanceCriteriaForms.push(this.createAcceptanceCriteriaForm());
-    this.form.markAsDirty();
+  public selectStageValue(value: MetaDropdownValue): void {
+    this.selectStage(value as UserStoryStage);
+  }
+
+  public selectPersonaValue(value: MetaDropdownValue): void {
+    this.selectPersona(String(value));
+  }
+
+  public selectScenarioValue(value: MetaDropdownValue): void {
+    this.selectScenario(String(value));
+  }
+
+  public async addAcceptanceCriteria(): Promise<void> {
+    await this.openAcceptanceCriteriaModal(null);
   }
 
   public removeAcceptanceCriteria(index: number): void {
@@ -214,14 +269,55 @@ export class ProjectUserStoryEditor {
     this.form.markAsDirty();
   }
 
-  public addEdgeCase(): void {
-    this.edgeCaseForms.push(this.createEdgeCaseForm());
-    this.form.markAsDirty();
+  public async editAcceptanceCriteria(index: number): Promise<void> {
+    await this.openAcceptanceCriteriaModal(index);
+  }
+
+  public async addEdgeCase(): Promise<void> {
+    await this.openEdgeCaseModal(null);
   }
 
   public removeEdgeCase(index: number): void {
     this.edgeCaseForms.removeAt(index);
     this.form.markAsDirty();
+  }
+
+  public async editEdgeCase(index: number): Promise<void> {
+    await this.openEdgeCaseModal(index);
+  }
+
+  public openPersonaDetails(): void {
+    const persona = this.currentScenarioOption?.persona;
+
+    if (!persona) {
+      return;
+    }
+
+    const modalRef = this.modalService.open(UserStoryContextModal, { centered: true });
+    modalRef.componentInstance.title = persona.name;
+    modalRef.componentInstance.icon = this.entityIcons.persona;
+    modalRef.componentInstance.fields = [
+      { label: 'Description', value: persona.description },
+      { label: 'Context of use', value: persona.contextOfUse },
+      { label: 'Goals', value: persona.goals },
+      { label: 'Frustrations', value: persona.frustrations },
+    ];
+  }
+
+  public openScenarioDetails(): void {
+    const option = this.currentScenarioOption;
+
+    if (!option) {
+      return;
+    }
+
+    const modalRef = this.modalService.open(UserStoryContextModal, { centered: true });
+    modalRef.componentInstance.title = option.scenario.title;
+    modalRef.componentInstance.icon = this.entityIcons.scenario;
+    modalRef.componentInstance.fields = [
+      { label: 'Persona', value: option.persona.name },
+      { label: 'Content', value: option.scenario.content },
+    ];
   }
 
   public async save(): Promise<void> {
@@ -289,18 +385,12 @@ export class ProjectUserStoryEditor {
     return this.stageControl.touched && this.stageControl.invalid;
   }
 
-  public get selectedStageMeta() {
-    return this.stageOptions.find((stage) => stage.value === this.stageControl.value);
+  public acceptanceCriteriaText(index: number): string {
+    return this.acceptanceCriteriaForms.at(index).controls.wording.value.trim();
   }
 
-  public isAcceptanceCriteriaInvalid(index: number): boolean {
-    const control = this.acceptanceCriteriaForms.at(index).controls.wording;
-    return control.touched && control.invalid;
-  }
-
-  public isEdgeCaseInvalid(index: number, controlName: keyof EdgeCaseForm['controls']): boolean {
-    const control = this.edgeCaseForms.at(index).controls[controlName];
-    return control.touched && control.invalid;
+  public edgeCasePreconditions(index: number): string {
+    return this.edgeCaseForms.at(index).controls.preconditions.value.trim();
   }
 
   private async loadScenarioOptions(projectId: string): Promise<ScenarioOption[]> {
@@ -471,19 +561,100 @@ export class ProjectUserStoryEditor {
     }
   }
 
-  private createAcceptanceCriteriaForm(item?: AcceptanceCriteria): AcceptanceCriteriaForm {
+  private createAcceptanceCriteriaForm(item?: Partial<AcceptanceCriteria>): AcceptanceCriteriaForm {
     return this.fb.nonNullable.group({
       id: [item?.id ?? ''],
       wording: [item?.wording ?? '', Validators.required],
     });
   }
 
-  private createEdgeCaseForm(item?: EdgeCase): EdgeCaseForm {
+  private createEdgeCaseForm(item?: Partial<EdgeCase>): EdgeCaseForm {
     return this.fb.nonNullable.group({
       id: [item?.id ?? ''],
       preconditions: [item?.preconditions ?? '', Validators.required],
       triggerAction: [item?.triggerAction ?? '', Validators.required],
       expectedBehavior: [item?.expectedBehavior ?? '', Validators.required],
     });
+  }
+
+  private async openEdgeCaseModal(index: number | null): Promise<void> {
+    const modalRef = this.modalService.open(UserStoryEdgeCaseModal, { centered: true, size: 'lg' });
+    const edgeCaseForm = index === null ? null : this.edgeCaseForms.at(index);
+
+    modalRef.componentInstance.title = index === null ? 'Add edge case' : 'Edit edge case';
+    modalRef.componentInstance.canDelete = index !== null;
+    modalRef.componentInstance.value = edgeCaseForm
+      ? {
+          preconditions: edgeCaseForm.controls.preconditions.value,
+          triggerAction: edgeCaseForm.controls.triggerAction.value,
+          expectedBehavior: edgeCaseForm.controls.expectedBehavior.value,
+        }
+      : {
+          preconditions: '',
+          triggerAction: '',
+          expectedBehavior: '',
+        };
+
+    try {
+      const result = (await modalRef.result) as UserStoryEdgeCaseModalResult;
+
+      if (result.action === 'delete') {
+        if (index !== null) {
+          this.removeEdgeCase(index);
+        }
+
+        return;
+      }
+
+      if (index === null) {
+        this.edgeCaseForms.push(this.createEdgeCaseForm(result.value));
+      } else {
+        edgeCaseForm?.patchValue(result.value);
+        edgeCaseForm?.markAsDirty();
+      }
+
+      this.form.markAsDirty();
+    } catch {
+      return;
+    }
+  }
+
+  private async openAcceptanceCriteriaModal(index: number | null): Promise<void> {
+    const modalRef = this.modalService.open(UserStoryAcceptanceCriteriaModal, { centered: true });
+    const criteriaForm = index === null ? null : this.acceptanceCriteriaForms.at(index);
+
+    modalRef.componentInstance.title =
+      index === null ? 'Add acceptance criteria' : 'Edit acceptance criteria';
+    modalRef.componentInstance.canDelete = index !== null;
+    modalRef.componentInstance.value = criteriaForm
+      ? {
+          wording: criteriaForm.controls.wording.value,
+        }
+      : {
+          wording: '',
+        };
+
+    try {
+      const result = (await modalRef.result) as UserStoryAcceptanceCriteriaModalResult;
+
+      if (result.action === 'delete') {
+        if (index !== null) {
+          this.removeAcceptanceCriteria(index);
+        }
+
+        return;
+      }
+
+      if (index === null) {
+        this.acceptanceCriteriaForms.push(this.createAcceptanceCriteriaForm(result.value));
+      } else {
+        criteriaForm?.patchValue(result.value);
+        criteriaForm?.markAsDirty();
+      }
+
+      this.form.markAsDirty();
+    } catch {
+      return;
+    }
   }
 }

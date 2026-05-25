@@ -3,18 +3,30 @@ import { FormBuilder, FormControl, ReactiveFormsModule, Validators } from '@angu
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { faCheck, faTimes } from '@fortawesome/free-solid-svg-icons';
-import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
+import { NgbActiveModal, NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { Notification } from '../../core/services/notification.service';
+import {
+  MetaDropdown,
+  MetaDropdownOption,
+  MetaDropdownValue,
+} from '../../shared/components/meta-dropdown/meta-dropdown';
 import { ScenarioFormFields } from '../../shared/components/scenario-form-fields/scenario-form-fields';
 import { ENTITY_ICONS } from '../../shared/icons/entity-icons';
 import { Persona } from '../../shared/models/persona.model';
 import { Scenario } from '../../shared/models/scenario.model';
 import { PersonaService } from '../../shared/services/persona';
 import { ScenarioService } from '../../shared/services/scenario';
+import { UserStoryContextModal } from '../project-user-story-editor/user-story-context-modal';
 
 @Component({
   selector: 'app-project-scenario-editor',
-  imports: [ReactiveFormsModule, RouterModule, FontAwesomeModule, ScenarioFormFields],
+  imports: [
+    ReactiveFormsModule,
+    RouterModule,
+    FontAwesomeModule,
+    MetaDropdown,
+    ScenarioFormFields,
+  ],
   templateUrl: './project-scenario-editor.html',
 })
 export class ProjectScenarioEditor {
@@ -42,6 +54,7 @@ export class ProjectScenarioEditor {
     @Optional() private readonly activeModal: NgbActiveModal | null,
     private readonly cdr: ChangeDetectorRef,
     private readonly fb: FormBuilder,
+    private readonly modalService: NgbModal,
     private readonly personaService: PersonaService,
     private readonly scenarioService: ScenarioService,
     private readonly notification: Notification,
@@ -101,6 +114,41 @@ export class ProjectScenarioEditor {
   public get currentPersona(): Persona | undefined {
     const personaId = this.personaControl.value;
     return this.personas.find((persona) => persona.id === personaId);
+  }
+
+  public get personaDropdownOptions(): MetaDropdownOption[] {
+    return this.personas.map((persona) => ({
+      value: persona.id,
+      label: persona.name,
+    }));
+  }
+
+  public selectPersona(personaId: string): void {
+    this.personaControl.setValue(personaId);
+    this.personaControl.markAsDirty();
+    this.personaControl.markAsTouched();
+  }
+
+  public selectPersonaValue(value: MetaDropdownValue): void {
+    this.selectPersona(String(value));
+  }
+
+  public openPersonaDetails(): void {
+    const persona = this.currentPersona;
+
+    if (!persona) {
+      return;
+    }
+
+    const modalRef = this.modalService.open(UserStoryContextModal, { centered: true });
+    modalRef.componentInstance.title = persona.name;
+    modalRef.componentInstance.icon = this.entityIcons.persona;
+    modalRef.componentInstance.fields = [
+      { label: 'Description', value: persona.description },
+      { label: 'Context of use', value: persona.contextOfUse },
+      { label: 'Goals', value: persona.goals },
+      { label: 'Frustrations', value: persona.frustrations },
+    ];
   }
 
   public async save(): Promise<void> {

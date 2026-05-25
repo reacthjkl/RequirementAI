@@ -1,0 +1,20 @@
+<div class="modal-header">
+  <div class="d-flex align-items-center gap-2">
+    <span class="text-primary">
+      <fa-icon [icon]="icon"></fa-icon>
+    </span>
+    <h5 class="modal-title mb-0">{{ title }}</h5>
+  </div>
+  <button type="button" class="btn-close" aria-label="Close" (click)="activeModal.dismiss()"></button>
+</div>
+
+<div class="modal-body">
+  <dl class="d-flex flex-column gap-3 mb-0">
+    @for (field of fields; track field.label) {
+      <div>
+        <dt class="small text-secondary fw-normal">{{ field.label }}</dt>
+        <dd class="mb-0 context-modal-value" style="white-space: pre-wrap">{{ field.value }}</dd>
+      </div>
+    }
+  </dl>
+</div>

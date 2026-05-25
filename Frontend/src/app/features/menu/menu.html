@@ -12,7 +12,9 @@
         type="button"
         class="btn btn-sm btn-link link-secondary text-decoration-none p-0"
         [attr.aria-label]="isMinimized ? 'Expand menu' : 'Collapse menu'"
-        [title]="isMinimized ? 'Expand menu' : 'Collapse menu'"
+        [ngbTooltip]="isMinimized ? 'Expand menu' : 'Collapse menu'"
+        container="body"
+        placement="right"
         (click)="toggleMinimized()"
       >
         <fa-icon [icon]="isMinimized ? faAnglesRight : faAnglesLeft"></fa-icon>
@@ -46,7 +48,10 @@
             routerLinkActive="text-primary bg-primary-subtle"
             class="list-group-item list-group-item-action border-0 rounded d-flex align-items-center gap-2"
             [class.justify-content-center]="isMinimized"
-            [title]="isMinimized ? page.label : null"
+            [ngbTooltip]="page.label"
+            [disableTooltip]="!isMinimized"
+            container="body"
+            placement="right"
           >
             <fa-icon [icon]="page.icon"></fa-icon>
             @if (!isMinimized) {
@@ -62,7 +67,10 @@
           routerLinkActive="text-primary bg-primary-subtle"
           class="list-group-item list-group-item-action border-0 rounded d-flex align-items-center gap-2"
           [class.justify-content-center]="isMinimized"
-          [title]="isMinimized ? 'Settings' : null"
+          ngbTooltip="Settings"
+          [disableTooltip]="!isMinimized"
+          container="body"
+          placement="right"
         >
           <fa-icon [icon]="entityIcons.settings"></fa-icon>
           @if (!isMinimized) {
@@ -78,7 +86,10 @@
           [routerLinkActiveOptions]="{ exact: true }"
           class="list-group-item list-group-item-action border-0 rounded d-flex align-items-center gap-2"
           [class.justify-content-center]="isMinimized"
-          [title]="isMinimized ? 'Projects' : null"
+          ngbTooltip="Projects"
+          [disableTooltip]="!isMinimized"
+          container="body"
+          placement="right"
         >
           <fa-icon [icon]="entityIcons.project"></fa-icon>
           @if (!isMinimized) {
@@ -109,18 +120,25 @@
           </button>
         </app-menu-dropdown>
       } @else {
-        <button
-          type="button"
-          class="btn btn-link link-body-emphasis text-decoration-none p-0 w-100 d-flex justify-content-center"
+        <app-menu-dropdown
+          #compactUserMenu
           [title]="currentUser.name"
-          (click)="logout()"
+          [iconText]="userInitials(currentUser)"
+          [dropup]="true"
+          [compact]="true"
+          [ngbTooltip]="currentUser.name"
+          container="body"
+          placement="right"
         >
-          <span
-            class="menu-avatar d-inline-flex align-items-center justify-content-center rounded-circle bg-primary-subtle text-primary flex-shrink-0 lh-1"
+          <button
+            type="button"
+            class="dropdown-item d-flex align-items-center gap-2"
+            (click)="logout(); compactUserMenu.close()"
           >
-            {{ userInitials(currentUser) }}
-          </span>
-        </button>
+            <fa-icon [icon]="faRightFromBracket"></fa-icon>
+            Logout
+          </button>
+        </app-menu-dropdown>
       }
     </div>
   }

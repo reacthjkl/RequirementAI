@@ -1,0 +1,66 @@
+<div class="modal-header">
+  <div class="d-flex align-items-center gap-2">
+    <span class="text-primary">
+      <fa-icon [icon]="faTriangleExclamation"></fa-icon>
+    </span>
+    <h5 class="modal-title mb-0">{{ title }}</h5>
+  </div>
+  <button type="button" class="btn-close" aria-label="Close" (click)="activeModal.dismiss()"></button>
+</div>
+
+<form [formGroup]="form" (ngSubmit)="save()">
+  <div class="modal-body">
+    <div class="d-flex flex-column gap-3">
+      <div>
+        <label class="form-label" for="edgeCaseModalPreconditions">Preconditions</label>
+        <textarea
+          id="edgeCaseModalPreconditions"
+          class="form-control"
+          [class.is-invalid]="isInvalid('preconditions')"
+          rows="3"
+          formControlName="preconditions"
+        ></textarea>
+      </div>
+
+      <div>
+        <label class="form-label" for="edgeCaseModalTriggerAction">Trigger action</label>
+        <textarea
+          id="edgeCaseModalTriggerAction"
+          class="form-control"
+          [class.is-invalid]="isInvalid('triggerAction')"
+          rows="3"
+          formControlName="triggerAction"
+        ></textarea>
+      </div>
+
+      <div>
+        <label class="form-label" for="edgeCaseModalExpectedBehavior">Expected behavior</label>
+        <textarea
+          id="edgeCaseModalExpectedBehavior"
+          class="form-control"
+          [class.is-invalid]="isInvalid('expectedBehavior')"
+          rows="3"
+          formControlName="expectedBehavior"
+        ></textarea>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-footer justify-content-between">
+    <div>
+      @if (canDelete) {
+        <button type="button" class="btn btn-outline-danger" (click)="delete()">
+          <fa-icon [icon]="faTrash"></fa-icon>
+          Delete
+        </button>
+      }
+    </div>
+
+    <div>
+      <button type="submit" class="btn btn-primary">
+        <fa-icon [icon]="faCheck"></fa-icon>
+        Save
+      </button>
+    </div>
+  </div>
+</form>

@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-import { faCheck, faTimes } from '@fortawesome/free-solid-svg-icons';
+import { faCheck } from '@fortawesome/free-solid-svg-icons';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 
 @Component({
@@ -12,7 +12,6 @@ import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 export class ProjectRefineModal {
   public customInstructions = '';
   public readonly faCheck = faCheck;
-  public readonly faTimes = faTimes;
 
   constructor(public readonly activeModal: NgbActiveModal) {}
 

@@ -8,6 +8,7 @@ import {
   faPlus,
   faRightFromBracket,
 } from '@fortawesome/free-solid-svg-icons';
+import { NgbTooltipModule } from '@ng-bootstrap/ng-bootstrap';
 import { CurrentUserService } from '../../core/services/current-user.service';
 import { MenuDropdown } from '../../shared/components/menu-dropdown/menu-dropdown';
 import { ENTITY_COLLECTION_ICONS, ENTITY_ICONS } from '../../shared/icons/entity-icons';
@@ -20,7 +21,7 @@ type ProjectPageKey = 'overview' | 'personas' | 'scenarios' | 'board' | 'setting
 
 @Component({
   selector: 'app-menu',
-  imports: [RouterModule, FontAwesomeModule, MenuDropdown],
+  imports: [RouterModule, FontAwesomeModule, NgbTooltipModule, MenuDropdown],
   templateUrl: './menu.html',
   styleUrl: './menu.scss',
 })

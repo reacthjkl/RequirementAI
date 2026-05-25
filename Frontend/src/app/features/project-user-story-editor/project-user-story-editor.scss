@@ -1,88 +1,57 @@
-.scenario-summary {
-  align-items: center;
-  appearance: none;
-  background: var(--bs-tertiary-bg);
-  border: 1px solid var(--bs-border-color);
-  border-radius: var(--bs-border-radius);
-  color: inherit;
-  column-gap: 0.75rem;
-  cursor: pointer;
-  display: grid;
-  grid-template-columns: auto minmax(0, 1fr) auto minmax(0, 1.5fr);
-  padding: 0.65rem 0.75rem;
-  text-align: left;
-  transition:
-    background-color 0.15s ease-in-out,
-    border-color 0.15s ease-in-out;
-  width: 100%;
+.user-story-details-card {
+  border-left-width: 0.35rem;
 }
 
-.scenario-summary:hover,
-.scenario-summary:focus-visible {
-  background: rgba(var(--bs-primary-rgb), 0.08);
-  border-color: rgba(var(--bs-primary-rgb), 0.4);
-}
-
-.scenario-details {
-  background: var(--bs-tertiary-bg);
-  border: 1px solid var(--bs-border-color);
-  border-radius: var(--bs-border-radius);
-  padding: 0.75rem;
-}
-
-.user-story-primary-fields {
-  background: var(--bs-body-bg);
-  border: 1px solid rgba(var(--bs-primary-rgb), 0.25);
-  border-left: 0.25rem solid var(--bs-primary);
-  border-radius: var(--bs-border-radius);
-  box-shadow: 0 0.35rem 1rem rgba(var(--bs-body-color-rgb), 0.06);
-  padding: 1rem;
-}
-
-.user-story-primary-fields :is(input, textarea) {
+.user-story-details-card :is(input, textarea) {
   font-size: 1rem;
 }
 
-.user-story-primary-fields input {
+.user-story-details-card input {
   font-size: 1.15rem;
   font-weight: 600;
 }
 
-.stage-dropdown {
-  position: relative;
-}
-
-.stage-dropdown-toggle {
-  align-items: center;
-  background: var(--bs-body-bg);
-  border-color: var(--bs-border-color);
-  color: var(--bs-body-color);
-  display: inline-flex;
-  gap: 0.5rem;
-  justify-content: flex-start;
-  min-width: 8rem;
-  width: 100%;
-}
-
-.stage-dropdown-toggle:hover,
-.stage-dropdown-toggle:focus-visible,
-.stage-dropdown-toggle:active,
-.stage-dropdown-toggle.show {
-  background: var(--bs-body-bg);
-  border-color: var(--bs-primary);
-  color: var(--bs-body-color);
-}
-
-.stage-dropdown-toggle:focus-visible {
-  box-shadow: 0 0 0 0.25rem rgba(var(--bs-primary-rgb), 0.25);
-}
-
-.stage-dropdown-menu {
-  min-width: 100%;
-}
-
-.stage-option {
-  align-items: center;
+.compact-list {
   display: flex;
+  flex-direction: column;
   gap: 0.5rem;
+  list-style-position: outside;
+  list-style-type: disc;
+  padding-left: 1.25rem;
+}
+
+.compact-list-item {
+  padding-left: 0.25rem;
+}
+
+.compact-list-item::marker {
+  color: var(--bs-secondary-color);
+}
+
+.compact-list-row {
+  align-items: flex-start;
+  column-gap: 0.5rem;
+  display: flex;
+}
+
+.compact-list-button {
+  appearance: none;
+  background: transparent;
+  border: 0;
+  color: inherit;
+  flex: 1 1 auto;
+  min-width: 0;
+  padding: 0.2rem 0;
+  text-align: left;
+  white-space: pre-wrap;
+}
+
+.compact-list-button:hover,
+.compact-list-button:focus-visible {
+  color: var(--bs-primary);
+}
+
+.compact-list-empty {
+  color: var(--bs-secondary-color);
+  list-style: none;
 }
