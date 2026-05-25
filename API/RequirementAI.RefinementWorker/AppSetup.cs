@@ -28,7 +28,6 @@ public static class AppSetup
     {
         builder.Services.AddAutoMapper(cfg =>
             {
-                var key = builder.Configuration["AutoMapperOptions:LicenseKey"];
                 cfg.LicenseKey = builder.Configuration["AutoMapperOptions:LicenseKey"];
             },
             typeof(UserProfile),
