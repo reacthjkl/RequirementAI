@@ -46,6 +46,7 @@ public class PromptBuilder(IRefinementTaskProvider refinementTaskProvider, IRefi
                                    INSTRUCTIONS:
                                    - Follow the task exactly.
                                    - Preserve the original business intent.
+                                   - Write all generated or refined user stories in the same language as the input.
                                    - Improve clarity, consistency, completeness, and testability.
                                    - Identify missing details, ambiguities, contradictions, risks, and edge cases when relevant.
                                    - Do not invent unsupported domain-specific facts.
