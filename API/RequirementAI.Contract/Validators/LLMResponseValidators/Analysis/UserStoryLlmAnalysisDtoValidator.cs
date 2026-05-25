@@ -7,7 +7,6 @@ public class UserStoryLlmAnalysisDtoValidator: AbstractValidator<UserStoryLlmAna
 {
     public UserStoryLlmAnalysisDtoValidator()
     {
-        RuleFor(x => x.OverallScore).GreaterThan(0).LessThan(10).NotEmpty();
         RuleFor(x => x.ClarityScore).GreaterThan(0).LessThan(10).NotEmpty();
         RuleFor(x => x.CompletenessScore).GreaterThan(0).LessThan(10).NotEmpty();
         RuleFor(x => x.TestabilityScore).GreaterThan(0).LessThan(10).NotEmpty();

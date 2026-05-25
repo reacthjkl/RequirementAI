@@ -7,7 +7,6 @@ public class ScenarioLlmAnalysisDtoValidator: AbstractValidator<ScenarioLlmAnaly
 {
     public ScenarioLlmAnalysisDtoValidator()
     {
-        RuleFor(x => x.OverallScore).GreaterThan(0).LessThan(10).NotEmpty();
         RuleFor(x => x.ClarityScore).GreaterThan(0).LessThan(10).NotEmpty();
         RuleFor(x => x.ContextScore).GreaterThan(0).LessThan(10).NotEmpty();
         RuleFor(x => x.TriggerScore).GreaterThan(0).LessThan(10).NotEmpty();

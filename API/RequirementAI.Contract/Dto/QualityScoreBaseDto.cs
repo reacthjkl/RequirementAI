@@ -5,7 +5,6 @@ public abstract class QualityScoreBaseDto
     public Guid Id { get; set; }
     public DateTimeOffset CreatedAt { get; set; }
     public DateTimeOffset UpdatedAt { get; set; }
-    
     public int OverallScore { get; set; }
     
     public string Strengths { get; set; } = null!;

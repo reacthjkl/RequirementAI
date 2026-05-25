@@ -7,7 +7,6 @@ public class PersonaLlmAnalysisDtoValidator: AbstractValidator<PersonaLlmAnalysi
 {
     public PersonaLlmAnalysisDtoValidator()
     {
-        RuleFor(x => x.OverallScore).GreaterThan(0).LessThan(10).NotEmpty();
         RuleFor(x => x.ClarityScore).GreaterThan(0).LessThan(10).NotEmpty();
         RuleFor(x => x.RealismScore).GreaterThan(0).LessThan(10).NotEmpty();
         RuleFor(x => x.GoalClarityScore).GreaterThan(0).LessThan(10).NotEmpty();

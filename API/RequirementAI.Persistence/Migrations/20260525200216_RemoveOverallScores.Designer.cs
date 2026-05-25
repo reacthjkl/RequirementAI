@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using RequirementAI.Persistence;
@@ -11,9 +12,11 @@ using RequirementAI.Persistence;
 namespace RequirementAI.Persistence.Migrations
 {
     [DbContext(typeof(RequirementAIContext))]
-    partial class RequirementAIContextModelSnapshot : ModelSnapshot
+    [Migration("20260525200216_RemoveOverallScores")]
+    partial class RemoveOverallScores
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
