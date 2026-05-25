@@ -25,7 +25,9 @@
             (dragleave)="clearDragOver(column)"
             (drop)="dropUserStory($event, column)"
           >
-            <div class="board-column-header d-flex align-items-center justify-content-between gap-3">
+            <div
+              class="board-column-header d-flex align-items-center justify-content-between gap-3"
+            >
               <h5 class="mb-0 text-truncate d-flex align-items-center gap-2">
                 <span [class]="'stage-dot ' + column.stageMeta.colorClass"></span>
                 {{ column.label }}
@@ -36,17 +38,53 @@
             <div class="board-column-body">
               @if (column.userStories.length > 0) {
                 @for (item of column.userStories; track item.userStory.id) {
-                  <button
-                    type="button"
+                  <div
                     class="user-story-card"
                     draggable="true"
+                    role="button"
+                    tabindex="0"
                     (click)="openEditUserStory(item.userStory, $event)"
+                    (keydown)="handleCardKeydown($event, item.userStory)"
                     (dragstart)="startDragging($event, item.userStory)"
                     (dragend)="stopDragging()"
                   >
-                    <h6 class="mb-2 text-truncate">{{ item.userStory.title }}</h6>
+                    <div class="d-flex align-items-start justify-content-between gap-2 mb-2">
+                      <h6 class="mb-0 text-truncate">{{ item.userStory.title }}</h6>
+
+                      <div
+                        ngbDropdown
+                        container="body"
+                        class="user-story-actions"
+                        (click)="$event.stopPropagation()"
+                        (keydown)="$event.stopPropagation()"
+                        (pointerdown)="$event.stopPropagation()"
+                      >
+                        <button
+                          type="button"
+                          class="btn btn-sm btn-link user-story-actions-toggle"
+                          ngbDropdownToggle
+                          [disabled]="deletingUserStoryId === item.userStory.id"
+                          [attr.aria-label]="'User Story actions for ' + item.userStory.title"
+                        >
+                          <fa-icon [icon]="faEllipsisVertical"></fa-icon>
+                        </button>
+
+                        <div ngbDropdownMenu>
+                          <button
+                            type="button"
+                            ngbDropdownItem
+                            class="text-danger"
+                            [disabled]="deletingUserStoryId === item.userStory.id"
+                            (click)="deleteUserStory(item.userStory, $event)"
+                          >
+                            Delete user story
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+
                     <p class="mb-0 text-muted text-truncate">{{ item.personaName }}</p>
-                  </button>
+                  </div>
                 }
               } @else {
                 <div class="empty-column text-secondary text-center">Empty</div>

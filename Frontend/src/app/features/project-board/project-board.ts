@@ -1,9 +1,10 @@
 import { Component } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-import { faPlus } from '@fortawesome/free-solid-svg-icons';
-import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { faEllipsisVertical, faPlus } from '@fortawesome/free-solid-svg-icons';
+import { NgbDropdownModule, NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { Notification } from '../../core/services/notification.service';
+import { ConfirmationModal } from '../../shared/components/confirmation-modal/confirmation-modal';
 import {
   USER_STORY_STAGE_META,
   UserStoryStageMeta,
@@ -33,11 +34,12 @@ interface BoardColumn {
 
 @Component({
   selector: 'app-project-board',
-  imports: [FontAwesomeModule],
+  imports: [FontAwesomeModule, NgbDropdownModule],
   templateUrl: './project-board.html',
   styleUrl: './project-board.scss',
 })
 export class ProjectBoard {
+  public readonly faEllipsisVertical = faEllipsisVertical;
   public readonly faPlus = faPlus;
   public readonly columns: BoardColumn[] = [
     {
@@ -69,6 +71,7 @@ export class ProjectBoard {
   public projectId: string | null = null;
   public project: Project | null = null;
   public loading = true;
+  public deletingUserStoryId: string | null = null;
   public draggedUserStory: UserStory | null = null;
   public dragOverColumn: UserStoryStage | null = null;
 
@@ -103,6 +106,41 @@ export class ProjectBoard {
 
   public async openEditUserStory(userStory: UserStory, event?: MouseEvent): Promise<void> {
     await this.openUserStoryEditor(userStory.id, event);
+  }
+
+  public async deleteUserStory(userStory: UserStory, event: MouseEvent): Promise<void> {
+    event.stopPropagation();
+
+    if (this.deletingUserStoryId) {
+      return;
+    }
+
+    const confirmed = await this.confirmDeleteUserStory(userStory);
+
+    if (!confirmed) {
+      return;
+    }
+
+    this.deletingUserStoryId = userStory.id;
+
+    try {
+      await this.userStoryService.delete(userStory.id);
+      this.removeUserStoryFromColumns(userStory.id);
+      this.notification.success('User Story deleted');
+    } catch {
+      this.notification.fail('Could not delete User Story');
+    } finally {
+      this.deletingUserStoryId = null;
+    }
+  }
+
+  public handleCardKeydown(event: KeyboardEvent, userStory: UserStory): void {
+    if (event.key !== 'Enter' && event.key !== ' ') {
+      return;
+    }
+
+    event.preventDefault();
+    void this.openEditUserStory(userStory);
   }
 
   public startDragging(event: DragEvent, userStory: UserStory): void {
@@ -169,6 +207,20 @@ export class ProjectBoard {
     }
   }
 
+  private async confirmDeleteUserStory(userStory: UserStory): Promise<boolean> {
+    const modalRef = this.modalService.open(ConfirmationModal, { centered: true });
+    modalRef.componentInstance.title = 'Delete User Story';
+    modalRef.componentInstance.message = `Delete "${userStory.title}"? This action cannot be undone.`;
+    modalRef.componentInstance.confirmText = 'Delete user story';
+    modalRef.componentInstance.confirmButtonClass = 'btn-danger';
+
+    try {
+      return !!(await modalRef.result);
+    } catch {
+      return false;
+    }
+  }
+
   private async loadBoard(): Promise<void> {
     if (!this.projectId) {
       return;
@@ -182,6 +234,12 @@ export class ProjectBoard {
     }
 
     this.loading = false;
+  }
+
+  private removeUserStoryFromColumns(userStoryId: string): void {
+    for (const column of this.columns) {
+      column.userStories = column.userStories.filter((item) => item.userStory.id !== userStoryId);
+    }
   }
 
   private async moveUserStoryToStage(userStory: UserStory, stage: UserStoryStage): Promise<void> {
