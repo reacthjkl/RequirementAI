@@ -89,10 +89,6 @@ public class RequirementAIContext(DbContextOptions<RequirementAIContext> options
             entity.Property(e => e.Description)
                 .HasMaxLength(2048);
 
-            entity.Property(e => e.Status)
-                .HasMaxLength(255)
-                .HasConversion<string>();
-                
             entity.HasMany(e => e.Personas)
                 .WithOne(e => e.Project)
                 .HasForeignKey(e => e.ProjectId);
