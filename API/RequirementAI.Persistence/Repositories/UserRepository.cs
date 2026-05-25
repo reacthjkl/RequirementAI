@@ -28,10 +28,10 @@ public class UserRepository(RequirementAIContext context) : IUserRepository
         await context.SaveChangesAsync(ct);
     }
 
-    public async Task<User?> GetByRefreshToken(string expiredRefreshToken, CancellationToken ct)
+    public async Task<User?> GetByRefreshToken(string refreshToken, CancellationToken ct)
     {
         return await context.Users
-            .FirstOrDefaultAsync(u => u.RefreshToken == expiredRefreshToken, ct);
+            .FirstOrDefaultAsync(u => u.RefreshToken == refreshToken, ct);
     }
 
     public async Task<User> GetById(Guid id, CancellationToken ct)
