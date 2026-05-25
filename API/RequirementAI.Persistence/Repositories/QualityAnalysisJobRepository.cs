@@ -30,6 +30,23 @@ public class QualityAnalysisJobRepository(RequirementAIContext context): IQualit
             .FirstAsync(x => x.Id == job.Id, ct);
     }
 
+    public async Task<QualityAnalysisJob?> GetLastByProjectId(Guid projectId, CancellationToken ct)
+    {
+        return await context.QualityAnalysisJobs
+            .Where(x => x.ProjectId == projectId)
+            .OrderByDescending(x => x.CreatedAt)
+            .FirstOrDefaultAsync(ct);    
+    }
+
+    public async Task<QualityAnalysisJob> Create(QualityAnalysisJob job, CancellationToken ct)
+    {
+        await context.QualityAnalysisJobs.AddAsync(job, ct);
+        await context.SaveChangesAsync(ct);
+        
+        return job;
+        
+    }
+
     public async Task<QualityAnalysisJob> Update(QualityAnalysisJob job, CancellationToken ct)
     {
         context.QualityAnalysisJobs.Update(job);

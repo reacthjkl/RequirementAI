@@ -43,6 +43,13 @@ public class ProjectController(IProjectService projectService)
         return Ok(ResponseDto.Success());
     }
     
+    [HttpPut("analyze/{projectId:guid}")]
+    public async Task<IActionResult> Analyze([FromRoute] Guid projectId, CancellationToken ct)
+    {
+        await projectService.Analyze(projectId, ct);
+        return Ok(ResponseDto.Success());
+    }
+    
     [HttpDelete("{id:guid}")]
     public async Task<IActionResult> Delete(Guid id, CancellationToken ct)
     {

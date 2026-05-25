@@ -15,6 +15,14 @@ public class ProjectRefinementJobRepository(RequirementAIContext context): IProj
                ?? throw new EntityNotFoundException<ProjectRefinementJob>(id);
     }
 
+    public async Task<ProjectRefinementJob?> GetLastByProjectId(Guid projectId, CancellationToken ct)
+    {
+        return await context.ProjectRefinementJobs
+            .Where(x => x.ProjectId == projectId)
+            .OrderByDescending(x => x.CreatedAt)
+            .FirstOrDefaultAsync(ct);
+    }
+
     public async Task<Dictionary<Guid, JobStatus>> GetLatestStatusesByProjectIds(List<Guid> projectIds, CancellationToken ct)
     {
         return await context.ProjectRefinementJobs
