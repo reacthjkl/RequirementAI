@@ -1,0 +1,26 @@
+<div class="modal-header">
+  <h5 class="modal-title mb-0">Refine project</h5>
+  <button type="button" class="btn-close" aria-label="Close" (click)="activeModal.dismiss()"></button>
+</div>
+
+<div class="modal-body">
+  <label class="form-label" for="projectRefineInstructions">Custom instructions (optional)</label>
+  <textarea
+    id="projectRefineInstructions"
+    class="form-control"
+    rows="6"
+    [(ngModel)]="customInstructions"
+  ></textarea>
+</div>
+
+<div class="modal-footer">
+  <button type="button" class="btn btn-outline-secondary" (click)="activeModal.dismiss()">
+    <fa-icon [icon]="faTimes"></fa-icon>
+    Cancel
+  </button>
+
+  <button type="button" class="btn btn-primary" (click)="refine()">
+    <fa-icon [icon]="faCheck"></fa-icon>
+    Refine
+  </button>
+</div>

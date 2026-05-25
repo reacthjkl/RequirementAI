@@ -15,6 +15,12 @@ $btn-active-color: #fff;
   --bs-btn-disabled-color: #fff;
 }
 
+.btn-warning,
+.btn-outline-warning {
+  --bs-btn-hover-color: #fff;
+  --bs-btn-active-color: #fff;
+}
+
 .badge {
   --bs-badge-font-weight: 600;
 }
@@ -61,4 +67,41 @@ $btn-active-color: #fff;
 
 .cursor-pointer {
   cursor: pointer;
+}
+
+button.card:focus,
+a.card:focus,
+.user-story-card:focus {
+  outline: none;
+}
+
+.modal-content,
+.modal-header,
+.modal-body,
+.modal-footer {
+  background: var(--bs-tertiary-bg);
+}
+
+.stage-dot {
+  border-radius: 50%;
+  display: inline-block;
+  flex: 0 0 0.625rem;
+  height: 0.625rem;
+  width: 0.625rem;
+}
+
+.stage-dot-new {
+  background: var(--bs-secondary);
+}
+
+.stage-dot-active {
+  background: var(--bs-blue);
+}
+
+.stage-dot-testing {
+  background: var(--bs-purple);
+}
+
+.stage-dot-closed {
+  background: var(--bs-primary);
 }

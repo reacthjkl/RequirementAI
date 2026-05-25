@@ -11,6 +11,7 @@ import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { faCheck, faPen, faTrash } from '@fortawesome/free-solid-svg-icons';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { ConfirmationModal } from '../../../../../shared/components/confirmation-modal/confirmation-modal';
+import { PersonaFormFields } from '../../../../../shared/components/persona-form-fields/persona-form-fields';
 import { ENTITY_ICONS } from '../../../../../shared/icons/entity-icons';
 import { Persona } from '../../../../../shared/models/persona.model';
 import { PersonaService } from '../../../../../shared/services/persona';
@@ -28,7 +29,7 @@ type PersonaForm = FormGroup<{
 
 @Component({
   selector: 'app-project-wizard-personas-step',
-  imports: [ReactiveFormsModule, FontAwesomeModule],
+  imports: [ReactiveFormsModule, FontAwesomeModule, PersonaFormFields],
   templateUrl: './project-wizard-personas-step.html',
   styleUrl: './project-wizard-personas-step.scss',
 })

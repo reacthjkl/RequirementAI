@@ -22,6 +22,27 @@
   width: 3rem;
 }
 
+.stat-card {
+  background: var(--bs-body-bg);
+  color: inherit;
+  cursor: pointer;
+  text-decoration: none;
+  transition:
+    background-color 0.15s ease-in-out,
+    border-color 0.15s ease-in-out,
+    box-shadow 0.15s ease-in-out,
+    transform 0.15s ease-in-out;
+}
+
+.stat-card:hover,
+.stat-card:focus-visible {
+  background: var(--bs-tertiary-bg);
+  border-color: rgba(var(--bs-primary-rgb), 0.45) !important;
+  box-shadow: 0 0.25rem 0.75rem rgba(var(--bs-body-color-rgb), 0.08) !important;
+  color: inherit;
+  transform: translateY(-1px);
+}
+
 .stat-value {
   font-size: 1.75rem;
   font-weight: 700;

@@ -1,0 +1,79 @@
+@if (isModal) {
+  <div class="modal-header">
+    <div class="d-flex align-items-center gap-2">
+      <span class="text-primary">
+        <fa-icon [icon]="entityIcons.scenario"></fa-icon>
+      </span>
+      <h5 class="modal-title mb-0">{{ title }}</h5>
+    </div>
+    <button type="button" class="btn-close" aria-label="Close" (click)="cancel()"></button>
+  </div>
+}
+
+<div class="d-flex flex-column gap-4" [class.modal-body]="isModal">
+  <div class="d-flex justify-content-between align-items-start gap-3">
+    @if (!isModal) {
+      <div>
+        <h3>{{ title }}</h3>
+      </div>
+    }
+  </div>
+
+  @if (loading) {
+    <div class="text-muted">Loading scenario...</div>
+  } @else if (isEditing && !scenario) {
+    <div class="text-secondary">Scenario not found</div>
+  } @else {
+    <section class="card border-0 shadow-sm">
+      <div class="card-body">
+        <form [formGroup]="form" class="d-flex flex-column gap-4" (ngSubmit)="save()">
+          @if (!isModal) {
+            <div class="d-flex align-items-center gap-2">
+              <span class="text-primary">
+                <fa-icon [icon]="entityIcons.scenario"></fa-icon>
+              </span>
+              <h5 class="mb-0">{{ title }}</h5>
+            </div>
+          }
+
+          @if (isEditing) {
+            <div>
+              <label class="form-label">Persona</label>
+              <div class="form-control bg-body-tertiary">
+                {{ currentPersona?.name ?? 'Unknown persona' }}
+              </div>
+            </div>
+          } @else {
+            <div>
+              <label class="form-label" for="scenarioPersona">Persona</label>
+              <select
+                id="scenarioPersona"
+                class="form-select"
+                [class.is-invalid]="isPersonaInvalid()"
+                [formControl]="personaControl"
+              >
+                @for (persona of personas; track persona.id) {
+                  <option [value]="persona.id">{{ persona.name }}</option>
+                }
+              </select>
+            </div>
+          }
+
+          <app-scenario-form-fields [form]="form" idPrefix="scenarioEditor" />
+
+          <div class="d-flex justify-content-end gap-2">
+            <button type="button" class="btn btn-outline-secondary" (click)="cancel()">
+              <fa-icon [icon]="faTimes"></fa-icon>
+              Cancel
+            </button>
+
+            <button type="submit" class="btn btn-primary" [disabled]="saving">
+              <fa-icon [icon]="faCheck"></fa-icon>
+              {{ saving ? 'Saving...' : 'Save' }}
+            </button>
+          </div>
+        </form>
+      </div>
+    </section>
+  }
+</div>

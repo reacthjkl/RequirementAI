@@ -1,9 +1,10 @@
 import { Component } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, RouterModule } from '@angular/router';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { faCheck, faPen, faTimes } from '@fortawesome/free-solid-svg-icons';
 import { Notification } from '../../core/services/notification.service';
+import { ProjectRefineButton } from '../../shared/components/project-refine-button/project-refine-button';
 import { UserStoryStage } from '../../shared/enums/user-story-stage.enum';
 import { ENTITY_COLLECTION_ICONS, ENTITY_ICONS } from '../../shared/icons/entity-icons';
 import { Project } from '../../shared/models/project.model';
@@ -14,7 +15,7 @@ import { UserStoryService } from '../../shared/services/user-story';
 
 @Component({
   selector: 'app-project-overview',
-  imports: [ReactiveFormsModule, FontAwesomeModule],
+  imports: [ReactiveFormsModule, RouterModule, FontAwesomeModule, ProjectRefineButton],
   templateUrl: './project-overview.html',
   styleUrl: './project-overview.scss',
 })

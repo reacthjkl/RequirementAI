@@ -1,7 +1,12 @@
 import { Component, effect } from '@angular/core';
 import { Router, RouterModule } from '@angular/router';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-import { faPlus, faRightFromBracket } from '@fortawesome/free-solid-svg-icons';
+import {
+  faAnglesLeft,
+  faAnglesRight,
+  faPlus,
+  faRightFromBracket,
+} from '@fortawesome/free-solid-svg-icons';
 import { CurrentUserService } from '../../core/services/current-user.service';
 import { MenuDropdown } from '../../shared/components/menu-dropdown/menu-dropdown';
 import { ENTITY_COLLECTION_ICONS, ENTITY_ICONS } from '../../shared/icons/entity-icons';
@@ -19,14 +24,19 @@ type ProjectPageKey = 'overview' | 'personas' | 'scenarios' | 'board' | 'setting
   styleUrl: './menu.scss',
 })
 export class Menu {
+  private readonly menuMinimizedStorageKey = 'requirement-ai-menu-minimized';
+
   public currentUser?: User;
   public projects: Project[] = [];
   public currentProject?: Project;
   public currentProjectPage: ProjectPageKey = 'overview';
+  public isMinimized = localStorage.getItem(this.menuMinimizedStorageKey) === 'true';
 
   // icons
   public readonly entityCollectionIcons = ENTITY_COLLECTION_ICONS;
   public readonly entityIcons = ENTITY_ICONS;
+  public readonly faAnglesLeft = faAnglesLeft;
+  public readonly faAnglesRight = faAnglesRight;
   public readonly faPlus = faPlus;
   public readonly faRightFromBracket = faRightFromBracket;
 
@@ -64,6 +74,11 @@ export class Menu {
 
   public async switchProject(project: Project): Promise<void> {
     await this.router.navigate(['/projects', project.id, this.currentProjectPage]);
+  }
+
+  public toggleMinimized(): void {
+    this.isMinimized = !this.isMinimized;
+    localStorage.setItem(this.menuMinimizedStorageKey, String(this.isMinimized));
   }
 
   public get otherProjects(): Project[] {

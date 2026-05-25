@@ -38,8 +38,12 @@ export class ProjectService {
     await this.api.put(ApiController.Project, '', project);
   }
 
-  public async refine(id: string): Promise<void> {
-    await this.api.put<void, null>(ApiController.Project, `refine/${id}`);
+  public async refine(id: string, customInstructions: string | null): Promise<void> {
+    await this.api.put<{ customInstructions: string | null }, null>(
+      ApiController.Project,
+      `refine/${id}`,
+      { customInstructions },
+    );
   }
 
   public async delete(id: string): Promise<void> {

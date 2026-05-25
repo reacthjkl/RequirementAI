@@ -1,41 +1,60 @@
-<div class="d-flex flex-column gap-4 h-100">
+<div class="board-page d-flex flex-column gap-4">
   <div class="d-flex justify-content-between align-items-start gap-3">
     <div>
       <h3>Board</h3>
     </div>
+
+    @if (projectId) {
+      <button type="button" class="btn btn-primary" (click)="openCreateUserStory()">
+        <fa-icon [icon]="faPlus"></fa-icon>
+        Add User Story
+      </button>
+    }
   </div>
 
   @if (loading) {
     <div class="text-muted">Loading board...</div>
   } @else {
-    <div class="row row-cols-1 row-cols-sm-2 row-cols-lg-4 g-3">
-      @for (column of columns; track column.key) {
-        <div class="col">
-          <section class="card h-100 bg-body-tertiary">
-            <div class="card-header d-flex align-items-center justify-content-between gap-3">
-              <h5 class="mb-0">{{ column.label }}</h5>
+    <div class="board-table-shell">
+      <div class="board-table">
+        @for (column of columns; track column.key) {
+          <section
+            class="board-column"
+            [class.board-column-drag-over]="dragOverColumn === column.key"
+            (dragover)="allowDrop($event, column)"
+            (dragleave)="clearDragOver(column)"
+            (drop)="dropUserStory($event, column)"
+          >
+            <div class="board-column-header d-flex align-items-center justify-content-between gap-3">
+              <h5 class="mb-0 text-truncate d-flex align-items-center gap-2">
+                <span [class]="'stage-dot ' + column.stageMeta.colorClass"></span>
+                {{ column.label }}
+              </h5>
               <span class="badge text-bg-secondary">{{ column.userStories.length }}</span>
             </div>
 
-            <div class="card-body d-flex flex-column gap-3">
+            <div class="board-column-body">
               @if (column.userStories.length > 0) {
-                @for (userStory of column.userStories; track userStory.id) {
-                  <article class="border rounded bg-body p-3 overflow-hidden">
-                    <div class="d-flex align-items-start gap-2 overflow-hidden">
-                      <div class="overflow-hidden">
-                        <h6 class="mb-2 text-truncate">{{ userStory.title }}</h6>
-                        <p class="mb-0 text-muted text-truncate">{{ userStory.description }}</p>
-                      </div>
-                    </div>
-                  </article>
+                @for (item of column.userStories; track item.userStory.id) {
+                  <button
+                    type="button"
+                    class="user-story-card"
+                    draggable="true"
+                    (click)="openEditUserStory(item.userStory, $event)"
+                    (dragstart)="startDragging($event, item.userStory)"
+                    (dragend)="stopDragging()"
+                  >
+                    <h6 class="mb-2 text-truncate">{{ item.userStory.title }}</h6>
+                    <p class="mb-0 text-muted text-truncate">{{ item.personaName }}</p>
+                  </button>
                 }
               } @else {
-                <div class="p-3 text-secondary text-center">Empty</div>
+                <div class="empty-column text-secondary text-center">Empty</div>
               }
             </div>
           </section>
-        </div>
-      }
+        }
+      </div>
     </div>
   }
 </div>

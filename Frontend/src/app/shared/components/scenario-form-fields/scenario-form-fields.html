@@ -1,0 +1,22 @@
+<div class="d-flex flex-column gap-3" [formGroup]="form">
+  <div>
+    <label class="form-label" [for]="idPrefix + 'Title'">Title</label>
+    <input
+      class="form-control"
+      [class.is-invalid]="isInvalid('title')"
+      [id]="idPrefix + 'Title'"
+      formControlName="title"
+    />
+  </div>
+
+  <div>
+    <label class="form-label" [for]="idPrefix + 'Content'">Content</label>
+    <textarea
+      class="form-control scenario-content-input"
+      [class.is-invalid]="isInvalid('content')"
+      [id]="idPrefix + 'Content'"
+      rows="4"
+      formControlName="content"
+    ></textarea>
+  </div>
+</div>

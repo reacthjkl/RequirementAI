@@ -3,6 +3,13 @@
     <div>
       <h3>Overview</h3>
     </div>
+
+    @if (project) {
+      <app-project-refine-button
+        [project]="project"
+        (refinementStarted)="project = $event"
+      ></app-project-refine-button>
+    }
   </div>
 
   @if (loading) {
@@ -96,7 +103,10 @@
 
     <div class="row row-cols-1 row-cols-md-3 g-3">
       <div class="col">
-        <section class="card h-100 border-0 shadow-sm">
+        <a
+          class="card stat-card h-100 border-0 shadow-sm"
+          [routerLink]="['/projects', project.id, 'personas']"
+        >
           <div class="card-body d-flex align-items-center gap-3">
             <span class="stat-icon bg-primary-subtle text-primary">
               <fa-icon [icon]="entityCollectionIcons.personas"></fa-icon>
@@ -107,11 +117,14 @@
               <div class="stat-value">{{ personaCount }}</div>
             </div>
           </div>
-        </section>
+        </a>
       </div>
 
       <div class="col">
-        <section class="card h-100 border-0 shadow-sm">
+        <a
+          class="card stat-card h-100 border-0 shadow-sm"
+          [routerLink]="['/projects', project.id, 'scenarios']"
+        >
           <div class="card-body d-flex align-items-center gap-3">
             <span class="stat-icon bg-primary-subtle text-primary">
               <fa-icon [icon]="entityCollectionIcons.scenarios"></fa-icon>
@@ -122,11 +135,14 @@
               <div class="stat-value">{{ scenarioCount }}</div>
             </div>
           </div>
-        </section>
+        </a>
       </div>
 
       <div class="col">
-        <section class="card h-100 border-0 shadow-sm">
+        <a
+          class="card stat-card h-100 border-0 shadow-sm"
+          [routerLink]="['/projects', project.id, 'board']"
+        >
           <div class="card-body d-flex align-items-center gap-3">
             <span class="stat-icon bg-primary-subtle text-primary">
               <fa-icon [icon]="entityIcons.userStory"></fa-icon>
@@ -137,7 +153,7 @@
               <div class="stat-value">{{ userStoryCount }}</div>
             </div>
           </div>
-        </section>
+        </a>
       </div>
     </div>
   }

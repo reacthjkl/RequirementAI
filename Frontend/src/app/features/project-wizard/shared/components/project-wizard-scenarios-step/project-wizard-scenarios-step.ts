@@ -11,6 +11,7 @@ import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { faCheck, faPen, faTrash } from '@fortawesome/free-solid-svg-icons';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { ConfirmationModal } from '../../../../../shared/components/confirmation-modal/confirmation-modal';
+import { ScenarioFormFields } from '../../../../../shared/components/scenario-form-fields/scenario-form-fields';
 import { ENTITY_ICONS } from '../../../../../shared/icons/entity-icons';
 import { Persona } from '../../../../../shared/models/persona.model';
 import { Scenario } from '../../../../../shared/models/scenario.model';
@@ -26,7 +27,7 @@ type ScenarioForm = FormGroup<{
 
 @Component({
   selector: 'app-project-wizard-scenarios-step',
-  imports: [ReactiveFormsModule, FontAwesomeModule],
+  imports: [ReactiveFormsModule, FontAwesomeModule, ScenarioFormFields],
   templateUrl: './project-wizard-scenarios-step.html',
   styleUrl: './project-wizard-scenarios-step.scss',
 })
