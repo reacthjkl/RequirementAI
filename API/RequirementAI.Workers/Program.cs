@@ -1,4 +1,4 @@
-using RequirementAI.RefinementWorker;
+using RequirementAI.Workers;
 
 var builder = Host.CreateApplicationBuilder(args);
 

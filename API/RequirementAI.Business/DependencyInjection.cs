@@ -3,6 +3,7 @@ using Microsoft.Extensions.DependencyInjection;
 using RequirementAI.Business.Helpers;
 using RequirementAI.Business.Interfaces;
 using RequirementAI.Business.Interfaces.EntityRelated;
+using RequirementAI.Business.Interfaces.QualityAnalysis;
 using RequirementAI.Business.Interfaces.Refinement;
 using RequirementAI.Business.Providers;
 using RequirementAI.Business.Providers.Auth;
@@ -10,9 +11,11 @@ using RequirementAI.Business.Providers.LLM;
 using RequirementAI.Business.Services;
 using RequirementAI.Business.Services.Auth;
 using RequirementAI.Business.Services.EntityRelated;
+using RequirementAI.Business.Services.QualityAnalysis;
 using RequirementAI.Business.Services.Refinement;
 using RequirementAI.Contract.Dto.LLMDtos;
-using RequirementAI.Contract.Validators.LLMResponseValidators;
+using RequirementAI.Contract.Validators.LLMResponseValidators.Analysis;
+using RequirementAI.Contract.Validators.LLMResponseValidators.Refinement;
 using RequirementAI.Persistence.Entities;
 
 namespace RequirementAI.Business;
@@ -31,6 +34,7 @@ public static class DependencyInjection
         services.AddScoped<IUserStoryService, UserStoryService>();
         services.AddScoped<IEdgeCaseService, EdgeCaseService>();
         services.AddScoped<IAcceptanceCriteriaService, AcceptanceCriteriaService>();
+        services.AddScoped<IQualityScoreService, QualityScoreService>();
         
         // refinement services
         services.AddScoped<IRefinementService, RefinementService>();
@@ -40,21 +44,32 @@ public static class DependencyInjection
         services.AddScoped<IRefinementMerger<UserStory, UserStoryForLLMDto>, UserStoryRefinementMerger>();
         services.AddScoped<IProjectRefinementOrchestrator, ProjectRefinementOrchestrator>();
         services.AddScoped<IProjectRefinementJobProcessor, ProjectRefinementJobProcessor>();
-        services.AddScoped<IPromptBuilder, PromptBuilder>();
-        services.AddScoped<IRefinementContextBuilder, RefinementContextBuilder>();
         
-        // auth providers
+        // analysis services
+        services.AddScoped<IQualityAnalysisJobProcessor, QualityAnalysisJobProcessor>();
+        services.AddScoped<IQualityAnalysisOrchestrator, QualityAnalysisOrchestrator>();
+        services.AddScoped<IQualityAnalysisService, QualityAnalysisService>();
+        services.AddScoped<IAnalysisTaskProvider, AnalysisTaskProvider>();
+        services.AddScoped<IAnalysisMerger<Persona, PersonaLlmAnalysisDto>, PersonaAnalysisMerger>();
+        services.AddScoped<IAnalysisMerger<Scenario, ScenarioLlmAnalysisDto>, ScenarioAnalysisMerger>();
+        services.AddScoped<IAnalysisMerger<UserStory, UserStoryLlmAnalysisDto>, UserStoryAnalysisMerger>();
+        
+        // auth
         services.AddScoped<IAuthService, AuthService>();
         services.AddScoped<IAuthProvider, AuthProvider>();
-        
+        services.AddScoped<IJwtTokenService, JwtTokenService>();
+        services.AddScoped<ICookiesHelper, CookiesHelper>();
 
         // LLM providers
         services.AddScoped<ILLMProvider, OpenAIProvider>();
         
         // helper services
-        services.AddScoped<IJwtTokenService, JwtTokenService>();
         services.AddSingleton<IPasswordHasher, Argon2PasswordHasher>();
-        services.AddScoped<ICookiesHelper, CookiesHelper>();
+        
+        // builders
+        services.AddScoped<IItemContextBuilder, ItemContextBuilder>();
+        services.AddScoped<IPromptBuilder, PromptBuilder>();
+        
         services.AddHttpClient();
         
         // validators
@@ -63,6 +78,9 @@ public static class DependencyInjection
         services.AddScoped<IValidator<PersonaForLLMDto>, PersonaForLLMDtoValidator>();
         services.AddScoped<IValidator<ScenarioForLLMDto>, ScenarioForLLMDtoValidator>();
         services.AddScoped<IValidator<UserStoryForLLMDto>, UserStoryForLLMDtoValidator>();
+        services.AddScoped<IValidator<PersonaLlmAnalysisDto>, PersonaLlmAnalysisDtoValidator>();
+        services.AddScoped<IValidator<ScenarioLlmAnalysisDto>, ScenarioLlmAnalysisDtoValidator>();
+        services.AddScoped<IValidator<UserStoryLlmAnalysisDto>, UserStoryLlmAnalysisDtoValidator>();
         
         services.AddHttpContextAccessor();
         

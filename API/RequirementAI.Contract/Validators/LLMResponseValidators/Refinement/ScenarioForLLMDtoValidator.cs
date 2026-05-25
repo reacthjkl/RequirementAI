@@ -1,7 +1,7 @@
 using FluentValidation;
 using RequirementAI.Contract.Dto.LLMDtos;
 
-namespace RequirementAI.Contract.Validators.LLMResponseValidators;
+namespace RequirementAI.Contract.Validators.LLMResponseValidators.Refinement;
 
 public class ScenarioForLLMDtoValidator: AbstractValidator<ScenarioForLLMDto>
 {

@@ -13,7 +13,11 @@ public class RequirementAIContext(DbContextOptions<RequirementAIContext> options
     public virtual DbSet<Scenario> Scenarios { get; set; }
     public virtual DbSet<User> Users { get; set; }
     public virtual DbSet<UserStory> UserStories { get; set; }
+    public virtual DbSet<PersonaQualityScore>  PersonaQualityScores { get; set; }
+    public virtual DbSet<ScenarioQualityScore>  ScenarioQualityScores { get; set; }
+    public virtual DbSet<UserStoryQualityScore>  UserStoryQualityScores { get; set; }
     public virtual DbSet<ProjectRefinementJob> ProjectRefinementJobs { get; set; }
+    public virtual DbSet<QualityAnalysisJob> QualityAnalysisJobs { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -180,6 +184,52 @@ public class RequirementAIContext(DbContextOptions<RequirementAIContext> options
 
             entity.Property(e => e.CustomInstructions)
                 .HasMaxLength(2048);
+        });
+        
+        modelBuilder.Entity<QualityAnalysisJob>(entity => {  
+            entity.HasKey(e => e.Id);
+            
+            entity.Property(e => e.ErrorMessage)
+                .HasMaxLength(1024);
+            
+            entity.Property(e => e.Status)
+                .HasMaxLength(255)
+                .HasConversion<string>();
+            
+            entity.Property(e => e.StartedAt)
+                .HasColumnType("timestamptz");
+            
+            entity.Property(e => e.FinishedAt)
+                .HasColumnType("timestamptz");
+
+            entity.HasOne<Project>()
+                .WithMany()
+                .HasForeignKey(e => e.ProjectId)
+                .OnDelete(DeleteBehavior.Cascade);
+        });
+        
+        modelBuilder.Entity<PersonaQualityScore>(entity => {  
+            entity.HasKey(e => e.Id);
+            
+            entity.HasOne(e => e.Persona)
+                .WithMany(e => e.QualityScores)
+                .HasForeignKey(e => e.PersonaId);
+        });
+        
+        modelBuilder.Entity<ScenarioQualityScore>(entity => {  
+            entity.HasKey(e => e.Id);
+            
+            entity.HasOne(e => e.Scenario)
+                .WithMany(e => e.QualityScores)
+                .HasForeignKey(e => e.ScenarioId);
+        });
+        
+        modelBuilder.Entity<UserStoryQualityScore>(entity => {  
+            entity.HasKey(e => e.Id);
+            
+            entity.HasOne(e => e.UserStory)
+                .WithMany(e => e.QualityScores)
+                .HasForeignKey(e => e.UserStoryId);
         });
     }
     

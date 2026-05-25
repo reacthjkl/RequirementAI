@@ -5,7 +5,6 @@
         <Nullable>enable</Nullable>
         <ImplicitUsings>enable</ImplicitUsings>
         <UserSecretsId>dotnet-RequirementAI.RefinementWorker-eb456a70-de50-4126-91ff-838839c64e55</UserSecretsId>
-        <RootNamespace>RequirementAI.RefinementWorker</RootNamespace>
     </PropertyGroup>
 
     <ItemGroup>

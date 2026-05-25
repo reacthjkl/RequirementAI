@@ -8,4 +8,5 @@ public class Scenario: BaseEntity
     public IList<UserStory> UserStories { get; set; } = new List<UserStory>();
     public Guid PersonaId { get; set; }
     public Persona Persona { get; set; } = null!;
+    public List<ScenarioQualityScore> QualityScores { get; set; } = [];
 }

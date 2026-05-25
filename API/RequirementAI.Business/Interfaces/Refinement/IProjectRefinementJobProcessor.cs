@@ -1,4 +1,4 @@
-namespace RequirementAI.Business.Services.Refinement;
+namespace RequirementAI.Business.Interfaces.Refinement;
 
 public interface IProjectRefinementJobProcessor
 {

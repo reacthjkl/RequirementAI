@@ -11,4 +11,5 @@ public class UserStory: BaseEntity
     public Guid ScenarioId { get; set; }
     public Scenario Scenario { get; set; } = null!;
     public UserStoryStage Stage { get; set; } = UserStoryStage.New;
+    public List<UserStoryQualityScore> QualityScores { get; set; } = [];
 }

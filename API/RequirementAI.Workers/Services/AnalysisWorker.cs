@@ -1,8 +1,8 @@
-using RequirementAI.Business.Services.Refinement;
+using RequirementAI.Business.Interfaces.QualityAnalysis;
 
-namespace RequirementAI.RefinementWorker;
+namespace RequirementAI.Workers.Services;
 
-public class Worker(IServiceScopeFactory scopeFactory) : BackgroundService
+public class AnalysisWorker(IServiceScopeFactory scopeFactory) : BackgroundService
 {
     protected override async Task ExecuteAsync(CancellationToken ct)
     {
@@ -11,7 +11,7 @@ public class Worker(IServiceScopeFactory scopeFactory) : BackgroundService
             using var scope = scopeFactory.CreateScope();
             
             var processor = scope.ServiceProvider
-                .GetRequiredService<IProjectRefinementJobProcessor>();
+                .GetRequiredService<IQualityAnalysisJobProcessor>();
             
             await processor.ProcessNextJob(ct);
 

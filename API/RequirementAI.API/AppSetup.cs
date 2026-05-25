@@ -30,7 +30,8 @@ public static class AppSetup
             typeof(ScenarioProfile),
             typeof(UserStoryProfile),
             typeof(AcceptanceCriteriaProfile),
-            typeof(EdgeCaseProfile)
+            typeof(EdgeCaseProfile),
+            typeof(QualityScoreProfile)
         );
     }
 

@@ -1,11 +1,15 @@
 using Microsoft.EntityFrameworkCore;
 using RequirementAI.Business;
+using RequirementAI.Business.Interfaces.QualityAnalysis;
+using RequirementAI.Business.Interfaces.Refinement;
 using RequirementAI.Business.MappingProfiles;
+using RequirementAI.Business.Services.QualityAnalysis;
 using RequirementAI.Business.Services.Refinement;
 using RequirementAI.Persistence;
+using RequirementAI.Workers.Services;
 using Serilog;
 
-namespace RequirementAI.RefinementWorker;
+namespace RequirementAI.Workers;
 
 public static class AppSetup
 {
@@ -35,14 +39,19 @@ public static class AppSetup
             typeof(ScenarioProfile),
             typeof(UserStoryProfile),
             typeof(AcceptanceCriteriaProfile),
-            typeof(EdgeCaseProfile)
+            typeof(EdgeCaseProfile),
+            typeof(QualityScoreProfile)
         );    
     }
 
     public static void SetupServices(HostApplicationBuilder builder)
     {
-        builder.Services.AddHostedService<Worker>();
-        builder.Services.AddScoped<IProjectRefinementJobProcessor, ProjectRefinementJobProcessor>();    }
+        builder.Services.AddHostedService<RefinementWorker>();
+        builder.Services.AddScoped<IProjectRefinementJobProcessor, ProjectRefinementJobProcessor>();
+        
+        builder.Services.AddHostedService<AnalysisWorker>();
+        builder.Services.AddScoped<IQualityAnalysisJobProcessor, QualityAnalysisJobProcessor>();
+    }
 
     public static void SetupLogging(HostApplicationBuilder builder)
     {
@@ -55,6 +64,5 @@ public static class AppSetup
                 .ReadFrom.Services(services)
                 .Enrich.FromLogContext();
         });
-        
     }
 }

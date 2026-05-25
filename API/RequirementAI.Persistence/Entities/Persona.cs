@@ -11,4 +11,5 @@ public class Persona: BaseEntity
     public IList<Scenario> Scenarios { get; set; } = new List<Scenario>();
     public Guid ProjectId { get; set; }
     public Project Project { get; set; } = null!;
+    public List<PersonaQualityScore> QualityScores { get; set; } = [];
 }

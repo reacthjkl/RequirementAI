@@ -34,7 +34,7 @@ public class RefinementService(
         string? customInstructions,
         CancellationToken ct)
     {
-        var request = promptBuilder.Build<TEntity, TDto>(entity, customInstructions);
+        var request = promptBuilder.BuildRefinementPrompt<TEntity, TDto>(entity, customInstructions);
         
         var response = await llmProvider.GetResponse(
             request,
@@ -56,6 +56,6 @@ public class RefinementService(
         var validator = serviceProvider.GetService(typeof(IValidator<TDto>)) as IValidator<TDto>
                         ?? throw new BusinessException($"Validator for {typeof(TDto).Name} has not been provided");
 
-        await validator.ValidateAsync(item, ct);
+        await validator.ValidateAndThrowAsync(item, ct);
     }
 }

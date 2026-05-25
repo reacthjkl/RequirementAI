@@ -1,12 +1,12 @@
 using System.Text.Json;
 using AutoMapper;
-using RequirementAI.Business.Interfaces;
+using RequirementAI.Business.Interfaces.Refinement;
 using RequirementAI.Contract.Dto.LLMDtos;
 using RequirementAI.Persistence.Entities;
 
-namespace RequirementAI.Business.Services;
+namespace RequirementAI.Business.Services.Refinement;
 
-public class RefinementContextBuilder(IMapper mapper): IRefinementContextBuilder
+public class ItemContextBuilder(IMapper mapper): IItemContextBuilder
 {
     public string Build<T>(T entity)
     {
