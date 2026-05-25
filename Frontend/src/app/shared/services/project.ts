@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { Subject } from 'rxjs';
 import { Api } from '../../core/services/api';
 import { ApiController } from '../enums/api-controller.enum';
 import { ApiResponse } from '../models/api-response.model';
@@ -10,6 +11,9 @@ import { Project } from '../models/project.model';
   providedIn: 'root',
 })
 export class ProjectService {
+  private readonly projectsChangedSubject = new Subject<void>();
+  public readonly projectsChanged$ = this.projectsChangedSubject.asObservable();
+
   constructor(private api: Api) {}
 
   public async getById(id: string): Promise<Project | null> {
@@ -31,11 +35,16 @@ export class ProjectService {
       project,
     );
 
+    if (response.successful) {
+      this.projectsChangedSubject.next();
+    }
+
     return response.data;
   }
 
   public async update(project: ProjectForUpdate): Promise<void> {
     await this.api.put(ApiController.Project, '', project);
+    this.projectsChangedSubject.next();
   }
 
   public async refine(id: string, customInstructions: string | null): Promise<void> {
@@ -48,5 +57,6 @@ export class ProjectService {
 
   public async delete(id: string): Promise<void> {
     await this.api.delete(ApiController.Project, id);
+    this.projectsChangedSubject.next();
   }
 }

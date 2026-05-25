@@ -19,59 +19,10 @@
   } @else {
     <section class="card border-0 shadow-sm">
       <div class="card-body">
-        @if (editing) {
-          <form [formGroup]="form" class="d-flex flex-column gap-3" (ngSubmit)="saveProject()">
-            <div>
-              <label for="projectName" class="form-label">Project name</label>
-              <input
-                id="projectName"
-                type="text"
-                class="form-control"
-                [class.is-invalid]="isInvalid('name')"
-                formControlName="name"
-              />
-            </div>
-
-            <div>
-              <label for="projectDescription" class="form-label">Description</label>
-              <textarea
-                id="projectDescription"
-                class="form-control"
-                [class.is-invalid]="isInvalid('description')"
-                rows="4"
-                formControlName="description"
-              ></textarea>
-            </div>
-
-            <div class="d-flex justify-content-end gap-2">
-              <button type="button" class="btn btn-outline-secondary" (click)="cancelEditing()">
-                <fa-icon [icon]="faTimes"></fa-icon>
-                Cancel
-              </button>
-
-              <button type="submit" class="btn btn-primary" [disabled]="saving">
-                <fa-icon [icon]="faCheck"></fa-icon>
-                {{ saving ? 'Saving...' : 'Save' }}
-              </button>
-            </div>
-          </form>
-        } @else {
-          <div class="d-flex justify-content-between align-items-start gap-3">
-            <div class="overflow-hidden">
-              <h4 class="mb-2">{{ project.name }}</h4>
-              <p class="text-secondary mb-0 project-description">{{ project.description }}</p>
-            </div>
-
-            <button
-              type="button"
-              class="btn btn-outline-warning flex-shrink-0"
-              (click)="startEditing()"
-            >
-              <fa-icon [icon]="faPen"></fa-icon>
-              Edit
-            </button>
-          </div>
-        }
+        <div class="overflow-hidden">
+          <h4 class="mb-2">{{ project.name }}</h4>
+          <p class="text-secondary mb-0 project-description">{{ project.description }}</p>
+        </div>
       </div>
     </section>
 

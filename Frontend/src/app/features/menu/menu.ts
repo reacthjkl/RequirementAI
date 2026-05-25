@@ -1,4 +1,5 @@
-import { Component, effect } from '@angular/core';
+import { Component, DestroyRef, effect } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Router, RouterModule } from '@angular/router';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import {
@@ -52,11 +53,16 @@ export class Menu {
     private readonly authSvc: AuthService,
     private readonly projectSvc: ProjectService,
     private readonly router: Router,
+    private readonly destroyRef: DestroyRef,
   ) {
     effect(() => {
       this.router.currentNavigation();
       this.syncCurrentProject();
     });
+
+    this.projectSvc.projectsChanged$
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(() => void this.reloadProjects());
   }
 
   public async ngOnInit(): Promise<void> {
@@ -131,5 +137,10 @@ export class Menu {
     }
 
     return 'overview';
+  }
+
+  private async reloadProjects(): Promise<void> {
+    this.projects = await this.projectSvc.get();
+    this.syncCurrentProject();
   }
 }
