@@ -11,47 +11,18 @@
   font-weight: 600;
 }
 
-.compact-list {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-  list-style-position: outside;
-  list-style-type: disc;
-  padding-left: 1.25rem;
+.user-story-child-table {
+  table-layout: fixed;
 }
 
-.compact-list-item {
-  padding-left: 0.25rem;
+.user-story-child-table :is(th, td) {
+  padding-bottom: 0.65rem;
+  padding-top: 0.65rem;
+  vertical-align: top;
+  white-space: normal;
+  word-break: break-word;
 }
 
-.compact-list-item::marker {
-  color: var(--bs-secondary-color);
-}
-
-.compact-list-row {
-  align-items: flex-start;
-  column-gap: 0.5rem;
-  display: flex;
-}
-
-.compact-list-button {
-  appearance: none;
-  background: transparent;
-  border: 0;
-  color: inherit;
-  flex: 1 1 auto;
-  min-width: 0;
-  padding: 0.2rem 0;
-  text-align: left;
-  white-space: pre-wrap;
-}
-
-.compact-list-button:hover,
-.compact-list-button:focus-visible {
-  color: var(--bs-primary);
-}
-
-.compact-list-empty {
-  color: var(--bs-secondary-color);
-  list-style: none;
+.user-story-child-row {
+  cursor: pointer;
 }

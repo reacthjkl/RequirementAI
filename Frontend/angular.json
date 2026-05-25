@@ -30,7 +30,10 @@
                 "input": "public"
               }
             ],
-            "styles": ["src/styles.scss"],
+            "styles": [
+              "node_modules/datatables.net-bs5/css/dataTables.bootstrap5.css",
+              "src/styles.scss"
+            ],
             "polyfills": ["@angular/localize/init"]
           },
           "configurations": {

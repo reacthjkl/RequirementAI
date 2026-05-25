@@ -133,23 +133,33 @@
             </button>
           </div>
 
-          <ul formArrayName="acceptanceCriteria" class="compact-list mb-0">
-            @for (criteriaForm of acceptanceCriteriaForms.controls; track criteriaForm; let i = $index) {
-              <li class="compact-list-item" [formGroupName]="i">
-                <div class="compact-list-row">
-                  <button
-                    type="button"
-                    class="compact-list-button"
+          <div formArrayName="acceptanceCriteria" class="table-responsive">
+            <table
+              #acceptanceCriteriaTable
+              class="table table-hover table-sm align-middle user-story-child-table mb-0"
+            >
+              <thead style="display: none">
+                <tr>
+                  <th scope="col">Wording</th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (
+                  criteriaForm of acceptanceCriteriaForms.controls;
+                  track criteriaForm;
+                  let i = $index
+                ) {
+                  <tr
+                    class="user-story-child-row"
+                    [formGroupName]="i"
                     (click)="editAcceptanceCriteria(i)"
                   >
-                    {{ acceptanceCriteriaText(i) || 'Untitled acceptance criteria' }}
-                  </button>
-                </div>
-              </li>
-            } @empty {
-              <li class="compact-list-empty">No Acceptance Criteria added yet.</li>
-            }
-          </ul>
+                    <td>{{ acceptanceCriteriaText(i) || 'Untitled acceptance criteria' }}</td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
         </div>
       </section>
 
@@ -163,19 +173,29 @@
             </button>
           </div>
 
-          <ul formArrayName="edgeCases" class="compact-list mb-0">
-            @for (edgeCaseForm of edgeCaseForms.controls; track edgeCaseForm; let i = $index) {
-              <li class="compact-list-item" [formGroupName]="i">
-                <div class="compact-list-row">
-                  <button type="button" class="compact-list-button" (click)="editEdgeCase(i)">
-                    {{ edgeCasePreconditions(i) || 'Untitled edge case' }}
-                  </button>
-                </div>
-              </li>
-            } @empty {
-              <li class="compact-list-empty">No Edge Cases added yet.</li>
-            }
-          </ul>
+          <div formArrayName="edgeCases" class="table-responsive">
+            <table
+              #edgeCasesTable
+              class="table table-hover table-sm align-middle user-story-child-table mb-0"
+            >
+              <thead>
+                <tr>
+                  <th scope="col">Preconditions</th>
+                  <th scope="col">Trigger Action</th>
+                  <th scope="col">Expected Behavior</th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (edgeCaseForm of edgeCaseForms.controls; track edgeCaseForm; let i = $index) {
+                  <tr class="user-story-child-row" [formGroupName]="i" (click)="editEdgeCase(i)">
+                    <td>{{ edgeCasePreconditions(i) || 'Untitled edge case' }}</td>
+                    <td>{{ edgeCaseForm.controls.triggerAction.value }}</td>
+                    <td>{{ edgeCaseForm.controls.expectedBehavior.value }}</td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
         </div>
       </section>
     </form>
@@ -183,7 +203,12 @@
 </div>
 
 <div class="modal-footer">
-  <button type="submit" form="userStoryEditorForm" class="btn btn-primary" [disabled]="saving || loading">
+  <button
+    type="submit"
+    form="userStoryEditorForm"
+    class="btn btn-primary"
+    [disabled]="saving || loading"
+  >
     <fa-icon [icon]="faCheck"></fa-icon>
     {{ saving ? 'Saving...' : 'Save' }}
   </button>

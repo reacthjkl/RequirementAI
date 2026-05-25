@@ -1,4 +1,13 @@
-import { ChangeDetectorRef, Component, Input, Optional } from '@angular/core';
+import {
+  AfterViewChecked,
+  ChangeDetectorRef,
+  Component,
+  ElementRef,
+  Input,
+  OnDestroy,
+  Optional,
+  ViewChild,
+} from '@angular/core';
 import {
   FormArray,
   FormBuilder,
@@ -11,9 +20,8 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { faCheck, faPlus } from '@fortawesome/free-solid-svg-icons';
 import { NgbActiveModal, NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import type { Api } from 'datatables.net-bs5';
 import { Notification } from '../../core/services/notification.service';
-import { USER_STORY_STAGE_META } from '../../shared/constants/user-story-stage-meta';
-import { UserStoryStage } from '../../shared/enums/user-story-stage.enum';
 import {
   MetaDropdown,
   MetaDropdownOption,
@@ -23,6 +31,8 @@ import {
   UserStoryFormFields,
   UserStoryFormGroup,
 } from '../../shared/components/user-story-form-fields/user-story-form-fields';
+import { USER_STORY_STAGE_META } from '../../shared/constants/user-story-stage-meta';
+import { UserStoryStage } from '../../shared/enums/user-story-stage.enum';
 import { ENTITY_ICONS } from '../../shared/icons/entity-icons';
 import { AcceptanceCriteria } from '../../shared/models/acceptance-criteria.model';
 import { EdgeCase } from '../../shared/models/edge-case.model';
@@ -39,10 +49,7 @@ import {
   UserStoryAcceptanceCriteriaModalResult,
 } from './user-story-acceptance-criteria-modal';
 import { UserStoryContextModal } from './user-story-context-modal';
-import {
-  UserStoryEdgeCaseModal,
-  UserStoryEdgeCaseModalResult,
-} from './user-story-edge-case-modal';
+import { UserStoryEdgeCaseModal, UserStoryEdgeCaseModalResult } from './user-story-edge-case-modal';
 
 type AcceptanceCriteriaForm = FormGroup<{
   id: FormControl<string>;
@@ -67,9 +74,12 @@ interface ScenarioOption {
   templateUrl: './project-user-story-editor.html',
   styleUrl: './project-user-story-editor.scss',
 })
-export class ProjectUserStoryEditor {
+export class ProjectUserStoryEditor implements AfterViewChecked, OnDestroy {
   @Input() public projectId: string | null = null;
   @Input() public userStoryId: string | null = null;
+  @ViewChild('acceptanceCriteriaTable')
+  private acceptanceCriteriaTable?: ElementRef<HTMLTableElement>;
+  @ViewChild('edgeCasesTable') private edgeCasesTable?: ElementRef<HTMLTableElement>;
 
   public readonly form;
   public readonly personaControl = new FormControl('', {
@@ -104,6 +114,12 @@ export class ProjectUserStoryEditor {
 
   private initialAcceptanceCriteria: AcceptanceCriteria[] = [];
   private initialEdgeCases: EdgeCase[] = [];
+  private acceptanceCriteriaDataTable: Api | null = null;
+  private acceptanceCriteriaDataTableGeneration = 0;
+  private acceptanceCriteriaDataTableInitializing = false;
+  private edgeCasesDataTable: Api | null = null;
+  private edgeCasesDataTableGeneration = 0;
+  private edgeCasesDataTableInitializing = false;
 
   constructor(
     private readonly route: ActivatedRoute,
@@ -181,6 +197,20 @@ export class ProjectUserStoryEditor {
 
   public get edgeCaseForms(): FormArray<EdgeCaseForm> {
     return this.form.controls.edgeCases;
+  }
+
+  public ngAfterViewChecked(): void {
+    this.initializeDataTable(
+      'acceptanceCriteria',
+      this.acceptanceCriteriaTable,
+      'No Acceptance Criteria added yet.',
+    );
+    this.initializeDataTable('edgeCases', this.edgeCasesTable, 'No Edge Cases added yet.');
+  }
+
+  public ngOnDestroy(): void {
+    this.destroyDataTable('acceptanceCriteria');
+    this.destroyDataTable('edgeCases');
   }
 
   public get userStoryFieldsForm(): UserStoryFormGroup {
@@ -265,8 +295,10 @@ export class ProjectUserStoryEditor {
   }
 
   public removeAcceptanceCriteria(index: number): void {
+    this.destroyDataTable('acceptanceCriteria');
     this.acceptanceCriteriaForms.removeAt(index);
     this.form.markAsDirty();
+    this.refreshDataTable('acceptanceCriteria');
   }
 
   public async editAcceptanceCriteria(index: number): Promise<void> {
@@ -278,8 +310,10 @@ export class ProjectUserStoryEditor {
   }
 
   public removeEdgeCase(index: number): void {
+    this.destroyDataTable('edgeCases');
     this.edgeCaseForms.removeAt(index);
     this.form.markAsDirty();
+    this.refreshDataTable('edgeCases');
   }
 
   public async editEdgeCase(index: number): Promise<void> {
@@ -546,19 +580,25 @@ export class ProjectUserStoryEditor {
   }
 
   private rebuildAcceptanceCriteria(items: AcceptanceCriteria[]): void {
+    this.destroyDataTable('acceptanceCriteria');
     this.acceptanceCriteriaForms.clear();
 
     for (const item of items) {
       this.acceptanceCriteriaForms.push(this.createAcceptanceCriteriaForm(item));
     }
+
+    this.refreshDataTable('acceptanceCriteria');
   }
 
   private rebuildEdgeCases(items: EdgeCase[]): void {
+    this.destroyDataTable('edgeCases');
     this.edgeCaseForms.clear();
 
     for (const item of items) {
       this.edgeCaseForms.push(this.createEdgeCaseForm(item));
     }
+
+    this.refreshDataTable('edgeCases');
   }
 
   private createAcceptanceCriteriaForm(item?: Partial<AcceptanceCriteria>): AcceptanceCriteriaForm {
@@ -606,6 +646,8 @@ export class ProjectUserStoryEditor {
         return;
       }
 
+      this.destroyDataTable('edgeCases');
+
       if (index === null) {
         this.edgeCaseForms.push(this.createEdgeCaseForm(result.value));
       } else {
@@ -614,6 +656,7 @@ export class ProjectUserStoryEditor {
       }
 
       this.form.markAsDirty();
+      this.refreshDataTable('edgeCases');
     } catch {
       return;
     }
@@ -645,6 +688,8 @@ export class ProjectUserStoryEditor {
         return;
       }
 
+      this.destroyDataTable('acceptanceCriteria');
+
       if (index === null) {
         this.acceptanceCriteriaForms.push(this.createAcceptanceCriteriaForm(result.value));
       } else {
@@ -653,8 +698,130 @@ export class ProjectUserStoryEditor {
       }
 
       this.form.markAsDirty();
+      this.refreshDataTable('acceptanceCriteria');
     } catch {
       return;
     }
+  }
+
+  private async initializeDataTable(
+    tableName: 'acceptanceCriteria' | 'edgeCases',
+    tableRef: ElementRef<HTMLTableElement> | undefined,
+    emptyTableMessage: string,
+  ): Promise<void> {
+    const state = this.dataTableState(tableName);
+
+    if (this.loading || state.table || state.initializing || !tableRef) {
+      return;
+    }
+
+    const table = tableRef.nativeElement;
+    const generation = state.generation;
+    this.setDataTableInitializing(tableName, true);
+
+    try {
+      const { default: DataTable } = await import('datatables.net-bs5');
+      const currentState = this.dataTableState(tableName);
+      const currentTableRef =
+        tableName === 'acceptanceCriteria' ? this.acceptanceCriteriaTable : this.edgeCasesTable;
+
+      if (
+        generation !== currentState.generation ||
+        currentState.table ||
+        !currentTableRef ||
+        currentTableRef.nativeElement !== table
+      ) {
+        return;
+      }
+
+      this.setDataTable(
+        tableName,
+        new DataTable(table, {
+          info: false,
+          language: {
+            emptyTable: emptyTableMessage,
+          },
+          ordering: false,
+          paging: false,
+          searching: false,
+        }),
+      );
+    } finally {
+      this.setDataTableInitializing(tableName, false);
+    }
+  }
+
+  private destroyDataTable(tableName: 'acceptanceCriteria' | 'edgeCases'): void {
+    const state = this.dataTableState(tableName);
+
+    this.incrementDataTableGeneration(tableName);
+    state.table?.destroy();
+    this.setDataTable(tableName, null);
+  }
+
+  private refreshDataTable(tableName: 'acceptanceCriteria' | 'edgeCases'): void {
+    setTimeout(() => {
+      if (tableName === 'acceptanceCriteria') {
+        this.initializeDataTable(
+          'acceptanceCriteria',
+          this.acceptanceCriteriaTable,
+          'No Acceptance Criteria added yet.',
+        );
+      } else {
+        this.initializeDataTable('edgeCases', this.edgeCasesTable, 'No Edge Cases added yet.');
+      }
+
+      this.cdr.markForCheck();
+    });
+  }
+
+  private dataTableState(tableName: 'acceptanceCriteria' | 'edgeCases'): {
+    generation: number;
+    initializing: boolean;
+    table: Api | null;
+  } {
+    if (tableName === 'acceptanceCriteria') {
+      return {
+        generation: this.acceptanceCriteriaDataTableGeneration,
+        initializing: this.acceptanceCriteriaDataTableInitializing,
+        table: this.acceptanceCriteriaDataTable,
+      };
+    }
+
+    return {
+      generation: this.edgeCasesDataTableGeneration,
+      initializing: this.edgeCasesDataTableInitializing,
+      table: this.edgeCasesDataTable,
+    };
+  }
+
+  private incrementDataTableGeneration(tableName: 'acceptanceCriteria' | 'edgeCases'): void {
+    if (tableName === 'acceptanceCriteria') {
+      this.acceptanceCriteriaDataTableGeneration++;
+      return;
+    }
+
+    this.edgeCasesDataTableGeneration++;
+  }
+
+  private setDataTable(tableName: 'acceptanceCriteria' | 'edgeCases', table: Api | null): void {
+    if (tableName === 'acceptanceCriteria') {
+      this.acceptanceCriteriaDataTable = table;
+      return;
+    }
+
+    this.edgeCasesDataTable = table;
+  }
+
+  private setDataTableInitializing(
+    tableName: 'acceptanceCriteria' | 'edgeCases',
+    initializing: boolean,
+  ): void {
+    if (tableName === 'acceptanceCriteria') {
+      this.acceptanceCriteriaDataTableInitializing = initializing;
+      return;
+    }
+
+    this.edgeCasesDataTableInitializing = initializing;
   }
 }

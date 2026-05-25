@@ -156,6 +156,11 @@ a.card:focus,
   gap: 0.5rem;
 }
 
+.table-hover > tbody > tr:hover > * {
+  --bs-table-bg-state: rgba(var(--bs-primary-rgb), 0.08);
+  --bs-table-color-state: inherit;
+}
+
 .stage-dot {
   border-radius: 50%;
   display: inline-block;
