@@ -50,7 +50,7 @@ export class Projects {
 
   public async openProject(project: Project): Promise<void> {
     if (!this.isIncompleteStatus(project.status)) {
-      await this.router.navigate(['/projects', project.id, 'board']);
+      await this.router.navigate(['/projects', project.id, 'overview']);
       return;
     }
 
