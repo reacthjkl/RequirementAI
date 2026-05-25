@@ -7,4 +7,5 @@ public interface IQualityScoreService
     public Task<List<PersonaQualityScoreDto>> GetPersonaQualityScores(Guid personaId, CancellationToken ct);
     public Task<List<ScenarioQualityScoreDto>> GetScenarioQualityScores(Guid scenarioId, CancellationToken ct);
     public Task<List<UserStoryQualityScoreDto>> GetUserStoryQualityScores(Guid userStoryId, CancellationToken ct);
+    Task<ProjectQualityOverviewDto> GetProjectQualityOverview(Guid projectId, CancellationToken ct);
 }

@@ -5,7 +5,7 @@ using RequirementAI.Contract.Dto.ResponseWrappers;
 
 namespace RequirementAI.API.Controllers;
 
-public class ProjectController(IProjectService projectService)
+public class ProjectController(IProjectService projectService, IQualityScoreService qualityScoreService)
     : RequirementAIControllerBase
 {
     [HttpGet("{id:guid}")]
@@ -20,6 +20,13 @@ public class ProjectController(IProjectService projectService)
     {
         var result = await projectService.GetByOrganizationId(OrganizationId, ct);
         return Ok(ResponseDto<List<ProjectResponseDto>>.Success(result));
+    }
+    
+    [HttpGet("{projectId:guid}/overview")]
+    public async Task<IActionResult> GetProjectQualityOverview(Guid projectId, CancellationToken ct)
+    {
+        var result = await qualityScoreService.GetProjectQualityOverview(projectId, ct);
+        return Ok(ResponseDto<ProjectQualityOverviewDto>.Success(result));
     }
 
     [HttpPost]

@@ -9,7 +9,9 @@ public class QualityScoreProfile: Profile
 {
     public QualityScoreProfile()
     {
-        CreateMap<PersonaQualityScore, PersonaQualityScoreDto>()
+        CreateMap<PersonaQualityScore, PersonaQualityScoreDto>();
+        CreateMap<PersonaQualityScore, PersonaLlmAnalysisDto>();
+        CreateMap<PersonaLlmAnalysisDto, PersonaQualityScore>()
             .ForMember(dest => dest.OverallScore, opt => opt.MapFrom(src =>
                 Math.Round(
                     src.ClarityScore * 0.20m +
@@ -20,9 +22,9 @@ public class QualityScoreProfile: Profile
                     src.DifferentiationScore * 0.05m,
                     1)));
         
-        CreateMap<PersonaQualityScore, PersonaLlmAnalysisDto>().ReverseMap();
-        
-        CreateMap<ScenarioQualityScore, ScenarioQualityScoreDto>()
+        CreateMap<ScenarioQualityScore, ScenarioQualityScoreDto>();
+        CreateMap<ScenarioQualityScore, ScenarioLlmAnalysisDto>();
+        CreateMap<ScenarioLlmAnalysisDto, ScenarioQualityScore>()
             .ForMember(dest => dest.OverallScore, opt => opt.MapFrom(src =>
                 Math.Round(
                     src.ClarityScore * 0.15m +
@@ -33,21 +35,17 @@ public class QualityScoreProfile: Profile
                     src.PersonaFitScore * 0.10m,
                     1)));
         
-        CreateMap<ScenarioQualityScore, ScenarioLlmAnalysisDto>().ReverseMap();
-        
-        CreateMap<UserStoryQualityScore, UserStoryQualityScoreDto>()
-            .ForMember(dest => dest.OverallScore, opt => opt.MapFrom(src =>
-                Math.Round(
-                    src.ClarityScore * 0.15m +
-                    src.CompletenessScore * 0.20m +
-                    src.TestabilityScore * 0.25m +
-                    src.AcceptanceCriteriaScore * 0.20m +
-                    src.ScopeScore * 0.10m +
-                    src.BusinessValueScore * 0.07m +
-                    src.AmbiguityScore * 0.03m,
-                    1)));
-        
-        CreateMap<UserStoryQualityScore, UserStoryLlmAnalysisDto>().ReverseMap();
-        
+        CreateMap<UserStoryQualityScore, UserStoryQualityScoreDto>() ;
+        CreateMap<UserStoryQualityScore, UserStoryLlmAnalysisDto>();
+        CreateMap<UserStoryLlmAnalysisDto, UserStoryQualityScore>().ForMember(dest => dest.OverallScore, opt => opt.MapFrom(src =>
+            Math.Round(
+                src.ClarityScore * 0.15m +
+                src.CompletenessScore * 0.20m +
+                src.TestabilityScore * 0.25m +
+                src.AcceptanceCriteriaScore * 0.20m +
+                src.ScopeScore * 0.10m +
+                src.BusinessValueScore * 0.07m +
+                src.AmbiguityScore * 0.03m,
+                1)));
     }
 }
