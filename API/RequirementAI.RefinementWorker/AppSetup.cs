@@ -3,6 +3,7 @@ using RequirementAI.Business;
 using RequirementAI.Business.MappingProfiles;
 using RequirementAI.Business.Services.Refinement;
 using RequirementAI.Persistence;
+using Serilog;
 
 namespace RequirementAI.RefinementWorker;
 
@@ -25,7 +26,11 @@ public static class AppSetup
 
     public static void SetupAutoMapper(HostApplicationBuilder builder)
     {
-        builder.Services.AddAutoMapper(_ => { },
+        builder.Services.AddAutoMapper(cfg =>
+            {
+                var key = builder.Configuration["AutoMapperOptions:LicenseKey"];
+                cfg.LicenseKey = builder.Configuration["AutoMapperOptions:LicenseKey"];
+            },
             typeof(UserProfile),
             typeof(PersonaProfile),
             typeof(ScenarioProfile),
@@ -39,4 +44,18 @@ public static class AppSetup
     {
         builder.Services.AddHostedService<Worker>();
         builder.Services.AddScoped<IProjectRefinementJobProcessor, ProjectRefinementJobProcessor>();    }
+
+    public static void SetupLogging(HostApplicationBuilder builder)
+    {
+        builder.Logging.ClearProviders();
+
+        builder.Services.AddSerilog((services, configuration) =>
+        {
+            configuration
+                .ReadFrom.Configuration(builder.Configuration)
+                .ReadFrom.Services(services)
+                .Enrich.FromLogContext();
+        });
+        
+    }
 }

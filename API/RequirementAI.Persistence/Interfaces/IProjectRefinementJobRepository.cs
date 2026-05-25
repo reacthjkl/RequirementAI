@@ -11,5 +11,6 @@ public interface IProjectRefinementJobRepository
     public Task<ProjectRefinementJob?> AcquireNextPendingJob(CancellationToken ct);
     public Task<ProjectRefinementJob> Create(ProjectRefinementJob job, CancellationToken ct);
     public Task<ProjectRefinementJob> Update(ProjectRefinementJob job, CancellationToken ct);
+    public Task MarkFailed(Guid jobId, string error, CancellationToken ct);
     public Task Delete(ProjectRefinementJob job, CancellationToken ct);
 }

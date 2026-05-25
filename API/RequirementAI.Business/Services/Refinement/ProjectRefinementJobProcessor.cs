@@ -1,10 +1,11 @@
+using Microsoft.Extensions.DependencyInjection;
 using RequirementAI.Business.Interfaces.Refinement;
 using RequirementAI.Contract.Enums;
 using RequirementAI.Persistence.Interfaces;
 
 namespace RequirementAI.Business.Services.Refinement;
 
-public class ProjectRefinementJobProcessor(IProjectRefinementOrchestrator orchestrator, IProjectRefinementJobRepository jobRepository): IProjectRefinementJobProcessor
+public class ProjectRefinementJobProcessor(IProjectRefinementOrchestrator orchestrator, IProjectRefinementJobRepository jobRepository, IServiceScopeFactory scopeFactory): IProjectRefinementJobProcessor
 {
     public async Task ProcessNextJob(CancellationToken ct)
     {
@@ -19,13 +20,20 @@ public class ProjectRefinementJobProcessor(IProjectRefinementOrchestrator orches
         }
         catch (Exception ex)
         {
-            job.Status = JobStatus.Failed;
-            job.ErrorMessage = ex.Message[..Math.Min(ex.Message.Length, 1024)];
+            await MarkFailedFresh(job.Id, ex.Message, ct);
         }
         finally
         {
             job.FinishedAt = DateTimeOffset.UtcNow;
             await jobRepository.Update(job, ct);
         }
+    }
+    
+    private async Task MarkFailedFresh(Guid jobId, string error, CancellationToken ct)
+    {
+        using var scope = scopeFactory.CreateScope();
+        var repo = scope.ServiceProvider.GetRequiredService<IProjectRefinementJobRepository>();
+
+        await repo.MarkFailed(jobId, error, ct);
     }
 }

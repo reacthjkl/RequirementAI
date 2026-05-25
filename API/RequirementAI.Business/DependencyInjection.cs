@@ -66,7 +66,6 @@ public static class DependencyInjection
         
         services.AddHttpContextAccessor();
         
-        
         return services;
     }
 }

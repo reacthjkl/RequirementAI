@@ -10,6 +10,8 @@ AppSetup.SetupEntityFramework(builder);
 
 AppSetup.SetupAutoMapper(builder);
 
+AppSetup.SetupLogging(builder);
+
 var host = builder.Build();
 
 host.Run();

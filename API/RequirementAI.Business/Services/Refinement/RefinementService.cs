@@ -1,5 +1,4 @@
 using System.Text.Json;
-using AutoMapper;
 using FluentValidation;
 using Microsoft.Extensions.DependencyInjection;
 using RequirementAI.Business.Interfaces;
@@ -35,10 +34,12 @@ public class RefinementService(
         string? customInstructions,
         CancellationToken ct)
     {
+        var request = promptBuilder.Build<TEntity, TDto>(entity, customInstructions);
+        
         var response = await llmProvider.GetResponse(
-            promptBuilder.Build<TEntity, TDto>(entity, customInstructions),
+            request,
             ct);
-
+        
         var refined = JsonSerializer.Deserialize<TDto>(response) 
                       ?? throw new BusinessException("Response provided by LLM does not fit to the object schema");
 

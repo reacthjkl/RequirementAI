@@ -71,6 +71,21 @@ public class ProjectRefinementJobRepository(RequirementAIContext context): IProj
         return job;
     }
 
+    public async Task MarkFailed(Guid jobId, string error, CancellationToken ct)
+    {
+        var errorMessage = error.Length > 1024
+            ? error[..1024]
+            : error;
+
+        await context.ProjectRefinementJobs
+            .Where(x => x.Id == jobId)
+            .ExecuteUpdateAsync(setters => setters
+                    .SetProperty(x => x.Status, JobStatus.Failed)
+                    .SetProperty(x => x.ErrorMessage, errorMessage)
+                    .SetProperty(x => x.FinishedAt, DateTimeOffset.UtcNow),
+                ct);
+    }
+
     public async Task Delete(ProjectRefinementJob job, CancellationToken ct)
     {
         context.ProjectRefinementJobs.Remove(job);
