@@ -15,6 +15,14 @@ public class ProjectRefinementJobRepository(RequirementAIContext context): IProj
                ?? throw new EntityNotFoundException<ProjectRefinementJob>(id);
     }
 
+    public async Task<ProjectRefinementJob?> GetLastByProjectId(Guid projectId, CancellationToken ct)
+    {
+        return await context.ProjectRefinementJobs
+            .Where(x => x.ProjectId == projectId)
+            .OrderByDescending(x => x.CreatedAt)
+            .FirstOrDefaultAsync(ct);
+    }
+
     public async Task<Dictionary<Guid, JobStatus>> GetLatestStatusesByProjectIds(List<Guid> projectIds, CancellationToken ct)
     {
         return await context.ProjectRefinementJobs
@@ -69,6 +77,21 @@ public class ProjectRefinementJobRepository(RequirementAIContext context): IProj
         await context.SaveChangesAsync(ct);
         
         return job;
+    }
+
+    public async Task MarkFailed(Guid jobId, string error, CancellationToken ct)
+    {
+        var errorMessage = error.Length > 1024
+            ? error[..1024]
+            : error;
+
+        await context.ProjectRefinementJobs
+            .Where(x => x.Id == jobId)
+            .ExecuteUpdateAsync(setters => setters
+                    .SetProperty(x => x.Status, JobStatus.Failed)
+                    .SetProperty(x => x.ErrorMessage, errorMessage)
+                    .SetProperty(x => x.FinishedAt, DateTimeOffset.UtcNow),
+                ct);
     }
 
     public async Task Delete(ProjectRefinementJob job, CancellationToken ct)

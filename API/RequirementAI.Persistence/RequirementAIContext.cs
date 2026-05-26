@@ -13,7 +13,11 @@ public class RequirementAIContext(DbContextOptions<RequirementAIContext> options
     public virtual DbSet<Scenario> Scenarios { get; set; }
     public virtual DbSet<User> Users { get; set; }
     public virtual DbSet<UserStory> UserStories { get; set; }
+    public virtual DbSet<PersonaQualityScore>  PersonaQualityScores { get; set; }
+    public virtual DbSet<ScenarioQualityScore>  ScenarioQualityScores { get; set; }
+    public virtual DbSet<UserStoryQualityScore>  UserStoryQualityScores { get; set; }
     public virtual DbSet<ProjectRefinementJob> ProjectRefinementJobs { get; set; }
+    public virtual DbSet<QualityAnalysisJob> QualityAnalysisJobs { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -22,12 +26,6 @@ public class RequirementAIContext(DbContextOptions<RequirementAIContext> options
             entity.HasKey(e => e.Id);
             
             entity.Property(e => e.Wording).HasMaxLength(1024);
-            
-            entity.Property(e => e.CreatedAt)
-                .HasColumnType("timestamptz")
-                .HasDefaultValueSql("CURRENT_TIMESTAMP")
-                .ValueGeneratedOnAdd();
-            
         });
         
         modelBuilder.Entity<EdgeCase>(entity =>
@@ -42,12 +40,6 @@ public class RequirementAIContext(DbContextOptions<RequirementAIContext> options
             
             entity.Property(e => e.ExpectedBehavior)
                 .HasMaxLength(1024);
-            
-            entity.Property(e => e.CreatedAt)
-                .HasColumnType("timestamptz")
-                .HasDefaultValueSql("CURRENT_TIMESTAMP")
-                .ValueGeneratedOnAdd();
-            
         });
         
         modelBuilder.Entity<Organization>(entity =>
@@ -64,12 +56,6 @@ public class RequirementAIContext(DbContextOptions<RequirementAIContext> options
             entity.HasMany(e => e.Projects)
                 .WithOne(e => e.Organization)
                 .HasForeignKey(e => e.OrganizationId);
-            
-            entity.Property(e => e.CreatedAt)
-                .HasColumnType("timestamptz")
-                .HasDefaultValueSql("CURRENT_TIMESTAMP")
-                .ValueGeneratedOnAdd();
-            
         });
         
         modelBuilder.Entity<Persona>(entity =>
@@ -95,11 +81,6 @@ public class RequirementAIContext(DbContextOptions<RequirementAIContext> options
                 .WithOne(e => e.Persona)
                 .HasForeignKey(e => e.PersonaId);
             
-            entity.Property(e => e.CreatedAt)
-                .HasColumnType("timestamptz")
-                .HasDefaultValueSql("CURRENT_TIMESTAMP")
-                .ValueGeneratedOnAdd();
-            
         });
         
         modelBuilder.Entity<Project>(entity =>
@@ -112,19 +93,9 @@ public class RequirementAIContext(DbContextOptions<RequirementAIContext> options
             entity.Property(e => e.Description)
                 .HasMaxLength(2048);
 
-            entity.Property(e => e.Status)
-                .HasMaxLength(255)
-                .HasConversion<string>();
-                
             entity.HasMany(e => e.Personas)
                 .WithOne(e => e.Project)
                 .HasForeignKey(e => e.ProjectId);
-            
-            entity.Property(e => e.CreatedAt)
-                .HasColumnType("timestamptz")
-                .HasDefaultValueSql("CURRENT_TIMESTAMP")
-                .ValueGeneratedOnAdd();
-            
         });
         
         modelBuilder.Entity<Scenario>(entity =>
@@ -140,12 +111,6 @@ public class RequirementAIContext(DbContextOptions<RequirementAIContext> options
             entity.HasMany(e => e.UserStories)
                 .WithOne(e => e.Scenario)
                 .HasForeignKey(e => e.ScenarioId);
-            
-            entity.Property(e => e.CreatedAt)
-                .HasColumnType("timestamptz")
-                .HasDefaultValueSql("CURRENT_TIMESTAMP")
-                .ValueGeneratedOnAdd();
-            
         });
         
         modelBuilder.Entity<User>(entity =>
@@ -172,12 +137,6 @@ public class RequirementAIContext(DbContextOptions<RequirementAIContext> options
                 .HasMaxLength(255);
 
             entity.Property(e => e.RefreshTokenExpiry);
-
-            entity.Property(e => e.CreatedAt)
-                .HasColumnType("timestamptz")
-                .HasDefaultValueSql("CURRENT_TIMESTAMP")
-                .ValueGeneratedOnAdd();
-            
         });
         
         modelBuilder.Entity<UserStory>(entity => {  
@@ -200,12 +159,6 @@ public class RequirementAIContext(DbContextOptions<RequirementAIContext> options
             entity.Property(e => e.Stage)
                 .HasMaxLength(255)
                 .HasConversion<string>();
-            
-            entity.Property(e => e.CreatedAt)
-                .HasColumnType("timestamptz")
-                .HasDefaultValueSql("CURRENT_TIMESTAMP")
-                .ValueGeneratedOnAdd();
-          
         });
         
         modelBuilder.Entity<ProjectRefinementJob>(entity => {  
@@ -217,11 +170,6 @@ public class RequirementAIContext(DbContextOptions<RequirementAIContext> options
             entity.Property(e => e.Status)
                 .HasMaxLength(255)
                 .HasConversion<string>();
-            
-            entity.Property(e => e.CreatedAt)
-                .HasColumnType("timestamptz")
-                .HasDefaultValueSql("CURRENT_TIMESTAMP")
-                .ValueGeneratedOnAdd();
             
             entity.Property(e => e.StartedAt)
                 .HasColumnType("timestamptz");
@@ -237,5 +185,73 @@ public class RequirementAIContext(DbContextOptions<RequirementAIContext> options
             entity.Property(e => e.CustomInstructions)
                 .HasMaxLength(2048);
         });
+        
+        modelBuilder.Entity<QualityAnalysisJob>(entity => {  
+            entity.HasKey(e => e.Id);
+            
+            entity.Property(e => e.ErrorMessage)
+                .HasMaxLength(1024);
+            
+            entity.Property(e => e.Status)
+                .HasMaxLength(255)
+                .HasConversion<string>();
+            
+            entity.Property(e => e.StartedAt)
+                .HasColumnType("timestamptz");
+            
+            entity.Property(e => e.FinishedAt)
+                .HasColumnType("timestamptz");
+
+            entity.HasOne<Project>()
+                .WithMany()
+                .HasForeignKey(e => e.ProjectId)
+                .OnDelete(DeleteBehavior.Cascade);
+        });
+        
+        modelBuilder.Entity<PersonaQualityScore>(entity => {  
+            entity.HasKey(e => e.Id);
+            
+            entity.HasOne(e => e.Persona)
+                .WithMany(e => e.QualityScores)
+                .HasForeignKey(e => e.PersonaId);
+        });
+        
+        modelBuilder.Entity<ScenarioQualityScore>(entity => {  
+            entity.HasKey(e => e.Id);
+            
+            entity.HasOne(e => e.Scenario)
+                .WithMany(e => e.QualityScores)
+                .HasForeignKey(e => e.ScenarioId);
+        });
+        
+        modelBuilder.Entity<UserStoryQualityScore>(entity => {  
+            entity.HasKey(e => e.Id);
+            
+            entity.HasOne(e => e.UserStory)
+                .WithMany(e => e.QualityScores)
+                .HasForeignKey(e => e.UserStoryId);
+        });
+    }
+    
+    public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
+    {
+        var now = DateTimeOffset.UtcNow;
+
+        foreach (var entry in ChangeTracker.Entries<BaseEntity>())
+        {
+            switch (entry.State)
+            {
+                case EntityState.Added:
+                    entry.Entity.CreatedAt = now;
+                    entry.Entity.UpdatedAt = now;
+                    break;
+                case EntityState.Modified:
+                    entry.Entity.UpdatedAt = now;
+                    entry.Property(x => x.CreatedAt).IsModified = false;
+                    break;
+            }
+        }
+
+        return base.SaveChangesAsync(cancellationToken);
     }
 }

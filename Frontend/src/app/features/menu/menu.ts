@@ -1,7 +1,14 @@
-import { Component, effect } from '@angular/core';
+import { Component, DestroyRef, effect } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Router, RouterModule } from '@angular/router';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-import { faPlus, faRightFromBracket } from '@fortawesome/free-solid-svg-icons';
+import {
+  faAnglesLeft,
+  faAnglesRight,
+  faPlus,
+  faRightFromBracket,
+} from '@fortawesome/free-solid-svg-icons';
+import { NgbTooltipModule } from '@ng-bootstrap/ng-bootstrap';
 import { CurrentUserService } from '../../core/services/current-user.service';
 import { MenuDropdown } from '../../shared/components/menu-dropdown/menu-dropdown';
 import { ENTITY_COLLECTION_ICONS, ENTITY_ICONS } from '../../shared/icons/entity-icons';
@@ -14,19 +21,24 @@ type ProjectPageKey = 'overview' | 'personas' | 'scenarios' | 'board' | 'setting
 
 @Component({
   selector: 'app-menu',
-  imports: [RouterModule, FontAwesomeModule, MenuDropdown],
+  imports: [RouterModule, FontAwesomeModule, NgbTooltipModule, MenuDropdown],
   templateUrl: './menu.html',
   styleUrl: './menu.scss',
 })
 export class Menu {
+  private readonly menuMinimizedStorageKey = 'requirement-ai-menu-minimized';
+
   public currentUser?: User;
   public projects: Project[] = [];
   public currentProject?: Project;
   public currentProjectPage: ProjectPageKey = 'overview';
+  public isMinimized = localStorage.getItem(this.menuMinimizedStorageKey) === 'true';
 
   // icons
   public readonly entityCollectionIcons = ENTITY_COLLECTION_ICONS;
   public readonly entityIcons = ENTITY_ICONS;
+  public readonly faAnglesLeft = faAnglesLeft;
+  public readonly faAnglesRight = faAnglesRight;
   public readonly faPlus = faPlus;
   public readonly faRightFromBracket = faRightFromBracket;
 
@@ -42,11 +54,16 @@ export class Menu {
     private readonly authSvc: AuthService,
     private readonly projectSvc: ProjectService,
     private readonly router: Router,
+    private readonly destroyRef: DestroyRef,
   ) {
     effect(() => {
       this.router.currentNavigation();
       this.syncCurrentProject();
     });
+
+    this.projectSvc.projectsChanged$
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(() => void this.reloadProjects());
   }
 
   public async ngOnInit(): Promise<void> {
@@ -64,6 +81,11 @@ export class Menu {
 
   public async switchProject(project: Project): Promise<void> {
     await this.router.navigate(['/projects', project.id, this.currentProjectPage]);
+  }
+
+  public toggleMinimized(): void {
+    this.isMinimized = !this.isMinimized;
+    localStorage.setItem(this.menuMinimizedStorageKey, String(this.isMinimized));
   }
 
   public get otherProjects(): Project[] {
@@ -116,5 +138,10 @@ export class Menu {
     }
 
     return 'overview';
+  }
+
+  private async reloadProjects(): Promise<void> {
+    this.projects = await this.projectSvc.get();
+    this.syncCurrentProject();
   }
 }

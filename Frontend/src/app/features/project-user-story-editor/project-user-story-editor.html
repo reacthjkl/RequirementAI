@@ -1,0 +1,215 @@
+<div class="modal-header">
+  <div class="d-flex align-items-center gap-2">
+    <span class="text-primary">
+      <fa-icon [icon]="entityIcons.userStory"></fa-icon>
+    </span>
+    <h5 class="modal-title mb-0">{{ title }}</h5>
+  </div>
+  <button type="button" class="btn-close" aria-label="Close" (click)="cancel()"></button>
+</div>
+
+<div class="modal-body">
+  @if (loading) {
+    <div class="text-muted">Loading User Story...</div>
+  } @else if (loadFailed) {
+    <div class="text-secondary">Could not load User Story data.</div>
+  } @else if (isEditing && !userStory) {
+    <div class="text-secondary">User Story not found</div>
+  } @else {
+    <form
+      id="userStoryEditorForm"
+      [formGroup]="form"
+      class="d-flex flex-column gap-4"
+      (ngSubmit)="save()"
+    >
+      <section class="card border-0 shadow-sm">
+        <div class="card-body">
+          <div class="row g-3">
+            <div class="col-md-4">
+              <label class="form-label" for="userStoryStage">Stage</label>
+              <app-meta-dropdown
+                id="userStoryStage"
+                [value]="stageControl.value"
+                [options]="stageDropdownOptions"
+                [invalid]="isStageInvalid()"
+                (valueChange)="selectStageValue($event)"
+              />
+            </div>
+
+            <div class="col-md-4">
+              @if (isEditing) {
+                <span class="form-label d-block">Persona</span>
+                <button
+                  type="button"
+                  class="meta-control"
+                  [disabled]="!currentScenarioOption"
+                  (click)="openPersonaDetails()"
+                >
+                  <span class="fw-semibold text-truncate">
+                    {{ currentScenarioOption?.persona?.name ?? 'Unknown persona' }}
+                  </span>
+                </button>
+              } @else {
+                <div class="d-flex justify-content-between align-items-center gap-2">
+                  <label class="form-label mb-0" for="userStoryPersona">Persona</label>
+                  <button
+                    type="button"
+                    class="btn btn-sm btn-link link-secondary p-0 meta-details-button"
+                    [disabled]="!currentPersona"
+                    (click)="openPersonaDetails()"
+                  >
+                    Details
+                  </button>
+                </div>
+                <app-meta-dropdown
+                  id="userStoryPersona"
+                  [value]="personaControl.value"
+                  [options]="personaDropdownOptions"
+                  placeholder="Select persona"
+                  [disabled]="personaOptions.length === 0"
+                  [invalid]="isPersonaInvalid()"
+                  (valueChange)="selectPersonaValue($event)"
+                />
+              }
+            </div>
+
+            <div class="col-md-4">
+              @if (isEditing) {
+                <span class="form-label d-block">Scenario</span>
+                <button
+                  type="button"
+                  class="meta-control"
+                  [disabled]="!currentScenarioOption"
+                  (click)="openScenarioDetails()"
+                >
+                  <span class="text-truncate">
+                    {{ currentScenarioOption?.scenario?.title ?? 'Unknown scenario' }}
+                  </span>
+                </button>
+              } @else {
+                <div class="d-flex justify-content-between align-items-center gap-2">
+                  <label class="form-label mb-0" for="userStoryScenario">Scenario</label>
+                  <button
+                    type="button"
+                    class="btn btn-sm btn-link link-secondary p-0 meta-details-button"
+                    [disabled]="!currentScenarioOption"
+                    (click)="openScenarioDetails()"
+                  >
+                    Details
+                  </button>
+                </div>
+                <app-meta-dropdown
+                  id="userStoryScenario"
+                  [value]="scenarioControl.value"
+                  [options]="scenarioDropdownOptions"
+                  placeholder="Select scenario"
+                  [disabled]="filteredScenarioOptions.length === 0"
+                  [invalid]="isScenarioInvalid()"
+                  (valueChange)="selectScenarioValue($event)"
+                />
+              }
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="card border-primary shadow-sm user-story-details-card">
+        <div class="card-body">
+          <app-user-story-form-fields [form]="userStoryFieldsForm" idPrefix="userStoryEditor" />
+        </div>
+      </section>
+
+      <section class="card border-0 shadow-sm">
+        <div class="card-body d-flex flex-column gap-3">
+          <div class="d-flex justify-content-between align-items-center gap-3">
+            <h5 class="mb-0">Acceptance Criteria</h5>
+            <button
+              type="button"
+              class="btn btn-sm btn-outline-primary"
+              (click)="addAcceptanceCriteria()"
+            >
+              <fa-icon [icon]="faPlus"></fa-icon>
+              Add
+            </button>
+          </div>
+
+          <div formArrayName="acceptanceCriteria" class="table-responsive">
+            <table
+              #acceptanceCriteriaTable
+              class="table table-hover table-sm align-middle user-story-child-table acceptance-criteria-table mb-0"
+            >
+              <thead style="display: none">
+                <tr>
+                  <th scope="col">Wording</th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (
+                  criteriaForm of acceptanceCriteriaForms.controls;
+                  track criteriaForm;
+                  let i = $index
+                ) {
+                  <tr
+                    class="user-story-child-row"
+                    [formGroupName]="i"
+                    (click)="editAcceptanceCriteria(i)"
+                  >
+                    <td>{{ acceptanceCriteriaText(i) || 'Untitled acceptance criteria' }}</td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <section class="card border-0 shadow-sm">
+        <div class="card-body d-flex flex-column gap-3">
+          <div class="d-flex justify-content-between align-items-center gap-3">
+            <h5 class="mb-0">Edge Cases</h5>
+            <button type="button" class="btn btn-sm btn-outline-primary" (click)="addEdgeCase()">
+              <fa-icon [icon]="faPlus"></fa-icon>
+              Add
+            </button>
+          </div>
+
+          <div formArrayName="edgeCases" class="table-responsive">
+            <table
+              #edgeCasesTable
+              class="table table-hover table-sm align-middle user-story-child-table mb-0"
+            >
+              <thead>
+                <tr>
+                  <th scope="col">Preconditions</th>
+                  <th scope="col">Trigger Action</th>
+                  <th scope="col">Expected Behavior</th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (edgeCaseForm of edgeCaseForms.controls; track edgeCaseForm; let i = $index) {
+                  <tr class="user-story-child-row" [formGroupName]="i" (click)="editEdgeCase(i)">
+                    <td>{{ edgeCasePreconditions(i) || 'Untitled edge case' }}</td>
+                    <td>{{ edgeCaseForm.controls.triggerAction.value }}</td>
+                    <td>{{ edgeCaseForm.controls.expectedBehavior.value }}</td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+    </form>
+  }
+</div>
+
+<div class="modal-footer">
+  <button
+    type="submit"
+    form="userStoryEditorForm"
+    class="btn btn-primary"
+    [disabled]="saving || loading"
+  >
+    <fa-icon [icon]="faCheck"></fa-icon>
+    {{ saving ? 'Saving...' : 'Save' }}
+  </button>
+</div>

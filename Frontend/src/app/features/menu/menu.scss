@@ -1,3 +1,13 @@
 .app-menu {
   width: 18rem;
+  transition: width 0.15s ease-in-out;
+}
+
+.app-menu-minimized {
+  width: 4.5rem;
+}
+
+.menu-avatar {
+  height: 2.5rem;
+  width: 2.5rem;
 }

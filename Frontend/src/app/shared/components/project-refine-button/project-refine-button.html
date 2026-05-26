@@ -1,0 +1,18 @@
+@if (badge; as refinementBadge) {
+  <span class="badge project-refinement-badge rounded-pill d-inline-flex align-items-center gap-1 {{ refinementBadge.className }}">
+    <fa-icon [icon]="refinementBadge.icon" [class.status-icon-spin]="refinementBadge.spinning"></fa-icon>
+    {{ refinementBadge.label }}
+  </span>
+} @else {
+  <span [ngbTooltip]="disabledTooltip" container="body">
+    <button
+      type="button"
+      class="btn btn-primary"
+      [disabled]="!canRefine"
+      (click)="openRefineModal()"
+    >
+      <fa-icon [icon]="faMagicWandSparkles"></fa-icon>
+      {{ refining ? 'Refining...' : 'Refine' }}
+    </button>
+  </span>
+}

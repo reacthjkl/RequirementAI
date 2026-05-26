@@ -15,6 +15,7 @@ interface ProjectStatusViewModel {
   icon: IconDefinition;
   label: string;
   className: string;
+  spinning?: boolean;
 }
 
 @Component({
@@ -33,15 +34,16 @@ export class ProjectStatusComponent {
     if (this.refinementStatus === RefinementStatus.InProcess) {
       return {
         icon: faSpinner,
-        label: 'In refinement',
+        label: 'Refinement in Progress',
         className: 'text-bg-info',
+        spinning: true,
       };
     }
 
     if (this.refinementStatus === RefinementStatus.Pending) {
       return {
         icon: faClock,
-        label: 'Refinement pending',
+        label: 'Refinement Pending',
         className: 'text-bg-primary',
       };
     }
@@ -49,7 +51,7 @@ export class ProjectStatusComponent {
     if (this.refinementStatus === RefinementStatus.Failed) {
       return {
         icon: faCircleExclamation,
-        label: 'Refinement failed',
+        label: 'Refinement Failed',
         className: 'text-bg-danger',
       };
     }
@@ -57,8 +59,8 @@ export class ProjectStatusComponent {
     if (this.refinementStatus === RefinementStatus.Completed) {
       return {
         icon: faCheckDouble,
-        label: 'Refined',
-        className: 'text-bg-secondary',
+        label: 'Refinement Completed',
+        className: 'text-bg-success',
       };
     }
 

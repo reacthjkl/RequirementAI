@@ -10,7 +10,8 @@
       "projectType": "application",
       "schematics": {
         "@schematics/angular:component": {
-          "style": "scss"
+          "style": "scss",
+          "skipTests": true
         }
       },
       "root": "",
@@ -30,11 +31,10 @@
               }
             ],
             "styles": [
+              "node_modules/datatables.net-bs5/css/dataTables.bootstrap5.css",
               "src/styles.scss"
             ],
-            "polyfills": [
-              "@angular/localize/init"
-            ]
+            "polyfills": ["@angular/localize/init"]
           },
           "configurations": {
             "production": {

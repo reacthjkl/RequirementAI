@@ -1,4 +1,4 @@
-<span class="badge rounded-pill d-inline-flex align-items-center gap-1 {{ viewModel.className }}">
-  <fa-icon [icon]="viewModel.icon" />
+<span class="badge project-status-badge rounded-pill d-inline-flex align-items-center gap-1 {{ viewModel.className }}">
+  <fa-icon [icon]="viewModel.icon" [class.status-icon-spin]="viewModel.spinning" />
   {{ viewModel.label }}
 </span>

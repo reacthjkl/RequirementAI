@@ -9,7 +9,22 @@
 </div>
 
 <div class="modal-body">
-  <p class="mb-0">{{ message }}</p>
+  <p [class.mb-0]="!requiredConfirmationText">{{ message }}</p>
+
+  @if (requiredConfirmationText) {
+    <div class="alert alert-danger py-2" role="alert">
+      This action is permanent. Type <strong>{{ requiredConfirmationText }}</strong> to confirm.
+    </div>
+
+    <label for="confirmationText" class="form-label">{{ confirmationLabel }}</label>
+    <input
+      id="confirmationText"
+      type="text"
+      class="form-control"
+      autocomplete="off"
+      [(ngModel)]="confirmationText"
+    />
+  }
 </div>
 
 <div class="modal-footer">
@@ -19,6 +34,7 @@
   <button
     type="button"
     class="btn {{ confirmButtonClass }}"
+    [disabled]="!canConfirm"
     (click)="activeModal.close(true)"
   >
     {{ confirmText }}

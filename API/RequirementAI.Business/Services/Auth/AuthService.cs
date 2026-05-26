@@ -8,7 +8,7 @@ using RequirementAI.Contract.Settings;
 using RequirementAI.Persistence.Entities;
 using RequirementAI.Persistence.Interfaces;
 
-namespace RequirementAI.Business.Services;
+namespace RequirementAI.Business.Services.Auth;
 
 public class AuthService(
     IAuthProvider provider,

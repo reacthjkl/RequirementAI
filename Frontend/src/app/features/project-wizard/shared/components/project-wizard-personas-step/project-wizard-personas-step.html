@@ -22,60 +22,7 @@
             </div>
           </div>
 
-          <div class="row g-3">
-            <div class="col-md-6">
-              <label class="form-label" [for]="'personaName' + i">Name</label>
-              <input
-                class="form-control"
-                [class.is-invalid]="isInvalid(i, 'name')"
-                [id]="'personaName' + i"
-                formControlName="name"
-              />
-            </div>
-
-            <div class="col-md-6">
-              <label class="form-label" [for]="'personaContext' + i">Context of use</label>
-              <input
-                class="form-control"
-                [class.is-invalid]="isInvalid(i, 'contextOfUse')"
-                [id]="'personaContext' + i"
-                formControlName="contextOfUse"
-              />
-            </div>
-
-            <div class="col-12">
-              <label class="form-label" [for]="'personaDescription' + i">Description</label>
-              <textarea
-                class="form-control"
-                [class.is-invalid]="isInvalid(i, 'description')"
-                [id]="'personaDescription' + i"
-                rows="3"
-                formControlName="description"
-              ></textarea>
-            </div>
-
-            <div class="col-md-6">
-              <label class="form-label" [for]="'personaGoals' + i">Goals</label>
-              <textarea
-                class="form-control"
-                [class.is-invalid]="isInvalid(i, 'goals')"
-                [id]="'personaGoals' + i"
-                rows="3"
-                formControlName="goals"
-              ></textarea>
-            </div>
-
-            <div class="col-md-6">
-              <label class="form-label" [for]="'personaFrustrations' + i">Frustrations</label>
-              <textarea
-                class="form-control"
-                [class.is-invalid]="isInvalid(i, 'frustrations')"
-                [id]="'personaFrustrations' + i"
-                rows="3"
-                formControlName="frustrations"
-              ></textarea>
-            </div>
-          </div>
+          <app-persona-form-fields [form]="personaForm" [idPrefix]="'persona' + i" />
 
           <div class="d-flex justify-content-end mt-3">
             <button

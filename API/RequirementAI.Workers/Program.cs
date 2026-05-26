@@ -1,0 +1,17 @@
+using RequirementAI.Workers;
+
+var builder = Host.CreateApplicationBuilder(args);
+
+AppSetup.SetupServices(builder);
+
+AppSetup.SetupLayers(builder);
+
+AppSetup.SetupEntityFramework(builder);
+
+AppSetup.SetupAutoMapper(builder);
+
+AppSetup.SetupLogging(builder);
+
+var host = builder.Build();
+
+host.Run();

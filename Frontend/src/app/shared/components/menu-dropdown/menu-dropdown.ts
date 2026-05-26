@@ -15,6 +15,7 @@ export class MenuDropdown {
   @Input() public icon?: IconDefinition;
   @Input() public iconText?: string;
   @Input() public dropup = false;
+  @Input() public compact = false;
 
   public isOpen = false;
   public readonly faChevronDown = faChevronDown;

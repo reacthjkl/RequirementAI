@@ -1,0 +1,85 @@
+.project-description {
+  white-space: pre-wrap;
+}
+
+.progress {
+  height: 0.75rem;
+}
+
+.progress-value {
+  font-size: 2rem;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.stat-icon {
+  align-items: center;
+  border-radius: 0.5rem;
+  display: inline-flex;
+  flex: 0 0 3rem;
+  height: 3rem;
+  justify-content: center;
+  width: 3rem;
+}
+
+.stat-card {
+  background: var(--bs-body-bg);
+  color: inherit;
+  cursor: pointer;
+  text-decoration: none;
+  transition:
+    background-color 0.15s ease-in-out,
+    border-color 0.15s ease-in-out,
+    box-shadow 0.15s ease-in-out,
+    transform 0.15s ease-in-out;
+}
+
+.stat-card:hover,
+.stat-card:focus-visible {
+  background: var(--bs-tertiary-bg);
+  border-color: rgba(var(--bs-primary-rgb), 0.45) !important;
+  box-shadow: 0 0.25rem 0.75rem rgba(var(--bs-body-color-rgb), 0.08) !important;
+  color: inherit;
+  transform: translateY(-1px);
+}
+
+.stat-value {
+  font-size: 1.75rem;
+  font-weight: 700;
+  line-height: 1.1;
+}
+
+.quality-score-card,
+.quality-lowest-item {
+  background: var(--bs-tertiary-bg);
+  border: 1px solid var(--bs-border-color);
+  border-radius: var(--bs-border-radius);
+  padding: 1rem;
+}
+
+.quality-score-value {
+  font-size: 1.75rem;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.quality-progress {
+  height: 0.5rem;
+}
+
+.quality-chart {
+  height: 20rem;
+  min-height: 20rem;
+  position: relative;
+}
+
+.quality-chart canvas {
+  display: block;
+  height: 100% !important;
+  width: 100% !important;
+}
+
+.quality-low-score {
+  font-weight: 700;
+  white-space: nowrap;
+}

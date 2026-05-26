@@ -4,11 +4,10 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using RequirementAI.API.Middleware;
 using RequirementAI.Business;
-using RequirementAI.Business.Interfaces;
 using RequirementAI.Business.MappingProfiles;
-using RequirementAI.Business.Providers.Auth;
 using RequirementAI.Contract.Settings;
 using RequirementAI.Persistence;
+using Serilog;
 
 namespace RequirementAI.API;
 
@@ -22,13 +21,17 @@ public static class AppSetup
 
     public static void SetupAutoMapper(WebApplicationBuilder builder)
     {
-        builder.Services.AddAutoMapper(_ => { },
+        builder.Services.AddAutoMapper(cfg =>
+            {
+                cfg.LicenseKey = builder.Configuration["AutoMapperOptions:LicenseKey"];
+            },
             typeof(UserProfile),
             typeof(PersonaProfile),
             typeof(ScenarioProfile),
             typeof(UserStoryProfile),
             typeof(AcceptanceCriteriaProfile),
-            typeof(EdgeCaseProfile)
+            typeof(EdgeCaseProfile),
+            typeof(QualityScoreProfile)
         );
     }
 
@@ -86,8 +89,14 @@ public static class AppSetup
     public static void SetupLogging(WebApplicationBuilder builder)
     {
         builder.Logging.ClearProviders();
-        builder.Logging.AddConsole();
-        builder.Logging.AddDebug();
+
+        builder.Host.UseSerilog((context, services, configuration) =>
+        {
+            configuration
+                .ReadFrom.Configuration(context.Configuration)
+                .ReadFrom.Services(services)
+                .Enrich.FromLogContext();
+        });
     }
 
     public static void SetupConfiguration(WebApplicationBuilder builder)
