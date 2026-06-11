@@ -1,4 +1,4 @@
-import { Component, ElementRef, OnDestroy, ViewChild } from '@angular/core';
+import { Component, ElementRef, ViewChild } from '@angular/core';
 import { ActivatedRoute, RouterModule } from '@angular/router';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { faRotateRight } from '@fortawesome/free-solid-svg-icons';
@@ -22,7 +22,7 @@ import { UserStoryService } from '../../shared/services/user-story';
   templateUrl: './project-overview.html',
   styleUrl: './project-overview.scss',
 })
-export class ProjectOverview implements OnDestroy {
+export class ProjectOverview {
   @ViewChild('scoreTrendCanvas')
   private set scoreTrendCanvas(canvas: ElementRef<HTMLCanvasElement> | undefined) {
     this.scoreTrendCanvasRef = canvas;
@@ -101,21 +101,6 @@ export class ProjectOverview implements OnDestroy {
     return Math.round((this.closedUserStoryCount / this.userStoryCount) * 100);
   }
 
-  public get hasQualityInfoForToday(): boolean {
-    if (!this.qualityOverview) {
-      return false;
-    }
-
-    const today = this.dateKey(new Date());
-
-    return [
-      ...this.qualityOverview.scoreTrend.map((point) => point.date),
-      this.qualityOverview.lowestPersona?.evaluatedAt,
-      this.qualityOverview.lowestScenario?.evaluatedAt,
-      this.qualityOverview.lowestUserStory?.evaluatedAt,
-    ].some((date) => !!date && this.dateKey(date) === today);
-  }
-
   public get lowestScoreItems(): LowestScoreItem[] {
     return [
       this.qualityOverview?.lowestPersona,
@@ -138,7 +123,7 @@ export class ProjectOverview implements OnDestroy {
   }
 
   public async analyzeProject(): Promise<void> {
-    if (!this.project || this.analyzing || this.hasQualityInfoForToday) {
+    if (!this.project || this.analyzing) {
       return;
     }
 
@@ -164,11 +149,20 @@ export class ProjectOverview implements OnDestroy {
   }
 
   public formatDate(value: string): string {
+    const date = new Date(value);
+
+    if (Number.isNaN(date.getTime())) {
+      return value;
+    }
+
     return new Intl.DateTimeFormat(undefined, {
       day: '2-digit',
+      hour: '2-digit',
+      minute: '2-digit',
       month: 'short',
+      timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
       year: 'numeric',
-    }).format(new Date(value));
+    }).format(date);
   }
 
   private async loadQualityOverview(projectId: string): Promise<void> {
@@ -220,7 +214,7 @@ export class ProjectOverview implements OnDestroy {
     this.scoreTrendChart = new Chart(canvas, {
       type: 'line',
       data: {
-        labels: trend.map((point) => point.label || this.formatDate(point.date)),
+        labels: trend.map((point) => this.formatDate(point.date)),
         datasets: [
           {
             data: trend.map((point) => this.normalizedScore(point.score)),

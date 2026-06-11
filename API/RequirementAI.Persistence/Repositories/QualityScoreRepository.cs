@@ -38,7 +38,8 @@ public class QualityScoreRepository(RequirementAIContext context): IQualityScore
             .Select(x => new QualityScoreTrendProjection
             {
                 OverallScore = x.OverallScore,
-                CreatedAt = x.CreatedAt
+                CreatedAt = x.CreatedAt,
+                Type = QualityScoreTrendType.Persona
             });
 
         var scenarioScores = context.ScenarioQualityScores
@@ -46,7 +47,8 @@ public class QualityScoreRepository(RequirementAIContext context): IQualityScore
             .Select(x => new QualityScoreTrendProjection
             {
                 OverallScore = x.OverallScore,
-                CreatedAt = x.CreatedAt
+                CreatedAt = x.CreatedAt,
+                Type = QualityScoreTrendType.Scenario
             });
 
         var userStoryScores = context.UserStoryQualityScores
@@ -54,7 +56,8 @@ public class QualityScoreRepository(RequirementAIContext context): IQualityScore
             .Select(x => new QualityScoreTrendProjection
             {
                 OverallScore = x.OverallScore,
-                CreatedAt = x.CreatedAt
+                CreatedAt = x.CreatedAt,
+                Type = QualityScoreTrendType.UserStory
             });
 
         return await personaScores

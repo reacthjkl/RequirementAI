@@ -81,12 +81,6 @@ public class ProjectService(
 
     public async Task<Guid> Analyze(Guid projectId, CancellationToken ct)
     {
-        var lastJob = await qualityAnalysisJobRepository.GetLastByProjectId(projectId, ct);
-
-        if (lastJob is { Status: JobStatus.Completed, FinishedAt: not null } &&
-            lastJob.FinishedAt.Value.AddDays(1) > DateTime.UtcNow)
-            throw new BusinessException("Limit reached for today");
-        
         var job = await qualityAnalysisJobRepository.Create(
             new QualityAnalysisJob
             {

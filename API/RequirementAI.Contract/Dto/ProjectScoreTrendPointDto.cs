@@ -2,7 +2,7 @@ namespace RequirementAI.Contract.Dto;
 
 public class ProjectScoreTrendPointDto
 {
-    public DateTime Date { get; set; }
+    public DateTimeOffset Date { get; set; }
 
     public double Score { get; set; }
 

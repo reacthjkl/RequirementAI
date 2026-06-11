@@ -59,6 +59,7 @@ public class PromptBuilder(
                                    - Keep the response concise and non-redundant.
                                    - Return ONLY raw JSON.
                                    - Do not use markdown.
+                                   - Do not use escaped control characters such as \u0000-\u001F in string values. Use normal UTF-8 German characters like ä, ö, ü, ß.
                                    - Do not include explanations outside JSON.
                                    - The response MUST strictly match the provided JSON schema.
                                    - Follow CUSTOM INSTRUCTIONS unless they conflict with the JSON schema, system constraints, or the original business intent.
@@ -108,6 +109,7 @@ public class PromptBuilder(
                            - Keep the response concise and non-redundant.
                            - Return ONLY raw JSON.
                            - Do not use markdown.
+                           - Do not use escaped control characters such as \u0000-\u001F in string values. Use normal UTF-8 German characters like ä, ö, ü, ß.
                            - Do not include explanations outside JSON.
                            - The response MUST strictly match the provided JSON schema.
                            
