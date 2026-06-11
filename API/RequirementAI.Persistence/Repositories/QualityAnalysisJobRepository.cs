@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using RequirementAI.Contract.Enums;
+using RequirementAI.Contract.Exceptions;
 using RequirementAI.Persistence.Entities;
 using RequirementAI.Persistence.Interfaces;
 
@@ -7,6 +8,14 @@ namespace RequirementAI.Persistence.Repositories;
 
 public class QualityAnalysisJobRepository(RequirementAIContext context): IQualityAnalysisJobRepository
 {
+    public async Task<QualityAnalysisJob> GetJobById(Guid jobId, CancellationToken ct)
+    {
+        return await context.QualityAnalysisJobs
+            .FirstOrDefaultAsync(j => j.Id == jobId, ct)
+               ?? throw new EntityNotFoundException<QualityAnalysisJob>(jobId);
+        
+    }
+
     public async Task<QualityAnalysisJob?> AcquireNextPendingJob(CancellationToken ct)
     {
         var job = await context.QualityAnalysisJobs

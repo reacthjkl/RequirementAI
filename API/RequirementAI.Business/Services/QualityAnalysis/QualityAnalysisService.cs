@@ -3,6 +3,7 @@ using FluentValidation;
 using Microsoft.Extensions.DependencyInjection;
 using RequirementAI.Business.Interfaces;
 using RequirementAI.Business.Interfaces.QualityAnalysis;
+using RequirementAI.Contract.Dto;
 using RequirementAI.Contract.Dto.LLMDtos;
 using RequirementAI.Contract.Exceptions;
 using RequirementAI.Persistence.Entities;
@@ -25,7 +26,7 @@ public class QualityAnalysisService(IPromptBuilder promptBuilder, ILLMProvider l
     {
         return await Analyze<UserStory, UserStoryForLLMDto, UserStoryLlmAnalysisDto>(userStory, ct);
     }
-    
+
     private async Task<TEntity> Analyze<TEntity, TRequestDto, TResponseDto>(TEntity entity, CancellationToken ct)
     {
         var request = promptBuilder.BuildAnalysisPrompt<TEntity, TRequestDto, TResponseDto>(entity);

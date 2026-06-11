@@ -45,9 +45,24 @@ export class ProjectRefineButton {
   public get canRefine(): boolean {
     return (
       this.project.status === ProjectStatus.Complete &&
-      this.project.refinementStatus === RefinementStatus.None &&
+      !this.isRefinementActive &&
       !this.refining
     );
+  }
+
+  public get isRefinementActive(): boolean {
+    return (
+      this.project.refinementStatus === RefinementStatus.Pending ||
+      this.project.refinementStatus === RefinementStatus.InProcess
+    );
+  }
+
+  public get buttonLabel(): string {
+    if (this.refining) {
+      return 'Refining...';
+    }
+
+    return 'Refine';
   }
 
   public get disabledTooltip(): string | null {

@@ -62,12 +62,6 @@ public class ProjectService(
 
     public async Task<Guid> Refine(Guid projectId, string? customInstructions, CancellationToken ct)
     {
-        var lastJob = await projectRefinementJobRepository.GetLastByProjectId(projectId, ct);
-
-        if (lastJob is { Status: JobStatus.Completed, FinishedAt: not null } &&
-            lastJob.FinishedAt.Value.AddDays(1) > DateTime.UtcNow)
-            throw new BusinessException("Limit reached for today");
-        
         var job = await projectRefinementJobRepository.Create(
             new ProjectRefinementJob
             {

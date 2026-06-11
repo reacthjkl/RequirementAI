@@ -1,3 +1,4 @@
+using RequirementAI.Contract.Dto;
 using RequirementAI.Persistence.Entities;
 
 namespace RequirementAI.Business.Interfaces.QualityAnalysis;

@@ -1,3 +1,4 @@
+using System.Text.Encodings.Web;
 using System.Text.Json;
 using AutoMapper;
 using RequirementAI.Business.Interfaces;
@@ -19,7 +20,10 @@ public class PromptBuilder(
     {
         var schema = JsonSchema.FromType<TDto>();
         var task = refinementTaskProvider.FromType<TEntity>();
-        var input = JsonSerializer.Serialize(mapper.Map<TDto>(entity));
+        var input = JsonSerializer.Serialize(mapper.Map<TDto>(entity), new JsonSerializerOptions
+        {
+            Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping
+        });
         var context = itemContextBuilder.Build(entity);
 
         return new LLMRequestDto($"""
@@ -73,7 +77,10 @@ public class PromptBuilder(
     {
         var schema = JsonSchema.FromType<TResponseDto>();
         var task = analysisTaskProvider.FromType<TEntity>();
-        var input = JsonSerializer.Serialize(mapper.Map<TRequestDto>(entity));
+        var input = JsonSerializer.Serialize(mapper.Map<TRequestDto>(entity), new JsonSerializerOptions
+        {
+            Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping
+        });
         var context = itemContextBuilder.Build(entity);
 
         return new LLMRequestDto($"""

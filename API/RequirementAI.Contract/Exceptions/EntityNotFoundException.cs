@@ -1,4 +1,7 @@
 namespace RequirementAI.Contract.Exceptions;
 
+public abstract class EntityNotFoundException(string message)
+    : PersistenceException(message);
+
 public class EntityNotFoundException<TEntity>(Guid id)
-    : PersistenceException($"{typeof(TEntity).Name} with id {id} was not found");
+    : EntityNotFoundException($"{typeof(TEntity).Name} with id {id} was not found");

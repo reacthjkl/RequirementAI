@@ -134,10 +134,46 @@
             [disabled]="qualityLoading || analyzing"
             (click)="analyzeProject()"
           >
-            <fa-icon [icon]="faRotateRight"></fa-icon>
-            {{ analyzing ? 'Refreshing...' : 'Refresh analysis' }}
+            @if (analyzing) {
+              <fa-icon [icon]="faSpinner" class="status-icon-spin"></fa-icon>
+            } @else {
+              <fa-icon [icon]="faChartLine"></fa-icon>
+            }
+            {{ analysisButtonLabel }}
           </button>
         </div>
+
+        @if (analysisJobStatus !== jobStatus.None) {
+          <div
+            class="analysis-job-status d-flex align-items-start gap-3"
+            [class.analysis-job-status-pending]="analysisJobStatus === jobStatus.Pending"
+            [class.analysis-job-status-running]="analysisJobStatus === jobStatus.Running"
+            [class.analysis-job-status-completed]="analysisJobStatus === jobStatus.Completed"
+            [class.analysis-job-status-failed]="analysisJobStatus === jobStatus.Failed"
+          >
+            <div class="analysis-job-status-icon">
+              @switch (analysisJobStatus) {
+                @case (jobStatus.Pending) {
+                  <fa-icon [icon]="faClock"></fa-icon>
+                }
+                @case (jobStatus.Running) {
+                  <fa-icon [icon]="faSpinner" class="status-icon-spin"></fa-icon>
+                }
+                @case (jobStatus.Completed) {
+                  <fa-icon [icon]="faCircleCheck"></fa-icon>
+                }
+                @case (jobStatus.Failed) {
+                  <fa-icon [icon]="faCircleExclamation"></fa-icon>
+                }
+              }
+            </div>
+
+            <div>
+              <div class="fw-semibold">{{ analysisStatusTitle }}</div>
+              <div class="small">{{ analysisStatusMessage }}</div>
+            </div>
+          </div>
+        }
 
         @if (qualityLoading) {
           <div class="text-muted">Loading quality overview...</div>
@@ -150,7 +186,11 @@
                 <div class="quality-score-card h-100">
                   <div class="d-flex justify-content-between align-items-start gap-3 mb-3">
                     <div class="text-secondary small">{{ scoreCard.label }}</div>
-                    <div class="quality-score-value text-primary">
+                    <div
+                      class="quality-score-value"
+                      [class.text-danger]="isLowScore(scoreCard.score)"
+                      [class.text-primary]="!isLowScore(scoreCard.score)"
+                    >
                       {{ scoreLabel(scoreCard.score) }}
                     </div>
                   </div>
@@ -163,7 +203,11 @@
                     aria-valuemin="0"
                     aria-valuemax="10"
                   >
-                    <div class="progress-bar" [style.width.%]="scorePercent(scoreCard.score)"></div>
+                    <div
+                      class="progress-bar"
+                      [class.bg-danger]="isLowScore(scoreCard.score)"
+                      [style.width.%]="scorePercent(scoreCard.score)"
+                    ></div>
                   </div>
                 </div>
               </div>
@@ -182,9 +226,13 @@
                         <div class="small text-secondary">{{ item.itemType }}</div>
                         <div class="fw-semibold text-truncate">{{ item.title }}</div>
                       </div>
-                      <span class="quality-low-score text-danger">{{
-                        scoreLabel(item.score)
-                      }}</span>
+                      <span
+                        class="quality-low-score"
+                        [class.text-danger]="isLowScore(item.score)"
+                        [class.text-primary]="!isLowScore(item.score)"
+                      >
+                        {{ scoreLabel(item.score) }}
+                      </span>
                     </div>
                     <div class="small text-secondary">
                       Evaluated {{ formatDate(item.evaluatedAt) }}

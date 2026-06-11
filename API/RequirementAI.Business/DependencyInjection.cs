@@ -35,6 +35,7 @@ public static class DependencyInjection
         services.AddScoped<IEdgeCaseService, EdgeCaseService>();
         services.AddScoped<IAcceptanceCriteriaService, AcceptanceCriteriaService>();
         services.AddScoped<IQualityScoreService, QualityScoreService>();
+        services.AddScoped<IQualityAnalysisJobService, QualityAnalysisJobService>();
         
         // refinement services
         services.AddScoped<IRefinementService, RefinementService>();

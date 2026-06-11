@@ -53,8 +53,8 @@ public class ProjectController(IProjectService projectService, IQualityScoreServ
     [HttpPut("analyze/{projectId:guid}")]
     public async Task<IActionResult> Analyze([FromRoute] Guid projectId, CancellationToken ct)
     {
-        await projectService.Analyze(projectId, ct);
-        return Ok(ResponseDto.Success());
+        var jobId = await projectService.Analyze(projectId, ct);
+        return Ok(ResponseDto<Guid>.Success(jobId));
     }
     
     [HttpDelete("{id:guid}")]

@@ -67,6 +67,64 @@
   height: 0.5rem;
 }
 
+.analysis-job-status {
+  border: 1px solid var(--bs-border-color);
+  border-radius: var(--bs-border-radius);
+  padding: 0.875rem 1rem;
+}
+
+.analysis-job-status-icon {
+  align-items: center;
+  border-radius: 50%;
+  display: inline-flex;
+  flex: 0 0 2rem;
+  height: 2rem;
+  justify-content: center;
+  width: 2rem;
+}
+
+.analysis-job-status-pending,
+.analysis-job-status-running {
+  background: rgba(var(--bs-info-rgb), 0.08);
+  border-color: rgba(var(--bs-info-rgb), 0.25);
+  color: #055160;
+}
+
+.analysis-job-status-pending .analysis-job-status-icon,
+.analysis-job-status-running .analysis-job-status-icon {
+  background: rgba(var(--bs-info-rgb), 0.14);
+}
+
+.analysis-job-status-completed {
+  background: rgba(var(--bs-success-rgb), 0.08);
+  border-color: rgba(var(--bs-success-rgb), 0.25);
+  color: #0f5132;
+}
+
+.analysis-job-status-completed .analysis-job-status-icon {
+  background: rgba(var(--bs-success-rgb), 0.14);
+}
+
+.analysis-job-status-failed {
+  background: rgba(var(--bs-danger-rgb), 0.08);
+  border-color: rgba(var(--bs-danger-rgb), 0.25);
+  color: #842029;
+}
+
+.analysis-job-status-failed .analysis-job-status-icon {
+  background: rgba(var(--bs-danger-rgb), 0.14);
+}
+
+.status-icon-spin {
+  animation: status-icon-spin 0.85s linear infinite;
+}
+
+@keyframes status-icon-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
 .quality-chart {
   height: 20rem;
   min-height: 20rem;

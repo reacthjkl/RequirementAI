@@ -12,6 +12,7 @@ public class GlobalExceptionHandler : IExceptionHandler
         var (statusCode, message) = exception switch
         {
             AuthorizationException ae => ((int)HttpStatusCode.Unauthorized, ae.Message),
+            EntityNotFoundException e => ((int)HttpStatusCode.NotFound, e.Message),
             RequirementAIException e => ((int)HttpStatusCode.BadRequest, e.Message),
             _ => ((int)HttpStatusCode.InternalServerError, "Unknown problem has occured. Please contact support.")
         };
