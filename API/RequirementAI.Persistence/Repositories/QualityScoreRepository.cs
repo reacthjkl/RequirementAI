@@ -31,6 +31,30 @@ public class QualityScoreRepository(RequirementAIContext context): IQualityScore
             .ToListAsync(ct);
     }
 
+    public async Task<PersonaQualityScore?> GetLatestPersonaQualityScore(Guid personaId, CancellationToken ct)
+    {
+        return await context.PersonaQualityScores
+            .Where(x => x.PersonaId == personaId)
+            .OrderByDescending(x => x.CreatedAt)
+            .FirstOrDefaultAsync(ct);
+    }
+
+    public async Task<ScenarioQualityScore?> GetLatestScenarioQualityScore(Guid scenarioId, CancellationToken ct)
+    {
+        return await context.ScenarioQualityScores
+            .Where(x => x.ScenarioId == scenarioId)
+            .OrderByDescending(x => x.CreatedAt)
+            .FirstOrDefaultAsync(ct);
+    }
+
+    public async Task<UserStoryQualityScore?> GetLatestUserStoryQualityScore(Guid userStoryId, CancellationToken ct)
+    {
+        return await context.UserStoryQualityScores
+            .Where(x => x.UserStoryId == userStoryId)
+            .OrderByDescending(x => x.CreatedAt)
+            .FirstOrDefaultAsync(ct);
+    }
+
     public async Task<List<QualityScoreTrendProjection>> GetAllQualityScoresByProjectId(Guid projectId, CancellationToken ct)
     {
         var personaScores = context.PersonaQualityScores

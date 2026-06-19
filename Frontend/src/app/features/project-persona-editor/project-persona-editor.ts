@@ -6,13 +6,22 @@ import { faCheck, faTimes } from '@fortawesome/free-solid-svg-icons';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { Notification } from '../../core/services/notification.service';
 import { PersonaFormFields } from '../../shared/components/persona-form-fields/persona-form-fields';
+import { QualityScorePanel } from '../../shared/components/quality-score-panel/quality-score-panel';
 import { ENTITY_ICONS } from '../../shared/icons/entity-icons';
 import { Persona } from '../../shared/models/persona.model';
+import { PersonaQualityScore } from '../../shared/models/quality-score.model';
 import { PersonaService } from '../../shared/services/persona';
+import { QualityScoreService } from '../../shared/services/quality-score';
 
 @Component({
   selector: 'app-project-persona-editor',
-  imports: [ReactiveFormsModule, RouterModule, FontAwesomeModule, PersonaFormFields],
+  imports: [
+    ReactiveFormsModule,
+    RouterModule,
+    FontAwesomeModule,
+    PersonaFormFields,
+    QualityScorePanel,
+  ],
   templateUrl: './project-persona-editor.html',
 })
 export class ProjectPersonaEditor {
@@ -22,7 +31,10 @@ export class ProjectPersonaEditor {
   public readonly form;
 
   public persona: Persona | null = null;
+  public latestQualityScore: PersonaQualityScore | null = null;
+  public activeTab: 'persona' | 'qualityScore' = 'persona';
   public loading = true;
+  public qualityScoreLoading = false;
   public saving = false;
 
   public readonly entityIcons = ENTITY_ICONS;
@@ -36,6 +48,7 @@ export class ProjectPersonaEditor {
     private readonly cdr: ChangeDetectorRef,
     private readonly fb: FormBuilder,
     private readonly personaService: PersonaService,
+    private readonly qualityScoreService: QualityScoreService,
     private readonly notification: Notification,
   ) {
     this.form = this.fb.nonNullable.group({
@@ -62,7 +75,11 @@ export class ProjectPersonaEditor {
       return;
     }
 
-    this.persona = await this.personaService.getById(this.personaId);
+    const [persona] = await Promise.all([
+      this.personaService.getById(this.personaId),
+      this.loadLatestQualityScore(this.personaId),
+    ]);
+    this.persona = persona;
 
     if (this.persona) {
       this.form.patchValue({
@@ -89,6 +106,14 @@ export class ProjectPersonaEditor {
 
   public get isModal(): boolean {
     return !!this.activeModal;
+  }
+
+  public selectTab(tab: 'persona' | 'qualityScore'): void {
+    if (tab === 'qualityScore' && !this.isEditing) {
+      return;
+    }
+
+    this.activeTab = tab;
   }
 
   public async save(): Promise<void> {
@@ -152,6 +177,19 @@ export class ProjectPersonaEditor {
       this.loading = false;
       this.cdr.markForCheck();
     });
+  }
+
+  private async loadLatestQualityScore(personaId: string): Promise<void> {
+    this.qualityScoreLoading = true;
+
+    try {
+      this.latestQualityScore = await this.qualityScoreService.getLatestByPersonaId(personaId);
+    } catch {
+      this.latestQualityScore = null;
+      this.notification.fail('Could not load persona quality score');
+    } finally {
+      this.qualityScoreLoading = false;
+    }
   }
 
   private trimFormValue() {

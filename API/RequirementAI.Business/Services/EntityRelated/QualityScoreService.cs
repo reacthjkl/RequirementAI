@@ -26,6 +26,24 @@ public class QualityScoreService(IQualityScoreRepository repository, IMapper map
         return mapper.Map<List<UserStoryQualityScoreDto>>(scores);
     }
 
+    public async Task<PersonaQualityScoreDto?> GetLatestPersonaQualityScore(Guid personaId, CancellationToken ct)
+    {
+        var score = await repository.GetLatestPersonaQualityScore(personaId, ct);
+        return mapper.Map<PersonaQualityScoreDto?>(score);
+    }
+
+    public async Task<ScenarioQualityScoreDto?> GetLatestScenarioQualityScore(Guid scenarioId, CancellationToken ct)
+    {
+        var score = await repository.GetLatestScenarioQualityScore(scenarioId, ct);
+        return mapper.Map<ScenarioQualityScoreDto?>(score);
+    }
+
+    public async Task<UserStoryQualityScoreDto?> GetLatestUserStoryQualityScore(Guid userStoryId, CancellationToken ct)
+    {
+        var score = await repository.GetLatestUserStoryQualityScore(userStoryId, ct);
+        return mapper.Map<UserStoryQualityScoreDto?>(score);
+    }
+
     public async Task<ProjectQualityOverviewDto> GetProjectQualityOverview(Guid projectId, CancellationToken ct)
     {
         var personaScores = await repository.GetLatestPersonaQualityScoresByProjectId(projectId, ct);

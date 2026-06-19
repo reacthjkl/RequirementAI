@@ -1,3 +1,4 @@
+using System.Text.Encodings.Web;
 using System.Text.Json;
 using AutoMapper;
 using RequirementAI.Business.Interfaces.Refinement;
@@ -29,7 +30,10 @@ public class ItemContextBuilder(IMapper mapper): IItemContextBuilder
                 {
                     JsonSerializer.Serialize(
                         mapper.Map<List<PersonaForLLMDto>>(
-                            persona.Project.Personas.Where(p => p.Id != persona.Id)))
+                            persona.Project.Personas.Where(p => p.Id != persona.Id)), new JsonSerializerOptions
+                        {
+                            Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping
+                        })
                 }
                 """;
     }
@@ -41,13 +45,19 @@ public class ItemContextBuilder(IMapper mapper): IItemContextBuilder
                 {scenario.Persona.Project.Description}
 
                 Persona for this scenario:
-                {JsonSerializer.Serialize(mapper.Map<PersonaForLLMDto>(scenario.Persona))}
+                {JsonSerializer.Serialize(mapper.Map<PersonaForLLMDto>(scenario.Persona), new JsonSerializerOptions
+                {
+                    Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping
+                })}
 
                 Other scenarios:
                 {
                     JsonSerializer.Serialize(
                         mapper.Map<List<ScenarioForLLMDto>>(
-                            scenario.Persona.Scenarios.Where(p => p.Id != scenario.Id)))
+                            scenario.Persona.Scenarios.Where(p => p.Id != scenario.Id)), new JsonSerializerOptions
+                        {
+                            Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping
+                        })
                 }
                 """;
     }
@@ -59,16 +69,25 @@ public class ItemContextBuilder(IMapper mapper): IItemContextBuilder
             {userStory.Scenario.Persona.Project.Description}
 
             Scenario for this user story:
-            {JsonSerializer.Serialize(mapper.Map<ScenarioForLLMDto>(userStory.Scenario))}
+            {JsonSerializer.Serialize(mapper.Map<ScenarioForLLMDto>(userStory.Scenario), new JsonSerializerOptions
+            {
+                Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping
+            })}
 
             Persona for this user story:
-            {JsonSerializer.Serialize(mapper.Map<PersonaForLLMDto>(userStory.Scenario.Persona))}
+            {JsonSerializer.Serialize(mapper.Map<PersonaForLLMDto>(userStory.Scenario.Persona), new JsonSerializerOptions
+            {
+                Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping
+            })}
 
             Other user stories:
             {
                 JsonSerializer.Serialize(
                     mapper.Map<List<UserStoryForLLMDto>>(
-                        userStory.Scenario.UserStories.Where(us => us.Id != userStory.Id)))
+                        userStory.Scenario.UserStories.Where(us => us.Id != userStory.Id)), new JsonSerializerOptions
+                    {
+                        Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping
+                    })
             }
             """;
     }

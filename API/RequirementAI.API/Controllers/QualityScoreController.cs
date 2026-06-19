@@ -28,4 +28,25 @@ public class QualityScoreController(IQualityScoreService qualityScoreService)
         var result = await qualityScoreService.GetUserStoryQualityScores(userStoryId, ct);
         return Ok(ResponseDto<List<UserStoryQualityScoreDto>>.Success(result));
     }
+
+    [HttpGet("latest/by-persona/{personaId:guid}")]
+    public async Task<IActionResult> GetLatestPersonaQualityScore(Guid personaId, CancellationToken ct)
+    {
+        var result = await qualityScoreService.GetLatestPersonaQualityScore(personaId, ct);
+        return Ok(ResponseDto<PersonaQualityScoreDto?>.Success(result));
+    }
+
+    [HttpGet("latest/by-scenario/{scenarioId:guid}")]
+    public async Task<IActionResult> GetLatestScenarioQualityScore(Guid scenarioId, CancellationToken ct)
+    {
+        var result = await qualityScoreService.GetLatestScenarioQualityScore(scenarioId, ct);
+        return Ok(ResponseDto<ScenarioQualityScoreDto?>.Success(result));
+    }
+
+    [HttpGet("latest/by-user-story/{userStoryId:guid}")]
+    public async Task<IActionResult> GetLatestUserStoryQualityScore(Guid userStoryId, CancellationToken ct)
+    {
+        var result = await qualityScoreService.GetLatestUserStoryQualityScore(userStoryId, ct);
+        return Ok(ResponseDto<UserStoryQualityScoreDto?>.Success(result));
+    }
 }

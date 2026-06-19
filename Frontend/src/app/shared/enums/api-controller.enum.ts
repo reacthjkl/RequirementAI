@@ -9,4 +9,5 @@ export enum ApiController {
   EdgeCase = 'EdgeCase',
   AcceptanceCriteria = 'AcceptanceCriteria',
   QualityAnalysis = 'QualityAnalysis',
+  QualityScore = 'QualityScore',
 }

@@ -16,6 +16,31 @@
   } @else if (isEditing && !userStory) {
     <div class="text-secondary">User Story not found</div>
   } @else {
+    <ul class="nav nav-tabs mb-4">
+      <li class="nav-item">
+        <button
+          type="button"
+          class="nav-link"
+          [class.active]="activeTab === 'userStory'"
+          (click)="selectTab('userStory')"
+        >
+          User Story
+        </button>
+      </li>
+      <li class="nav-item">
+        <button
+          type="button"
+          class="nav-link"
+          [class.active]="activeTab === 'qualityScore'"
+          [disabled]="!isEditing"
+          (click)="selectTab('qualityScore')"
+        >
+          Quality score
+        </button>
+      </li>
+    </ul>
+
+    @if (activeTab === 'userStory') {
     <form
       id="userStoryEditorForm"
       [formGroup]="form"
@@ -199,17 +224,32 @@
         </div>
       </section>
     </form>
+    } @else {
+      <section class="card border-0 shadow-sm">
+        <div class="card-body">
+          <app-quality-score-panel
+            context="userStory"
+            [score]="latestQualityScore"
+            [loading]="qualityScoreLoading"
+          />
+        </div>
+      </section>
+    }
   }
 </div>
 
 <div class="modal-footer">
-  <button
-    type="submit"
-    form="userStoryEditorForm"
-    class="btn btn-primary"
-    [disabled]="saving || loading"
-  >
-    <fa-icon [icon]="faCheck"></fa-icon>
-    {{ saving ? 'Saving...' : 'Save' }}
-  </button>
+  @if (activeTab === 'userStory') {
+    <button
+      type="submit"
+      form="userStoryEditorForm"
+      class="btn btn-primary"
+      [disabled]="saving || loading"
+    >
+      <fa-icon [icon]="faCheck"></fa-icon>
+      {{ saving ? 'Saving...' : 'Save' }}
+    </button>
+  } @else {
+    <button type="button" class="btn btn-outline-secondary" (click)="cancel()">Close</button>
+  }
 </div>

@@ -9,10 +9,11 @@ public class UserStoryProfile: Profile
 {
     public UserStoryProfile()
     {
-        CreateMap<UserStory, UserStoryForLLMDto>()
+        CreateMap<UserStoryForLLMDto, UserStory>()
             .ForMember(s => s.AcceptanceCriteria, o => o.Ignore())
-            .ForMember(s => s.EdgeCases, o => o.Ignore())
-            .ReverseMap();
+            .ForMember(s => s.EdgeCases, o => o.Ignore());
+
+        CreateMap<UserStory, UserStoryForLLMDto>();
         
         CreateMap<UserStory, UserStoryResponseDto>();
         CreateMap<UserStoryForCreationDto, UserStory>();
