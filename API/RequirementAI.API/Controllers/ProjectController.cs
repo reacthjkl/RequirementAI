@@ -21,7 +21,7 @@ public class ProjectController(IProjectService projectService, IQualityScoreServ
         var result = await projectService.GetByOrganizationId(OrganizationId, ct);
         return Ok(ResponseDto<List<ProjectResponseDto>>.Success(result));
     }
-    
+
     [HttpGet("{projectId:guid}/overview")]
     public async Task<IActionResult> GetProjectQualityOverview(Guid projectId, CancellationToken ct)
     {
@@ -42,21 +42,22 @@ public class ProjectController(IProjectService projectService, IQualityScoreServ
         await projectService.Update(dto, ct);
         return Ok(ResponseDto.Success());
     }
-    
+
     [HttpPut("refine/{projectId:guid}")]
-    public async Task<IActionResult> Refine([FromRoute] Guid projectId, [FromBody] string? customInstructions, CancellationToken ct)
+    public async Task<IActionResult> Refine([FromRoute] Guid projectId, [FromBody] RefineRequestDto request,
+        CancellationToken ct)
     {
-        await projectService.Refine(projectId, customInstructions, ct);
+        await projectService.Refine(projectId, request, ct);
         return Ok(ResponseDto.Success());
     }
-    
+
     [HttpPut("analyze/{projectId:guid}")]
     public async Task<IActionResult> Analyze([FromRoute] Guid projectId, CancellationToken ct)
     {
         var jobId = await projectService.Analyze(projectId, ct);
         return Ok(ResponseDto<Guid>.Success(jobId));
     }
-    
+
     [HttpDelete("{id:guid}")]
     public async Task<IActionResult> Delete(Guid id, CancellationToken ct)
     {
