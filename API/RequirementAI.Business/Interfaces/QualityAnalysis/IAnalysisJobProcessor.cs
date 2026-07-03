@@ -1,6 +1,6 @@
 namespace RequirementAI.Business.Interfaces.QualityAnalysis;
 
-public interface IQualityAnalysisJobProcessor
+public interface IAnalysisJobProcessor
 {
     Task ProcessNextJob(CancellationToken ct);
 }

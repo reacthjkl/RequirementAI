@@ -10,10 +10,10 @@ public class RefinementWorker(IServiceScopeFactory scopeFactory) : BackgroundSer
         while (!ct.IsCancellationRequested)
         {
             using var scope = scopeFactory.CreateScope();
-            
-            var processor = scope.ServiceProvider
-                .GetRequiredService<IProjectRefinementJobProcessor>();
-            
+
+            var processor =
+                scope.ServiceProvider.GetRequiredService<IProjectRefinementJobProcessor>();
+
             await processor.ProcessNextJob(ct);
 
             await Task.Delay(5000, ct);

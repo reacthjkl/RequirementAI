@@ -36,7 +36,7 @@ public static class DependencyInjection
         services.AddScoped<IAcceptanceCriteriaService, AcceptanceCriteriaService>();
         services.AddScoped<IQualityScoreService, QualityScoreService>();
         services.AddScoped<IQualityAnalysisJobService, QualityAnalysisJobService>();
-        
+
         // refinement services
         services.AddScoped<IRefinementService, RefinementService>();
         services.AddScoped<IRefinementTaskProvider, RefinementTaskProvider>();
@@ -45,16 +45,16 @@ public static class DependencyInjection
         services.AddScoped<IRefinementMerger<UserStory, UserStoryForLLMDto>, UserStoryRefinementMerger>();
         services.AddScoped<IProjectRefinementOrchestrator, ProjectRefinementOrchestrator>();
         services.AddScoped<IProjectRefinementJobProcessor, ProjectRefinementJobProcessor>();
-        
+
         // analysis services
-        services.AddScoped<IQualityAnalysisJobProcessor, QualityAnalysisJobProcessor>();
-        services.AddScoped<IQualityAnalysisOrchestrator, QualityAnalysisOrchestrator>();
+        services.AddScoped<IAnalysisJobProcessor, AnalysisJobProcessor>();
+        services.AddScoped<IAnalysisJobOrchestrator, AnalysisAnalysisJobOrchestrator>();
         services.AddScoped<IQualityAnalysisService, QualityAnalysisService>();
         services.AddScoped<IAnalysisTaskProvider, AnalysisTaskProvider>();
         services.AddScoped<IAnalysisMerger<Persona, PersonaLlmAnalysisDto>, PersonaAnalysisMerger>();
         services.AddScoped<IAnalysisMerger<Scenario, ScenarioLlmAnalysisDto>, ScenarioAnalysisMerger>();
         services.AddScoped<IAnalysisMerger<UserStory, UserStoryLlmAnalysisDto>, UserStoryAnalysisMerger>();
-        
+
         // auth
         services.AddScoped<IAuthService, AuthService>();
         services.AddScoped<IAuthProvider, AuthProvider>();
@@ -63,16 +63,16 @@ public static class DependencyInjection
 
         // LLM providers
         services.AddScoped<ILLMProvider, OpenAIProvider>();
-        
+
         // helper services
         services.AddSingleton<IPasswordHasher, Argon2PasswordHasher>();
-        
+
         // builders
         services.AddScoped<IItemContextBuilder, ItemContextBuilder>();
         services.AddScoped<IPromptBuilder, PromptBuilder>();
-        
+
         services.AddHttpClient();
-        
+
         // validators
         services.AddScoped<IValidator<AcceptanceCriteriaForLLMDto>, AcceptanceCriteriaForLLMDtoValidator>();
         services.AddScoped<IValidator<EdgeCaseForLLMDto>, EdgeCaseForLLMDtoValidator>();
@@ -82,9 +82,9 @@ public static class DependencyInjection
         services.AddScoped<IValidator<PersonaLlmAnalysisDto>, PersonaLlmAnalysisDtoValidator>();
         services.AddScoped<IValidator<ScenarioLlmAnalysisDto>, ScenarioLlmAnalysisDtoValidator>();
         services.AddScoped<IValidator<UserStoryLlmAnalysisDto>, UserStoryLlmAnalysisDtoValidator>();
-        
+
         services.AddHttpContextAccessor();
-        
+
         return services;
     }
 }

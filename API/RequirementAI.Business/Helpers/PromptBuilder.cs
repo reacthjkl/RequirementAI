@@ -16,7 +16,7 @@ public class PromptBuilder(
     IItemContextBuilder itemContextBuilder, 
     IMapper mapper): IPromptBuilder
 {
-    public LLMRequestDto BuildRefinementPrompt<TEntity, TDto>(TEntity entity, string? customInstructions = null)
+    public LLMRequestDto BuildRefinementPrompt<TEntity, TDto>(TEntity entity, string? customInstructions = null) 
     {
         var schema = JsonSchema.FromType<TDto>();
         var task = refinementTaskProvider.FromType<TEntity>();

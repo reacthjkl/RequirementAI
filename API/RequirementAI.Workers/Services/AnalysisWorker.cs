@@ -9,10 +9,10 @@ public class AnalysisWorker(IServiceScopeFactory scopeFactory) : BackgroundServi
         while (!ct.IsCancellationRequested)
         {
             using var scope = scopeFactory.CreateScope();
-            
+
             var processor = scope.ServiceProvider
-                .GetRequiredService<IQualityAnalysisJobProcessor>();
-            
+                .GetRequiredService<IAnalysisJobProcessor>();
+
             await processor.ProcessNextJob(ct);
 
             await Task.Delay(5000, ct);

@@ -2,8 +2,6 @@ using AutoMapper;
 using RequirementAI.Business.Interfaces;
 using RequirementAI.Business.Interfaces.EntityRelated;
 using RequirementAI.Contract.Dto;
-using RequirementAI.Contract.Enums;
-using RequirementAI.Contract.Exceptions;
 using RequirementAI.Persistence.Entities;
 using RequirementAI.Persistence.Interfaces;
 
@@ -11,8 +9,8 @@ namespace RequirementAI.Business.Services.EntityRelated;
 
 public class ProjectService(
     IProjectRepository projectRepository,
-    IProjectRefinementJobRepository projectRefinementJobRepository,
-    IQualityAnalysisJobRepository qualityAnalysisJobRepository,
+    IJobRepository<ProjectRefinementJob> projectRefinementJobRepository,
+    IJobRepository<QualityAnalysisJob> qualityAnalysisJobRepository,
     IProjectStatusEnricher projectStatusEnricher,
     IMapper mapper)
     : IProjectService
@@ -20,22 +18,22 @@ public class ProjectService(
     public async Task<ProjectResponseDto> GetById(Guid id, CancellationToken ct)
     {
         var entity = await projectRepository.GetById(id, ct);
-        
-        var dto =  mapper.Map<ProjectResponseDto>(entity);
-        
+
+        var dto = mapper.Map<ProjectResponseDto>(entity);
+
         await projectStatusEnricher.EnrichAsync(dto, ct);
-        
+
         return dto;
     }
 
     public async Task<List<ProjectResponseDto>> GetByOrganizationId(Guid organizationId, CancellationToken ct)
     {
         var entities = await projectRepository.GetByOrganization(organizationId, ct);
-        
+
         var dtos = mapper.Map<List<ProjectResponseDto>>(entities);
-        
+
         await projectStatusEnricher.EnrichRangeAsync(dtos, ct);
-        
+
         return dtos;
     }
 
@@ -54,7 +52,7 @@ public class ProjectService(
     public async Task Update(ProjectForUpdateDto project, CancellationToken ct)
     {
         var entity = await projectRepository.GetById(project.Id, ct);
-        
+
         mapper.Map(project, entity);
 
         await projectRepository.Update(entity, ct);
@@ -66,10 +64,10 @@ public class ProjectService(
             new ProjectRefinementJob
             {
                 ProjectId = projectId,
-                CustomInstructions = customInstructions,
-            }, 
+                CustomInstructions = customInstructions
+            },
             ct);
-        
+
         return job.Id;
     }
 
@@ -78,11 +76,11 @@ public class ProjectService(
         var job = await qualityAnalysisJobRepository.Create(
             new QualityAnalysisJob
             {
-                ProjectId = projectId,
-            }, 
+                ProjectId = projectId
+            },
             ct);
-        
-        return job.Id;    
+
+        return job.Id;
     }
 
     public async Task Delete(Guid id, CancellationToken ct)

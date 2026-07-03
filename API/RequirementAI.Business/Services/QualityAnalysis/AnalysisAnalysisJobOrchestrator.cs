@@ -4,7 +4,9 @@ using RequirementAI.Persistence.Interfaces;
 
 namespace RequirementAI.Business.Services.QualityAnalysis;
 
-public class QualityAnalysisOrchestrator(IProjectRepository projectRepository, IQualityAnalysisService analysisService): IQualityAnalysisOrchestrator
+public class AnalysisAnalysisJobOrchestrator(
+    IProjectRepository projectRepository,
+    IQualityAnalysisService analysisService) : IAnalysisJobOrchestrator
 {
     public async Task Execute(QualityAnalysisJob job, CancellationToken ct)
     {
@@ -18,13 +20,10 @@ public class QualityAnalysisOrchestrator(IProjectRepository projectRepository, I
             {
                 await analysisService.AnalyzeScenario(scenario, ct);
 
-                foreach (var userStory in scenario.UserStories)
-                {
-                    await analysisService.AnalyzeUserStory(userStory, ct);
-                }
+                foreach (var userStory in scenario.UserStories) await analysisService.AnalyzeUserStory(userStory, ct);
             }
         }
-        
+
         await projectRepository.Update(project, ct);
     }
 }
