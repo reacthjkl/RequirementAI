@@ -43,6 +43,7 @@ public static class DependencyInjection
         services.AddScoped<IRefinementMerger<Persona, PersonaForLLMDto>, PersonaRefinementMerger>();
         services.AddScoped<IRefinementMerger<Scenario, ScenarioForLLMDto>, ScenarioRefinementMerger>();
         services.AddScoped<IRefinementMerger<UserStory, UserStoryForLLMDto>, UserStoryRefinementMerger>();
+        services.AddScoped<IUserStorySplitService, UserStorySplitService>();
         services.AddScoped<IProjectRefinementOrchestrator, ProjectRefinementOrchestrator>();
         services.AddScoped<IProjectRefinementJobProcessor, ProjectRefinementJobProcessor>();
 
@@ -79,6 +80,7 @@ public static class DependencyInjection
         services.AddScoped<IValidator<PersonaForLLMDto>, PersonaForLLMDtoValidator>();
         services.AddScoped<IValidator<ScenarioForLLMDto>, ScenarioForLLMDtoValidator>();
         services.AddScoped<IValidator<UserStoryForLLMDto>, UserStoryForLLMDtoValidator>();
+        services.AddScoped<IValidator<UserStorySplitResultDto>, UserStorySplitResultDtoValidator>();
         services.AddScoped<IValidator<PersonaLlmAnalysisDto>, PersonaLlmAnalysisDtoValidator>();
         services.AddScoped<IValidator<ScenarioLlmAnalysisDto>, ScenarioLlmAnalysisDtoValidator>();
         services.AddScoped<IValidator<UserStoryLlmAnalysisDto>, UserStoryLlmAnalysisDtoValidator>();

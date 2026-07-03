@@ -5,12 +5,21 @@ using RequirementAI.Persistence.Interfaces;
 
 namespace RequirementAI.Business.Services.Refinement;
 
-public class ProjectRefinementOrchestrator(IProjectRepository projectRepository, IRefinementService refinementService)
+public class ProjectRefinementOrchestrator(
+    IProjectRepository projectRepository,
+    IRefinementService refinementService,
+    IUserStorySplitService userStorySplitService)
     : IProjectRefinementOrchestrator
 {
     public async Task Execute(ProjectRefinementJob job, CancellationToken ct)
     {
         var project = await projectRepository.GetFullProjectById(job.ProjectId, ct);
+        var eligibleUserStories = project.Personas
+            .SelectMany(persona => persona.Scenarios)
+            .SelectMany(scenario => scenario.UserStories)
+            .Where(userStory => userStory.Stage == UserStoryStage.New)
+            .ToList();
+        var eligibleUserStorySet = eligibleUserStories.ToHashSet();
 
         foreach (var persona in project.Personas)
         {
@@ -20,9 +29,16 @@ public class ProjectRefinementOrchestrator(IProjectRepository projectRepository,
             {
                 await refinementService.RefineScenario(scenario, job.CustomInstructions, ct);
 
-                foreach (var userStory in scenario.UserStories.Where(userStory => userStory.Stage == UserStoryStage.New))
+                foreach (var userStory in scenario.UserStories.Where(eligibleUserStorySet.Contains))
                     await refinementService.RefineUserStory(userStory, job.CustomInstructions, ct);
             }
+        }
+
+        foreach (var userStory in eligibleUserStories)
+        {
+            var splitStories = await userStorySplitService.SplitUserStory(userStory, job.CustomInstructions, ct);
+            foreach (var newStory in splitStories.Skip(1))
+                userStory.Scenario.UserStories.Add(newStory);
         }
 
         await projectRepository.Update(project, ct);

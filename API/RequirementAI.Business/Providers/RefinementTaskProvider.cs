@@ -79,9 +79,12 @@ public class RefinementTaskProvider : IRefinementTaskProvider
         [typeof(UserStory)] = """
                          Refine the user story into a clear, testable format.
                          
-                         The user story description must strictly follow this schema:
-                         
+                         The user story description must strictly follow the localized equivalent of this schema:
+
                          As a [persona], I want [action/capability], so that [benefit/business value].
+
+                         Translate the structural phrases "As a", "I want", and "so that" into the input language.
+                         For German input, use: Als [Persona] möchte ich [Aktion/Fähigkeit], damit [Nutzen/Mehrwert].
                          
                          Also include:
                          - Acceptance criteria
