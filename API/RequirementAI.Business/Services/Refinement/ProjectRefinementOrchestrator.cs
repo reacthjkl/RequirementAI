@@ -1,4 +1,5 @@
 using RequirementAI.Business.Interfaces.Refinement;
+using RequirementAI.Contract.Enums;
 using RequirementAI.Persistence.Entities;
 using RequirementAI.Persistence.Interfaces;
 
@@ -19,7 +20,7 @@ public class ProjectRefinementOrchestrator(IProjectRepository projectRepository,
             {
                 await refinementService.RefineScenario(scenario, job.CustomInstructions, ct);
 
-                foreach (var userStory in scenario.UserStories)
+                foreach (var userStory in scenario.UserStories.Where(userStory => userStory.Stage == UserStoryStage.New))
                     await refinementService.RefineUserStory(userStory, job.CustomInstructions, ct);
             }
         }
