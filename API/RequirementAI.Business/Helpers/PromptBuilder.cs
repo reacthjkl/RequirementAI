@@ -126,7 +126,7 @@ public class PromptBuilder(
                                    - If no meaningful split is needed, return exactly one refined user story.
                                    - If a split is needed, return exactly two or three focused user stories.
                                    - Each split story must include a title, a description, acceptance criteria, and edge cases.
-                                   - Each description must follow the localized equivalent of: As a [persona], I want [action/capability], so that [benefit/business value].
+                                   - Each description must express the persona, desired action or capability, and resulting benefit or business value, in that order and entirely in the input language.
                                    - Preserve the original persona, language, business intent, and scenario context.
                                    - The split stories must collectively cover the original scope without overlap or duplicated acceptance criteria.
                                    - Do not invent unsupported domain-specific facts.

@@ -28,9 +28,9 @@
             <div
               class="board-column-header d-flex align-items-center justify-content-between gap-3"
             >
-              <h5 class="mb-0 text-truncate d-flex align-items-center gap-2">
+              <h5 class="board-column-title mb-0 d-flex align-items-center gap-2">
                 <span [class]="'stage-dot ' + column.stageMeta.colorClass"></span>
-                {{ column.label }}
+                <span class="text-truncate">{{ column.label }}</span>
               </h5>
               <span class="badge text-bg-secondary">{{ column.userStories.length }}</span>
             </div>
@@ -49,7 +49,9 @@
                     (dragend)="stopDragging()"
                   >
                     <div class="d-flex align-items-start justify-content-between gap-2 mb-2">
-                      <h6 class="mb-0 text-truncate">{{ item.userStory.title }}</h6>
+                      <h6 class="user-story-title mb-0" [title]="item.userStory.title">
+                        {{ item.userStory.title }}
+                      </h6>
 
                       <div
                         ngbDropdown
