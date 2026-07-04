@@ -9,5 +9,6 @@ public abstract class BaseJob : BaseEntity
     public string? ErrorMessage { get; set; }
     public DateTimeOffset? StartedAt { get; set; }
     public DateTimeOffset? FinishedAt { get; set; }
+    public string? FinishedBy { get; set; }
     public int TryCount { get; set; }
 }

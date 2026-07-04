@@ -14,6 +14,9 @@ public class JobRepository<TJob>(RequirementAIContext context) : IJobRepository<
         Expression<Func<TJob, bool>> predicate = x =>
             x.Status == JobStatus.Pending ||
             (x.Status == JobStatus.Failed && x.TryCount < 3);
+        Expression<Func<BaseJob, bool>> basePredicate = x =>
+            x.Status == JobStatus.Pending ||
+            (x.Status == JobStatus.Failed && x.TryCount < 3);
 
         var jobId = await context
             .Set<TJob>()
@@ -26,9 +29,8 @@ public class JobRepository<TJob>(RequirementAIContext context) : IJobRepository<
             return null;
 
         // try to lock job
-        var affectedRows = await context
-            .Set<TJob>()
-            .Where(predicate)
+        var affectedRows = await context.BaseJobs
+            .Where(basePredicate)
             .Where(x => x.Id == jobId.Value)
             .ExecuteUpdateAsync(
                 setters =>
@@ -65,8 +67,8 @@ public class JobRepository<TJob>(RequirementAIContext context) : IJobRepository<
     {
         var errorMessage = error.Length > 1024 ? error[..1024] : error;
 
-        await context
-            .Set<TJob>().Where(x => x.Id == jobId)
+        await context.BaseJobs
+            .Where(x => x.Id == jobId)
             .ExecuteUpdateAsync(
                 setters =>
                     setters

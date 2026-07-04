@@ -1,10 +1,14 @@
 using RequirementAI.Contract.Enums;
+using RequirementAI.Business.Interfaces;
 using RequirementAI.Persistence.Entities;
 using RequirementAI.Persistence.Interfaces;
 
 namespace RequirementAI.Business.Services;
 
-public abstract class JobProcessor<TJob>(IJobRepository<TJob> jobRepository)
+public abstract class JobProcessor<TJob>(
+    IJobRepository<TJob> jobRepository,
+    ILLMRouteResolver routeResolver,
+    LLMRequestPurpose purpose)
     where TJob : BaseJob
 {
     protected abstract Task Execute(TJob job, CancellationToken ct);
@@ -19,6 +23,7 @@ public abstract class JobProcessor<TJob>(IJobRepository<TJob> jobRepository)
         try
         {
             await Execute(job, ct);
+            job.FinishedBy = routeResolver.Resolve(purpose).Identifier;
         }
         catch (Exception ex)
         {

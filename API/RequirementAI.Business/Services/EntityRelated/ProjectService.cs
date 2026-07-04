@@ -64,7 +64,7 @@ public class ProjectService(
             new ProjectRefinementJob
             {
                 ProjectId = projectId,
-                CustomInstructions = request.CustomInstructions
+                CustomInstructions = request.customInstructions
             },
             ct);
 

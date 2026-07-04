@@ -69,6 +69,7 @@ public static class DependencyInjection
         services.AddSingleton<ILLMProviderAdapter, AnthropicProvider>();
         services.AddSingleton<ILLMProviderAdapter, MoonshotAIProvider>();
         services.AddSingleton<ILLMProviderAdapter, GoogleProvider>();
+        services.AddSingleton<ILLMRouteResolver, LLMRouteResolver>();
         services.AddScoped<ILLMProvider, RoutingLLMProvider>();
 
         // helper services
