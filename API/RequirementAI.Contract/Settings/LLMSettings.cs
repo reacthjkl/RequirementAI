@@ -10,6 +10,7 @@ public class LLMProviderSettings
 {
     public string Type { get; set; } = null!;
     public string ApiKey { get; set; } = null!;
+    public string? BaseUrl { get; set; }
     public Dictionary<string, string> Models { get; set; } = [];
 }
 

@@ -66,6 +66,9 @@ public static class DependencyInjection
 
         // LLM providers
         services.AddSingleton<ILLMProviderAdapter, OpenAIProvider>();
+        services.AddSingleton<ILLMProviderAdapter, AnthropicProvider>();
+        services.AddSingleton<ILLMProviderAdapter, MoonshotAIProvider>();
+        services.AddSingleton<ILLMProviderAdapter, GoogleProvider>();
         services.AddScoped<ILLMProvider, RoutingLLMProvider>();
 
         // helper services
