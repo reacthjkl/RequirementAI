@@ -26,6 +26,7 @@ public class PromptBuilder(
             Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping
         });
         var context = itemContextBuilder.Build(entity);
+        var analysisFeedback = BuildAnalysisFeedback(entity);
 
         return new LLMRequestDto($"""
                                    You are a senior business analyst and requirements refinement assistant.
@@ -43,6 +44,11 @@ public class PromptBuilder(
                                    CONTEXT:
                                    ---
                                    {context}
+                                   ---
+
+                                   ANALYSIS FEEDBACK:
+                                   ---
+                                   {analysisFeedback}
                                    ---
                                    
                                    CUSTOM INSTRUCTIONS:
@@ -74,10 +80,39 @@ public class PromptBuilder(
                                    - Do not include explanations outside JSON.
                                    - The response MUST strictly match the provided JSON schema.
                                    - Follow CUSTOM INSTRUCTIONS unless they conflict with the JSON schema, system constraints, or the original business intent.
+                                   - Treat ANALYSIS FEEDBACK as advisory guidance, not as authoritative facts.
+                                   - Preserve the identified strengths and address supported weaknesses where possible.
+                                   - Apply suggestions only when they are consistent with the INPUT and CONTEXT.
+                                   - Do not invent information merely to satisfy analysis feedback.
                                    
                                    JSON SCHEMA:
                                    {schema.ToJson()}
                                    """);
+    }
+
+    private static string BuildAnalysisFeedback<TEntity>(TEntity entity)
+    {
+        QualityScoreBase? latestAnalysis = entity switch
+        {
+            Persona persona => persona.QualityScores.MaxBy(score => score.CreatedAt),
+            Scenario scenario => scenario.QualityScores.MaxBy(score => score.CreatedAt),
+            UserStory userStory => userStory.QualityScores.MaxBy(score => score.CreatedAt),
+            _ => null
+        };
+
+        if (latestAnalysis == null)
+            return "No previous analysis available.";
+
+        return $"""
+                Strengths:
+                {latestAnalysis.Strengths}
+
+                Weaknesses:
+                {latestAnalysis.Weaknesses}
+
+                Suggestions:
+                {latestAnalysis.Suggestions}
+                """;
     }
 
     public LLMRequestDto BuildUserStorySplitPrompt(UserStory userStory, string? customInstructions = null)

@@ -45,6 +45,7 @@ public static class DependencyInjection
         services.AddScoped<IRefinementMerger<UserStory, UserStoryForLLMDto>, UserStoryRefinementMerger>();
         services.AddSingleton<IUserStoryLanguageValidator, UserStoryLanguageValidator>();
         services.AddScoped<IUserStorySplitService, UserStorySplitService>();
+        services.AddScoped<IProjectAnalysisFreshnessService, ProjectAnalysisFreshnessService>();
         services.AddScoped<IProjectRefinementOrchestrator, ProjectRefinementOrchestrator>();
         services.AddScoped<IProjectRefinementJobProcessor, ProjectRefinementJobProcessor>();
 

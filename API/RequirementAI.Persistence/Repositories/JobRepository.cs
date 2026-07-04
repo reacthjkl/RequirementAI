@@ -79,8 +79,10 @@ public class JobRepository<TJob>(RequirementAIContext context) : IJobRepository<
 
     public async Task<TJob> Get(Guid id, CancellationToken ct)
     {
-        return await context.Set<TJob>().FirstOrDefaultAsync(x => x.Id == id, ct)
-               ?? throw new EntityNotFoundException<ProjectRefinementJob>(id);
+        return await context.Set<TJob>()
+                   .AsNoTracking()
+                   .FirstOrDefaultAsync(x => x.Id == id, ct)
+               ?? throw new EntityNotFoundException<TJob>(id);
     }
 
     public async Task<TJob?> GetLastByProjectId(
@@ -89,8 +91,22 @@ public class JobRepository<TJob>(RequirementAIContext context) : IJobRepository<
     )
     {
         return await context
-            .Set<TJob>().Where(x => x.ProjectId == projectId)
+            .Set<TJob>()
+            .AsNoTracking()
+            .Where(x => x.ProjectId == projectId)
             .OrderByDescending(x => x.CreatedAt)
+            .FirstOrDefaultAsync(ct);
+    }
+
+    public async Task<TJob?> GetLastCompletedByProjectId(
+        Guid projectId,
+        CancellationToken ct
+    )
+    {
+        return await context
+            .Set<TJob>()
+            .Where(x => x.ProjectId == projectId && x.Status == JobStatus.Completed)
+            .OrderByDescending(x => x.FinishedAt)
             .FirstOrDefaultAsync(ct);
     }
 

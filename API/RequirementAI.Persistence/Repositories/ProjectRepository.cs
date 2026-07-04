@@ -57,10 +57,52 @@ public class ProjectRepository(RequirementAIContext context): IProjectRepository
                    .ThenInclude(p => p.Scenarios)
                    .ThenInclude(s => s.UserStories)
                    .ThenInclude(us => us.EdgeCases)
+
+                   .Include(p => p.Personas)
+                   .ThenInclude(p => p.QualityScores
+                       .OrderByDescending(score => score.CreatedAt)
+                       .Take(1))
+
+                   .Include(p => p.Personas)
+                   .ThenInclude(p => p.Scenarios)
+                   .ThenInclude(s => s.QualityScores
+                       .OrderByDescending(score => score.CreatedAt)
+                       .Take(1))
+
+                   .Include(p => p.Personas)
+                   .ThenInclude(p => p.Scenarios)
+                   .ThenInclude(s => s.UserStories)
+                   .ThenInclude(us => us.QualityScores
+                       .OrderByDescending(score => score.CreatedAt)
+                       .Take(1))
                    
                    .AsSplitQuery()
                    .FirstOrDefaultAsync(p => p.Id == id, ct)
                ?? throw new EntityNotFoundException<Project>(id);
+    }
+
+    public async Task<DateTimeOffset> GetLatestContentUpdate(Guid id, CancellationToken ct)
+    {
+        var updates = context.Projects
+            .Where(project => project.Id == id)
+            .Select(project => project.UpdatedAt)
+            .Concat(context.Personas
+                .Where(persona => persona.ProjectId == id)
+                .Select(persona => persona.UpdatedAt))
+            .Concat(context.Scenarios
+                .Where(scenario => scenario.Persona.ProjectId == id)
+                .Select(scenario => scenario.UpdatedAt))
+            .Concat(context.UserStories
+                .Where(userStory => userStory.Scenario.Persona.ProjectId == id)
+                .Select(userStory => userStory.UpdatedAt))
+            .Concat(context.AcceptanceCriteria
+                .Where(criterion => criterion.UserStory.Scenario.Persona.ProjectId == id)
+                .Select(criterion => criterion.UpdatedAt))
+            .Concat(context.EdgeCases
+                .Where(edgeCase => edgeCase.UserStory.Scenario.Persona.ProjectId == id)
+                .Select(edgeCase => edgeCase.UpdatedAt));
+
+        return await updates.MaxAsync(ct);
     }
 
     public async Task<IList<Project>> GetByOrganization(Guid organizationId, CancellationToken ct)
