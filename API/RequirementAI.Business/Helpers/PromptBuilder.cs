@@ -5,6 +5,7 @@ using RequirementAI.Business.Interfaces;
 using RequirementAI.Business.Interfaces.QualityAnalysis;
 using RequirementAI.Business.Interfaces.Refinement;
 using RequirementAI.Contract.Dto.LLMDtos;
+using RequirementAI.Contract.Enums;
 using RequirementAI.Persistence.Entities;
 using JsonSchema = NJsonSchema.JsonSchema;
 
@@ -87,7 +88,7 @@ public class PromptBuilder(
                                    
                                    JSON SCHEMA:
                                    {schema.ToJson()}
-                                   """);
+                                   """, LLMRequestPurpose.Refinement);
     }
 
     private static string BuildAnalysisFeedback<TEntity>(TEntity entity)
@@ -172,7 +173,7 @@ public class PromptBuilder(
 
                                    JSON SCHEMA:
                                    {schema.ToJson()}
-                                   """);
+                                   """, LLMRequestPurpose.Refinement);
     }
 
     public LLMRequestDto BuildAnalysisPrompt<TEntity, TRequestDto, TResponseDto>(TEntity entity)
@@ -230,6 +231,6 @@ public class PromptBuilder(
                            
                            JSON SCHEMA:
                            {schema.ToJson()}
-                           """);
+                           """, LLMRequestPurpose.Analysis);
     }
 }

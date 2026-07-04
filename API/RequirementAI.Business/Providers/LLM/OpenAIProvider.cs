@@ -1,28 +1,32 @@
-using Microsoft.Extensions.Configuration;
+using System.Collections.Concurrent;
 using Microsoft.Extensions.Logging;
 using OpenAI;
 using OpenAI.Chat;
 using RequirementAI.Business.Interfaces;
 using RequirementAI.Contract.Dto.LLMDtos;
 using RequirementAI.Contract.Exceptions;
+using RequirementAI.Contract.Settings;
 
 namespace RequirementAI.Business.Providers.LLM;
 
-public class OpenAIProvider : ILLMProvider
+public class OpenAIProvider(ILogger<OpenAIProvider> logger) : ILLMProviderAdapter
 {
-    private readonly ChatClient _chat;
-    private readonly ILogger<OpenAIProvider> _logger;
+    private readonly ConcurrentDictionary<(string Provider, string Model), ChatClient> _clients = new();
 
-    public OpenAIProvider(IConfiguration config, 
-        ILogger<OpenAIProvider> logger)
+    public string ProviderType => "OpenAI";
+
+    public async Task<string> GetResponse(
+        string providerId,
+        LLMProviderSettings provider,
+        string model,
+        LLMRequestDto request,
+        CancellationToken ct)
     {
-         var client = new OpenAIClient(config["OpenAI:ApiKey"]);
-        _chat = client.GetChatClient(config["OpenAI:Model"]);
-        _logger = logger;
-    }
-    public async Task<string> GetResponse(LLMRequestDto request, CancellationToken ct)
-    {
-        var completion = await _chat.CompleteChatAsync(
+        var chat = _clients.GetOrAdd(
+            (providerId, model),
+            _ => new OpenAIClient(provider.ApiKey).GetChatClient(model));
+
+        var completion = await chat.CompleteChatAsync(
             new List<ChatMessage>
             {
                 new SystemChatMessage("You must return ONLY valid JSON. No markdown. No commentary."),
@@ -37,7 +41,7 @@ public class OpenAIProvider : ILLMProvider
 
         var response = completion.Value.Content[0].Text ?? throw new BusinessException("LLM Request failed.");
         
-        _logger.LogInformation(
+        logger.LogInformation(
             "LLM interaction. Prompt={RequestPrompt}, Response={Response}", request.Prompt, response);
 
         return response;

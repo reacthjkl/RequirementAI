@@ -73,5 +73,5 @@ public class UserStorySplitService(
              The previous response was rejected because its language did not match the INPUT.
              {correction}
              Generate the complete JSON response again and follow this correction exactly.
-             """, request.Temperature);
+             """, request.Purpose, request.Temperature);
 }

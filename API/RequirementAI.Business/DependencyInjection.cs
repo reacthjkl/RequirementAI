@@ -65,7 +65,8 @@ public static class DependencyInjection
         services.AddScoped<ICookiesHelper, CookiesHelper>();
 
         // LLM providers
-        services.AddScoped<ILLMProvider, OpenAIProvider>();
+        services.AddSingleton<ILLMProviderAdapter, OpenAIProvider>();
+        services.AddScoped<ILLMProvider, RoutingLLMProvider>();
 
         // helper services
         services.AddSingleton<IPasswordHasher, Argon2PasswordHasher>();
