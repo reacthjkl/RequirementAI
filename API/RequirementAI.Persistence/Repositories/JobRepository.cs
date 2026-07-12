@@ -13,10 +13,10 @@ public class JobRepository<TJob>(RequirementAIContext context) : IJobRepository<
     {
         Expression<Func<TJob, bool>> predicate = x =>
             x.Status == JobStatus.Pending ||
-            (x.Status == JobStatus.Failed && x.TryCount < 3);
+            (x.Status == JobStatus.Failed && x.TryCount < 1);
         Expression<Func<BaseJob, bool>> basePredicate = x =>
             x.Status == JobStatus.Pending ||
-            (x.Status == JobStatus.Failed && x.TryCount < 3);
+            (x.Status == JobStatus.Failed && x.TryCount < 1);
 
         var jobId = await context
             .Set<TJob>()

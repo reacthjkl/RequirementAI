@@ -22,45 +22,45 @@ public class GoogleProvider(
         LLMRequestDto request,
         CancellationToken ct)
     {
-        using var message = new HttpRequestMessage(
-            HttpMethod.Post,
-            HttpLLMProviderHelper.BuildUri(
-                provider,
-                $"models/{Uri.EscapeDataString(model)}:generateContent"));
-        message.Headers.Add("x-goog-api-key", provider.ApiKey);
-        message.Content = JsonContent.Create(new
-        {
-            systemInstruction = new
+        const int maxAttempts = 10;
+
+        var client = httpClientFactory.CreateClient();
+        client.Timeout = TimeSpan.FromMinutes(60);
+
+        for (var attempt = 1; attempt <= maxAttempts; attempt++)
+            try
             {
-                parts = new[]
-                {
-                    new { text = "You must return ONLY valid JSON. No markdown. No commentary." }
-                }
-            },
-            contents = new[]
-            {
-                new
-                {
-                    role = "user",
-                    parts = new[] { new { text = request.Prompt } }
-                }
-            },
-            generationConfig = new
-            {
-                responseMimeType = "application/json",
-                maxOutputTokens = 8192
+                using var message = CreateRequestMessage(provider, model, request);
+
+                using var response = await client.SendAsync(message, ct);
+
+                var payload = await HttpLLMProviderHelper.ReadResponse(
+                    response,
+                    ProviderType,
+                    ct);
+
+                var result = ExtractText(payload);
+
+                logger.LogInformation(
+                    "LLM interaction. Provider={Provider}, Model={Model}, Prompt={RequestPrompt}, Response={Response}",
+                    providerId, model, request.Prompt, result);
+
+                return result;
             }
-        });
+            catch (Exception ex) when (
+                attempt < maxAttempts)
+            {
+                logger.LogWarning(
+                    ex,
+                    "Request attempt {Attempt}/{MaxAttempts} failed. Retrying in one minute.",
+                    attempt,
+                    maxAttempts);
 
-        using var response = await httpClientFactory.CreateClient().SendAsync(message, ct);
-        var payload = await HttpLLMProviderHelper.ReadResponse(response, ProviderType, ct);
-        var result = ExtractText(payload);
+                await Task.Delay(TimeSpan.FromMinutes(1), ct);
+            }
 
-        logger.LogInformation(
-            "LLM interaction. Provider={Provider}, Model={Model}, Prompt={RequestPrompt}, Response={Response}",
-            providerId, model, request.Prompt, result);
-
-        return result;
+        throw new InvalidOperationException(
+            $"Request failed after {maxAttempts} attempts.");
     }
 
     private static string ExtractText(string payload)
@@ -73,13 +73,56 @@ public class GoogleProvider(
         var result = new StringBuilder();
 
         foreach (var part in parts.EnumerateArray())
-        {
             if (part.TryGetProperty("text", out var text))
                 result.Append(text.GetString());
-        }
 
         return result.Length > 0
             ? result.ToString()
             : throw new BusinessException("Google returned no text content.");
+    }
+
+    private static HttpRequestMessage CreateRequestMessage(
+        LLMProviderSettings provider,
+        string model,
+        LLMRequestDto request)
+    {
+        var message = new HttpRequestMessage(
+            HttpMethod.Post,
+            HttpLLMProviderHelper.BuildUri(
+                provider,
+                $"models/{Uri.EscapeDataString(model)}:generateContent"));
+
+        message.Headers.Add("x-goog-api-key", provider.ApiKey);
+
+        message.Content = JsonContent.Create(new
+        {
+            systemInstruction = new
+            {
+                parts = new[]
+                {
+                    new
+                    {
+                        text = "You must return ONLY valid JSON. No markdown. No commentary."
+                    }
+                }
+            },
+            contents = new[]
+            {
+                new
+                {
+                    role = "user",
+                    parts = new[]
+                    {
+                        new { text = request.Prompt }
+                    }
+                }
+            },
+            generationConfig = new
+            {
+                maxOutputTokens = 8192
+            }
+        });
+
+        return message;
     }
 }

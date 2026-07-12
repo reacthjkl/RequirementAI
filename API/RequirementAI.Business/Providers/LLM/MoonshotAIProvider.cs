@@ -28,6 +28,10 @@ public class MoonshotAIProvider(
         message.Headers.Authorization = new AuthenticationHeaderValue("Bearer", provider.ApiKey);
         message.Content = JsonContent.Create(new
         {
+            thinking = new
+            {
+                type = "disabled"
+            },
             model,
             max_completion_tokens = 8192,
             messages = new[]
