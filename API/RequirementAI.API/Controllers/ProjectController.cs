@@ -29,6 +29,20 @@ public class ProjectController(IProjectService projectService, IQualityScoreServ
         return Ok(ResponseDto<ProjectQualityOverviewDto>.Success(result));
     }
 
+    [HttpGet("{projectId:guid}/with-artifacts")]
+    public async Task<IActionResult> GetProjectWithArtifacts(Guid projectId, CancellationToken ct)
+    {
+        var result = await projectService.GetWithArtifacts(projectId, ct);
+        return Ok(ResponseDto<ProjectWithArtifactsDto>.Success(result));
+    }
+
+    [HttpGet("{projectId:guid}/word-counts")]
+    public async Task<IActionResult> GetProjectWordCounts(Guid projectId, CancellationToken ct)
+    {
+        var result = await projectService.GetWordCounts(projectId, ct);
+        return Ok(ResponseDto<ProjectWordCountDto>.Success(result));
+    }
+
     [HttpPost]
     public async Task<IActionResult> Create([FromBody] ProjectForCreationDto dto, CancellationToken ct)
     {
