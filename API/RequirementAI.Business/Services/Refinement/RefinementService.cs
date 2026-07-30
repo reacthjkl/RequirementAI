@@ -1,6 +1,6 @@
-using System.Text.Json;
 using FluentValidation;
 using Microsoft.Extensions.DependencyInjection;
+using RequirementAI.Business.Helpers;
 using RequirementAI.Business.Interfaces;
 using RequirementAI.Business.Interfaces.Refinement;
 using RequirementAI.Contract.Dto.LLMDtos;
@@ -36,11 +36,12 @@ public class RefinementService(
     {
         var request = promptBuilder.BuildRefinementPrompt<TEntity, TDto>(entity, customInstructions);
 
-        var response = await llmProvider.GetResponse(request, ct);
-        var refined = JsonSerializer.Deserialize<TDto>(response)
-                      ?? throw new BusinessException("Response provided by LLM does not fit to the object schema");
-
-        await Validate(refined, ct);
+        var refined = await LLMResponseRetryHelper.GetValidatedResponse<TDto>(
+            llmProvider,
+            request,
+            (result, token) => Validate(result, token),
+            "Response provided by LLM does not fit to the object schema",
+            ct);
 
         var merger = serviceProvider.GetRequiredService<IRefinementMerger<TEntity, TDto>>();
         merger.Apply(entity, refined);

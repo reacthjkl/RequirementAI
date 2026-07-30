@@ -1,10 +1,11 @@
-using RequirementAI.Contract.Exceptions;
 using RequirementAI.Contract.Settings;
 
 namespace RequirementAI.Business.Providers.LLM;
 
 internal static class HttpLLMProviderHelper
 {
+    public static readonly TimeSpan RequestTimeout = TimeSpan.FromMinutes(60);
+
     public static Uri BuildUri(LLMProviderSettings provider, string path)
     {
         if (string.IsNullOrWhiteSpace(provider.BaseUrl))
@@ -24,7 +25,9 @@ internal static class HttpLLMProviderHelper
 
         const int maxErrorLength = 2048;
         var error = payload.Length > maxErrorLength ? payload[..maxErrorLength] : payload;
-        throw new BusinessException(
-            $"{providerName} request failed with status {(int)response.StatusCode}: {error}");
+        throw new HttpRequestException(
+            $"{providerName} request failed with status {(int)response.StatusCode}: {error}",
+            null,
+            response.StatusCode);
     }
 }

@@ -89,8 +89,11 @@ public class ProjectAnalysisFreshnessService(
                     timeoutCts.Token);
             }
         }
-        catch (OperationCanceledException) when (!ct.IsCancellationRequested)
+        catch (OperationCanceledException)
         {
+            if (ct.IsCancellationRequested)
+                throw;
+
             throw new BusinessException(
                 $"Project analysis did not complete within {timeoutMinutes} minutes.");
         }

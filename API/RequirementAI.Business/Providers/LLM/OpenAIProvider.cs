@@ -1,4 +1,6 @@
 using System.Collections.Concurrent;
+using System.ClientModel;
+using System.ClientModel.Primitives;
 using Microsoft.Extensions.Logging;
 using OpenAI;
 using OpenAI.Chat;
@@ -24,7 +26,7 @@ public class OpenAIProvider(ILogger<OpenAIProvider> logger) : ILLMProviderAdapte
     {
         var chat = _clients.GetOrAdd(
             (providerId, model),
-            _ => new OpenAIClient(provider.ApiKey).GetChatClient(model));
+            _ => CreateClient(provider.ApiKey).GetChatClient(model));
 
         var completion = await chat.CompleteChatAsync(
             new List<ChatMessage>
@@ -36,14 +38,24 @@ public class OpenAIProvider(ILogger<OpenAIProvider> logger) : ILLMProviderAdapte
             {
                 ResponseFormat = ChatResponseFormat.CreateJsonObjectFormat()
             },
-            
             cancellationToken: ct);
 
         var response = completion.Value.Content[0].Text ?? throw new BusinessException("LLM Request failed.");
-        
+
         logger.LogInformation(
             "LLM interaction. Prompt={RequestPrompt}, Response={Response}", request.Prompt, response);
 
         return response;
+    }
+
+    private static OpenAIClient CreateClient(string apiKey)
+    {
+        return new OpenAIClient(
+            new ApiKeyCredential(apiKey),
+            new OpenAIClientOptions
+            {
+                NetworkTimeout = HttpLLMProviderHelper.RequestTimeout,
+                RetryPolicy = new ClientRetryPolicy(0)
+            });
     }
 }

@@ -1,5 +1,5 @@
-using System.Text.Json;
 using FluentValidation;
+using RequirementAI.Business.Helpers;
 using RequirementAI.Business.Interfaces;
 using RequirementAI.Business.Interfaces.Refinement;
 using RequirementAI.Contract.Dto.LLMDtos;
@@ -22,12 +22,12 @@ public class UserStorySplitService(
     {
         var request = promptBuilder.BuildUserStorySplitPrompt(userStory, customInstructions);
 
-        var response = await llmProvider.GetResponse(request, ct);
-        var result = JsonSerializer.Deserialize<UserStorySplitResultDto>(response)
-                     ?? throw new BusinessException(
-                         "Response provided by LLM does not fit the user story split schema");
-
-        await validator.ValidateAndThrowAsync(result, ct);
+        var result = await LLMResponseRetryHelper.GetValidatedResponse<UserStorySplitResultDto>(
+            llmProvider,
+            request,
+            (result, token) => validator.ValidateAndThrowAsync(result, token),
+            "Response provided by LLM does not fit the user story split schema",
+            ct);
 
         merger.Apply(userStory, result.UserStories.First());
 

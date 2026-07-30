@@ -22,45 +22,25 @@ public class GoogleProvider(
         LLMRequestDto request,
         CancellationToken ct)
     {
-        const int maxAttempts = 10;
-
         var client = httpClientFactory.CreateClient();
-        client.Timeout = TimeSpan.FromMinutes(60);
+        client.Timeout = HttpLLMProviderHelper.RequestTimeout;
 
-        for (var attempt = 1; attempt <= maxAttempts; attempt++)
-            try
-            {
-                using var message = CreateRequestMessage(provider, model, request);
+        using var message = CreateRequestMessage(provider, model, request);
 
-                using var response = await client.SendAsync(message, ct);
+        using var response = await client.SendAsync(message, ct);
 
-                var payload = await HttpLLMProviderHelper.ReadResponse(
-                    response,
-                    ProviderType,
-                    ct);
+        var payload = await HttpLLMProviderHelper.ReadResponse(
+            response,
+            ProviderType,
+            ct);
 
-                var result = ExtractText(payload);
+        var result = ExtractText(payload);
 
-                logger.LogInformation(
-                    "LLM interaction. Provider={Provider}, Model={Model}, Prompt={RequestPrompt}, Response={Response}",
-                    providerId, model, request.Prompt, result);
+        logger.LogInformation(
+            "LLM interaction. Provider={Provider}, Model={Model}, Prompt={RequestPrompt}, Response={Response}",
+            providerId, model, request.Prompt, result);
 
-                return result;
-            }
-            catch (Exception ex) when (
-                attempt < maxAttempts)
-            {
-                logger.LogWarning(
-                    ex,
-                    "Request attempt {Attempt}/{MaxAttempts} failed. Retrying in one minute.",
-                    attempt,
-                    maxAttempts);
-
-                await Task.Delay(TimeSpan.FromMinutes(1), ct);
-            }
-
-        throw new InvalidOperationException(
-            $"Request failed after {maxAttempts} attempts.");
+        return result;
     }
 
     private static string ExtractText(string payload)

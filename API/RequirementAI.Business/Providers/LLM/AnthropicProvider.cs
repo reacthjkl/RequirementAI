@@ -37,7 +37,10 @@ public class AnthropicProvider(
             }
         });
 
-        using var response = await httpClientFactory.CreateClient().SendAsync(message, ct);
+        var client = httpClientFactory.CreateClient();
+        client.Timeout = HttpLLMProviderHelper.RequestTimeout;
+
+        using var response = await client.SendAsync(message, ct);
         var payload = await HttpLLMProviderHelper.ReadResponse(response, ProviderType, ct);
         var result = ExtractText(payload);
 
