@@ -15,6 +15,7 @@ public class AuthService(
     IUserRepository userRepository,
     IJwtTokenService jwtService,
     IOptions<JwtSettings> jwtSettings,
+    IOptions<AuthenticationSettings> authenticationSettings,
     ICookiesHelper cookiesHelper,
     IMapper mapper,
     IPasswordHasher passwordHasher
@@ -22,6 +23,7 @@ public class AuthService(
     : IAuthService
 {
     private readonly JwtSettings _jwtSettings = jwtSettings.Value;
+    private readonly AuthenticationSettings _authenticationSettings = authenticationSettings.Value;
 
     public async Task AuthenticateAsync(AuthRequestDto request, CancellationToken ct)
     {
@@ -78,6 +80,8 @@ public class AuthService(
 
     public async Task Register(RegisterRequestDto request, CancellationToken ct)
     {
+        ValidateRegistrationSecret(request.RegistrationSecret);
+
         var existingUser = await userRepository.GetByEmailIgnoringFilters(request.Email, ct);
 
         if (existingUser != null)
@@ -89,5 +93,14 @@ public class AuthService(
             user.Password = passwordHasher.Hash(user.Password);
 
         await userRepository.Create(user, ct);
+    }
+
+    private void ValidateRegistrationSecret(string registrationSecret)
+    {
+        if (string.IsNullOrWhiteSpace(_authenticationSettings.RegistrationSecret))
+            throw new BusinessException("Registration secret has not been configured.");
+
+        if (registrationSecret != _authenticationSettings.RegistrationSecret)
+            throw new AuthorizationException("Invalid registration secret.");
     }
 }

@@ -105,6 +105,9 @@ public static class AppSetup
         builder.Services.Configure<JwtSettings>(
             builder.Configuration.GetSection("Jwt"));
 
+        builder.Services.Configure<AuthenticationSettings>(
+            builder.Configuration.GetSection("Authentication"));
+
         builder.Services.Configure<Argon2Settings>(builder.Configuration.GetSection("Argon2"));
     }
 
