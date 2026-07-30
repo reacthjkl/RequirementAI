@@ -50,7 +50,7 @@ dotnet user-secrets set "Authentication:RegistrationSecret" "your-registration-s
 Optional values:
 
 ```bash
-dotnet user-secrets set "AutoMapperOptions:LicenceKey" "your-automapper-license-key" --project API/RequirementAI.API/RequirementAI.API.csproj
+dotnet user-secrets set "AutoMapperOptions:LicenseKey" "your-automapper-license-key" --project API/RequirementAI.API/RequirementAI.API.csproj
 ```
 
 Run the API:
@@ -96,7 +96,7 @@ You only need keys for providers selected in the `LLM:Routing` section.
 Optional value:
 
 ```bash
-dotnet user-secrets set "AutoMapperOptions:LicenceKey" "your-automapper-license-key" --project API/RequirementAI.Workers/RequirementAI.Workers.csproj
+dotnet user-secrets set "AutoMapperOptions:LicenseKey" "your-automapper-license-key" --project API/RequirementAI.Workers/RequirementAI.Workers.csproj
 ```
 
 Run the workers:
@@ -177,7 +177,7 @@ Required worker configuration:
 
 Optional configuration:
 
-- `AutoMapperOptions:LicenceKey`
+- `AutoMapperOptions:LicenseKey`
 - `Authentication:Google:ClientId`
 
 ### API
