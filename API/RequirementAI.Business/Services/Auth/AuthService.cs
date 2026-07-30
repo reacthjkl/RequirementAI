@@ -1,4 +1,3 @@
-using System.Security.Authentication;
 using AutoMapper;
 using Microsoft.Extensions.Options;
 using RequirementAI.Business.Interfaces;
@@ -45,14 +44,14 @@ public class AuthService(
     public async Task RefreshTokens(string refreshToken, CancellationToken ct)
     {
         var user = await userRepository.GetByRefreshToken(refreshToken, ct)
-                   ?? throw new AuthenticationException("Invalid refresh token used.");
+                   ?? throw new AuthorizationException("Invalid refresh token used.");
 
         if (user.RefreshTokenExpiry <= DateTimeOffset.UtcNow)
         {
             user.RefreshToken = null;
             user.RefreshTokenExpiry = null;
             await userRepository.Update(user, ct);
-            throw new AuthenticationException("Expired refresh token used.");
+            throw new AuthorizationException("Expired refresh token used.");
         }
 
         var newAccessToken = jwtService.GenerateJwt(user);
