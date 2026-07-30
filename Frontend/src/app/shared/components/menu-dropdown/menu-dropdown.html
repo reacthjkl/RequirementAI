@@ -1,20 +1,20 @@
-<div class="dropdown w-100" [class.dropup]="dropup">
+<div class="dropdown w-100" [class.dropup]="dropup" [class.menu-dropdown-compact]="compact">
   <button
     type="button"
     class="btn btn-link link-body-emphasis text-decoration-none w-100 d-flex align-items-center gap-2 p-0 text-start"
-    [class.justify-content-center]="iconOnly"
+    [class.justify-content-center]="compact"
     [attr.aria-expanded]="isOpen"
-    [attr.aria-label]="iconOnly ? title : null"
-    [ngbTooltip]="iconOnly ? tooltip || title : null"
-    placement="end"
+    [attr.aria-label]="compact ? title : null"
+    [ngbTooltip]="compact ? tooltip || title : null"
+    placement="right"
     container="body"
     (click)="$event.stopPropagation(); toggle()"
   >
     @if (icon) {
       <span
         class="d-inline-flex align-items-center justify-content-center rounded bg-primary-subtle text-primary flex-shrink-0"
-        [class.p-3]="!iconOnly"
-        [class.p-2]="iconOnly"
+        [class.p-3]="!compact"
+        [class.p-2]="compact"
       >
         <fa-icon [icon]="icon"></fa-icon>
       </span>
@@ -26,7 +26,7 @@
       </span>
     }
 
-    @if (!iconOnly) {
+    @if (!compact) {
       <span class="overflow-hidden flex-grow-1">
         <span class="d-block fw-semibold text-truncate">{{ title }}</span>
         @if (subtitle) {
@@ -40,9 +40,10 @@
 
   @if (isOpen) {
     <div
-      class="dropdown-menu show shadow start-0"
-      [class.w-100]="!iconOnly"
-      [class.menu-dropdown-wide]="iconOnly"
+      class="dropdown-menu show shadow"
+      [class.w-100]="!compact"
+      [class.start-0]="!compact"
+      [class.menu-dropdown-compact-menu]="compact"
       [class.top-100]="!dropup"
       [class.mt-2]="!dropup"
       [class.bottom-100]="dropup"

@@ -1,0 +1,32 @@
+.user-story-details-card {
+  border-left-width: 0.35rem;
+}
+
+.user-story-details-card :is(input, textarea) {
+  font-size: 1rem;
+}
+
+.user-story-details-card input {
+  font-size: 1.15rem;
+  font-weight: 600;
+}
+
+.user-story-child-table {
+  table-layout: fixed;
+}
+
+.acceptance-criteria-table thead {
+  display: none;
+}
+
+.user-story-child-table :is(th, td) {
+  padding-bottom: 0.65rem;
+  padding-top: 0.65rem;
+  vertical-align: top;
+  white-space: normal;
+  word-break: break-word;
+}
+
+.user-story-child-row {
+  cursor: pointer;
+}

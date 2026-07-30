@@ -4,23 +4,32 @@
   (click)="expandFromMinimized($event)"
 >
   <nav class="p-3 d-flex flex-column gap-3">
-    @if (!isMinimized) {
-      <div class="d-flex justify-content-end">
-        <button
-          type="button"
-          class="btn btn-sm btn-link link-secondary text-decoration-none p-0"
-          aria-label="Collapse menu"
-          title="Collapse menu"
-          (click)="$event.stopPropagation(); toggleMinimized()"
-        >
-          <fa-icon [icon]="faAnglesLeft"></fa-icon>
-        </button>
-      </div>
-    }
+    <div
+      class="d-flex"
+      [class.justify-content-end]="!isMinimized"
+      [class.justify-content-center]="isMinimized"
+    >
+      <button
+        type="button"
+        class="btn btn-sm btn-link link-secondary text-decoration-none p-0"
+        [attr.aria-label]="isMinimized ? 'Expand menu' : 'Collapse menu'"
+        [ngbTooltip]="isMinimized ? 'Expand menu' : 'Collapse menu'"
+        container="body"
+        placement="right"
+        (click)="$event.stopPropagation(); toggleMinimized()"
+      >
+        <fa-icon [icon]="isMinimized ? faAnglesRight : faAnglesLeft"></fa-icon>
+      </button>
+    </div>
 
     @if (currentProject) {
       @if (!isMinimized) {
-        <app-menu-dropdown #projectMenu [title]="currentProject.name" (click)="$event.stopPropagation()">
+        <app-menu-dropdown
+          #projectMenu
+          [title]="currentProject.name"
+          [icon]="entityIcons.project"
+          (click)="$event.stopPropagation()"
+        >
           @if (otherProjects.length > 0) {
             @for (project of otherProjects; track project.id) {
               <button
@@ -45,9 +54,10 @@
             routerLinkActive="text-primary bg-primary-subtle"
             class="list-group-item list-group-item-action border-0 rounded d-flex align-items-center gap-2"
             [class.justify-content-center]="isMinimized"
-            [ngbTooltip]="isMinimized ? page.label : null"
-            placement="end"
+            [ngbTooltip]="page.label"
+            [disableTooltip]="!isMinimized"
             container="body"
+            placement="right"
             (click)="$event.stopPropagation()"
           >
             <fa-icon [icon]="page.icon"></fa-icon>
@@ -64,9 +74,10 @@
           routerLinkActive="text-primary bg-primary-subtle"
           class="list-group-item list-group-item-action border-0 rounded d-flex align-items-center gap-2"
           [class.justify-content-center]="isMinimized"
-          [ngbTooltip]="isMinimized ? 'Settings' : null"
-          placement="end"
+          ngbTooltip="Settings"
+          [disableTooltip]="!isMinimized"
           container="body"
+          placement="right"
           (click)="$event.stopPropagation()"
         >
           <fa-icon [icon]="entityIcons.settings"></fa-icon>
@@ -83,8 +94,9 @@
             routerLinkActive="text-primary bg-primary-subtle"
             class="list-group-item list-group-item-action border-0 rounded d-flex align-items-center gap-2"
             [class.justify-content-center]="isMinimized"
-            [ngbTooltip]="isMinimized ? project.name : null"
-            placement="end"
+            [ngbTooltip]="project.name"
+            [disableTooltip]="!isMinimized"
+            placement="right"
             container="body"
             (click)="$event.stopPropagation()"
           >
@@ -96,17 +108,20 @@
         }
 
         <a
-          [routerLink]="['/projects', 'wizard']"
+          [routerLink]="['/projects']"
+          routerLinkActive="text-primary bg-primary-subtle"
+          [routerLinkActiveOptions]="{ exact: true }"
           class="list-group-item list-group-item-action border-0 rounded d-flex align-items-center gap-2"
           [class.justify-content-center]="isMinimized"
-          [ngbTooltip]="isMinimized ? 'New project' : null"
-          placement="end"
+          ngbTooltip="Projects"
+          [disableTooltip]="!isMinimized"
           container="body"
+          placement="right"
           (click)="$event.stopPropagation()"
         >
-          <fa-icon [icon]="faPlus"></fa-icon>
+          <fa-icon [icon]="entityIcons.project"></fa-icon>
           @if (!isMinimized) {
-            New project
+            Projects
           }
         </a>
       </div>
@@ -121,7 +136,7 @@
         [subtitle]="currentUser.email"
         [iconText]="userInitials(currentUser)"
         [dropup]="true"
-        [iconOnly]="isMinimized"
+        [compact]="isMinimized"
         tooltip="User menu"
         (click)="$event.stopPropagation()"
       >

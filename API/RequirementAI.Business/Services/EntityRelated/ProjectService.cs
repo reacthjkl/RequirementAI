@@ -2,6 +2,8 @@ using AutoMapper;
 using RequirementAI.Business.Interfaces;
 using RequirementAI.Business.Interfaces.EntityRelated;
 using RequirementAI.Contract.Dto;
+using RequirementAI.Contract.Enums;
+using RequirementAI.Contract.Exceptions;
 using RequirementAI.Persistence.Entities;
 using RequirementAI.Persistence.Interfaces;
 
@@ -10,6 +12,7 @@ namespace RequirementAI.Business.Services.EntityRelated;
 public class ProjectService(
     IProjectRepository projectRepository,
     IProjectRefinementJobRepository projectRefinementJobRepository,
+    IQualityAnalysisJobRepository qualityAnalysisJobRepository,
     IProjectStatusEnricher projectStatusEnricher,
     IMapper mapper)
     : IProjectService
@@ -59,6 +62,12 @@ public class ProjectService(
 
     public async Task<Guid> Refine(Guid projectId, string? customInstructions, CancellationToken ct)
     {
+        var lastJob = await projectRefinementJobRepository.GetLastByProjectId(projectId, ct);
+
+        if (lastJob is { Status: JobStatus.Completed, FinishedAt: not null } &&
+            lastJob.FinishedAt.Value.AddDays(1) > DateTime.UtcNow)
+            throw new BusinessException("Limit reached for today");
+        
         var job = await projectRefinementJobRepository.Create(
             new ProjectRefinementJob
             {
@@ -68,6 +77,24 @@ public class ProjectService(
             ct);
         
         return job.Id;
+    }
+
+    public async Task<Guid> Analyze(Guid projectId, CancellationToken ct)
+    {
+        var lastJob = await qualityAnalysisJobRepository.GetLastByProjectId(projectId, ct);
+
+        if (lastJob is { Status: JobStatus.Completed, FinishedAt: not null } &&
+            lastJob.FinishedAt.Value.AddDays(1) > DateTime.UtcNow)
+            throw new BusinessException("Limit reached for today");
+        
+        var job = await qualityAnalysisJobRepository.Create(
+            new QualityAnalysisJob
+            {
+                ProjectId = projectId,
+            }, 
+            ct);
+        
+        return job.Id;    
     }
 
     public async Task Delete(Guid id, CancellationToken ct)

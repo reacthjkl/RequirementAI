@@ -1,0 +1,54 @@
+<div class="row g-3" [formGroup]="form">
+  <div class="col-md-6">
+    <label class="form-label" [for]="idPrefix + 'Name'">Name</label>
+    <input
+      class="form-control"
+      [class.is-invalid]="isInvalid('name')"
+      [id]="idPrefix + 'Name'"
+      formControlName="name"
+    />
+  </div>
+
+  <div class="col-md-6">
+    <label class="form-label" [for]="idPrefix + 'Context'">Context of use</label>
+    <input
+      class="form-control"
+      [class.is-invalid]="isInvalid('contextOfUse')"
+      [id]="idPrefix + 'Context'"
+      formControlName="contextOfUse"
+    />
+  </div>
+
+  <div class="col-12">
+    <label class="form-label" [for]="idPrefix + 'Description'">Description</label>
+    <textarea
+      class="form-control"
+      [class.is-invalid]="isInvalid('description')"
+      [id]="idPrefix + 'Description'"
+      rows="3"
+      formControlName="description"
+    ></textarea>
+  </div>
+
+  <div class="col-md-6">
+    <label class="form-label" [for]="idPrefix + 'Goals'">Goals</label>
+    <textarea
+      class="form-control"
+      [class.is-invalid]="isInvalid('goals')"
+      [id]="idPrefix + 'Goals'"
+      rows="3"
+      formControlName="goals"
+    ></textarea>
+  </div>
+
+  <div class="col-md-6">
+    <label class="form-label" [for]="idPrefix + 'Frustrations'">Frustrations</label>
+    <textarea
+      class="form-control"
+      [class.is-invalid]="isInvalid('frustrations')"
+      [id]="idPrefix + 'Frustrations'"
+      rows="3"
+      formControlName="frustrations"
+    ></textarea>
+  </div>
+</div>

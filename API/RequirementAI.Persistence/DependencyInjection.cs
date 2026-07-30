@@ -18,6 +18,8 @@ public static class DependencyInjection
         services.AddScoped<IUserRepository, UserRepository>();
         services.AddScoped<IUserStoryRepository, UserStoryRepository>();
         services.AddScoped<IProjectRefinementJobRepository, ProjectRefinementJobRepository>();
+        services.AddScoped<IQualityAnalysisJobRepository, QualityAnalysisJobRepository>();
+        services.AddScoped<IQualityScoreRepository, QualityScoreRepository>();
 
         return services;
     }

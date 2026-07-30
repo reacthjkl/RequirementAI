@@ -1,15 +1,10 @@
-using RequirementAI.Contract.Enums;
-using RequirementAI.Persistence.Interfaces;
 
 namespace RequirementAI.Persistence.Entities;
-public class Project: ICreatable
+public class Project: BaseEntity
 {
-    public Guid Id { get; set; }
     public string Name { get; set; } = null!;
     public string Description { get; set; } = null!;
-    public DateTimeOffset CreatedAt { get; set; }
     public Guid OrganizationId { get; set; }
     public Organization Organization { get; set; } = null!;
     public IList<Persona> Personas { get; set; } = new List<Persona>();
-    public ProjectStatus Status { get; set; } = ProjectStatus.Incomplete;
 }

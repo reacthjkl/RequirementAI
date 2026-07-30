@@ -29,9 +29,10 @@ namespace RequirementAI.Persistence.Migrations
                         .HasColumnType("uuid");
 
                     b.Property<DateTimeOffset>("CreatedAt")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("timestamptz")
-                        .HasDefaultValueSql("CURRENT_TIMESTAMP");
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTimeOffset>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<Guid>("UserStoryId")
                         .HasColumnType("uuid");
@@ -55,9 +56,7 @@ namespace RequirementAI.Persistence.Migrations
                         .HasColumnType("uuid");
 
                     b.Property<DateTimeOffset>("CreatedAt")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("timestamptz")
-                        .HasDefaultValueSql("CURRENT_TIMESTAMP");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("ExpectedBehavior")
                         .IsRequired()
@@ -73,6 +72,9 @@ namespace RequirementAI.Persistence.Migrations
                         .IsRequired()
                         .HasMaxLength(1024)
                         .HasColumnType("character varying(1024)");
+
+                    b.Property<DateTimeOffset>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<Guid>("UserStoryId")
                         .HasColumnType("uuid");
@@ -91,14 +93,15 @@ namespace RequirementAI.Persistence.Migrations
                         .HasColumnType("uuid");
 
                     b.Property<DateTimeOffset>("CreatedAt")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("timestamptz")
-                        .HasDefaultValueSql("CURRENT_TIMESTAMP");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(255)
                         .HasColumnType("character varying(255)");
+
+                    b.Property<DateTimeOffset>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
 
                     b.HasKey("Id");
 
@@ -117,9 +120,7 @@ namespace RequirementAI.Persistence.Migrations
                         .HasColumnType("character varying(2048)");
 
                     b.Property<DateTimeOffset>("CreatedAt")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("timestamptz")
-                        .HasDefaultValueSql("CURRENT_TIMESTAMP");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("Description")
                         .IsRequired()
@@ -144,11 +145,69 @@ namespace RequirementAI.Persistence.Migrations
                     b.Property<Guid>("ProjectId")
                         .HasColumnType("uuid");
 
+                    b.Property<DateTimeOffset>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
                     b.HasKey("Id");
 
                     b.HasIndex("ProjectId");
 
                     b.ToTable("Personas");
+                });
+
+            modelBuilder.Entity("RequirementAI.Persistence.Entities.PersonaQualityScore", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<int>("ClarityScore")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("DifferentiationScore")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("GoalClarityScore")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("OverallScore")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("PainPointsScore")
+                        .HasColumnType("integer");
+
+                    b.Property<Guid>("PersonaId")
+                        .HasColumnType("uuid");
+
+                    b.Property<int>("RealismScore")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("RelevanceScore")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Strengths")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Suggestions")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTimeOffset>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Weaknesses")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PersonaId");
+
+                    b.ToTable("PersonaQualityScores");
                 });
 
             modelBuilder.Entity("RequirementAI.Persistence.Entities.Project", b =>
@@ -158,9 +217,7 @@ namespace RequirementAI.Persistence.Migrations
                         .HasColumnType("uuid");
 
                     b.Property<DateTimeOffset>("CreatedAt")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("timestamptz")
-                        .HasDefaultValueSql("CURRENT_TIMESTAMP");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("Description")
                         .IsRequired()
@@ -175,10 +232,8 @@ namespace RequirementAI.Persistence.Migrations
                     b.Property<Guid>("OrganizationId")
                         .HasColumnType("uuid");
 
-                    b.Property<string>("Status")
-                        .IsRequired()
-                        .HasMaxLength(255)
-                        .HasColumnType("character varying(255)");
+                    b.Property<DateTimeOffset>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
 
                     b.HasKey("Id");
 
@@ -194,9 +249,7 @@ namespace RequirementAI.Persistence.Migrations
                         .HasColumnType("uuid");
 
                     b.Property<DateTimeOffset>("CreatedAt")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("timestamptz")
-                        .HasDefaultValueSql("CURRENT_TIMESTAMP");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("CustomInstructions")
                         .HasMaxLength(2048)
@@ -220,11 +273,51 @@ namespace RequirementAI.Persistence.Migrations
                         .HasMaxLength(255)
                         .HasColumnType("character varying(255)");
 
+                    b.Property<DateTimeOffset>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
                     b.HasKey("Id");
 
                     b.HasIndex("ProjectId");
 
                     b.ToTable("ProjectRefinementJobs");
+                });
+
+            modelBuilder.Entity("RequirementAI.Persistence.Entities.QualityAnalysisJob", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("ErrorMessage")
+                        .HasMaxLength(1024)
+                        .HasColumnType("character varying(1024)");
+
+                    b.Property<DateTimeOffset?>("FinishedAt")
+                        .HasColumnType("timestamptz");
+
+                    b.Property<Guid>("ProjectId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTimeOffset?>("StartedAt")
+                        .HasColumnType("timestamptz");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)");
+
+                    b.Property<DateTimeOffset>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProjectId");
+
+                    b.ToTable("QualityAnalysisJobs");
                 });
 
             modelBuilder.Entity("RequirementAI.Persistence.Entities.Scenario", b =>
@@ -239,9 +332,7 @@ namespace RequirementAI.Persistence.Migrations
                         .HasColumnType("text");
 
                     b.Property<DateTimeOffset>("CreatedAt")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("timestamptz")
-                        .HasDefaultValueSql("CURRENT_TIMESTAMP");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<Guid>("PersonaId")
                         .HasColumnType("uuid");
@@ -251,11 +342,69 @@ namespace RequirementAI.Persistence.Migrations
                         .HasMaxLength(1024)
                         .HasColumnType("character varying(1024)");
 
+                    b.Property<DateTimeOffset>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
                     b.HasKey("Id");
 
                     b.HasIndex("PersonaId");
 
                     b.ToTable("Scenarios");
+                });
+
+            modelBuilder.Entity("RequirementAI.Persistence.Entities.ScenarioQualityScore", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<int>("ClarityScore")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("ContextScore")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("EdgeCasesScore")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("FlowCompletenessScore")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("OverallScore")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("PersonaFitScore")
+                        .HasColumnType("integer");
+
+                    b.Property<Guid>("ScenarioId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Strengths")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Suggestions")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int>("TriggerScore")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTimeOffset>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Weaknesses")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ScenarioId");
+
+                    b.ToTable("ScenarioQualityScores");
                 });
 
             modelBuilder.Entity("RequirementAI.Persistence.Entities.User", b =>
@@ -265,9 +414,7 @@ namespace RequirementAI.Persistence.Migrations
                         .HasColumnType("uuid");
 
                     b.Property<DateTimeOffset>("CreatedAt")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("timestamptz")
-                        .HasDefaultValueSql("CURRENT_TIMESTAMP");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("Email")
                         .IsRequired()
@@ -293,6 +440,9 @@ namespace RequirementAI.Persistence.Migrations
                     b.Property<DateTimeOffset?>("RefreshTokenExpiry")
                         .HasColumnType("timestamp with time zone");
 
+                    b.Property<DateTimeOffset>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
                     b.HasKey("Id");
 
                     b.HasIndex("Email")
@@ -310,9 +460,7 @@ namespace RequirementAI.Persistence.Migrations
                         .HasColumnType("uuid");
 
                     b.Property<DateTimeOffset>("CreatedAt")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("timestamptz")
-                        .HasDefaultValueSql("CURRENT_TIMESTAMP");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("Description")
                         .IsRequired()
@@ -332,11 +480,72 @@ namespace RequirementAI.Persistence.Migrations
                         .HasMaxLength(1024)
                         .HasColumnType("character varying(1024)");
 
+                    b.Property<DateTimeOffset>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
                     b.HasKey("Id");
 
                     b.HasIndex("ScenarioId");
 
                     b.ToTable("UserStories");
+                });
+
+            modelBuilder.Entity("RequirementAI.Persistence.Entities.UserStoryQualityScore", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<int>("AcceptanceCriteriaScore")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("AmbiguityScore")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("BusinessValueScore")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("ClarityScore")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("CompletenessScore")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("OverallScore")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("ScopeScore")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Strengths")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Suggestions")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int>("TestabilityScore")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTimeOffset>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid>("UserStoryId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Weaknesses")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserStoryId");
+
+                    b.ToTable("UserStoryQualityScores");
                 });
 
             modelBuilder.Entity("RequirementAI.Persistence.Entities.AcceptanceCriteria", b =>
@@ -372,6 +581,17 @@ namespace RequirementAI.Persistence.Migrations
                     b.Navigation("Project");
                 });
 
+            modelBuilder.Entity("RequirementAI.Persistence.Entities.PersonaQualityScore", b =>
+                {
+                    b.HasOne("RequirementAI.Persistence.Entities.Persona", "Persona")
+                        .WithMany("QualityScores")
+                        .HasForeignKey("PersonaId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Persona");
+                });
+
             modelBuilder.Entity("RequirementAI.Persistence.Entities.Project", b =>
                 {
                     b.HasOne("RequirementAI.Persistence.Entities.Organization", "Organization")
@@ -392,6 +612,15 @@ namespace RequirementAI.Persistence.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("RequirementAI.Persistence.Entities.QualityAnalysisJob", b =>
+                {
+                    b.HasOne("RequirementAI.Persistence.Entities.Project", null)
+                        .WithMany()
+                        .HasForeignKey("ProjectId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("RequirementAI.Persistence.Entities.Scenario", b =>
                 {
                     b.HasOne("RequirementAI.Persistence.Entities.Persona", "Persona")
@@ -401,6 +630,17 @@ namespace RequirementAI.Persistence.Migrations
                         .IsRequired();
 
                     b.Navigation("Persona");
+                });
+
+            modelBuilder.Entity("RequirementAI.Persistence.Entities.ScenarioQualityScore", b =>
+                {
+                    b.HasOne("RequirementAI.Persistence.Entities.Scenario", "Scenario")
+                        .WithMany("QualityScores")
+                        .HasForeignKey("ScenarioId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Scenario");
                 });
 
             modelBuilder.Entity("RequirementAI.Persistence.Entities.User", b =>
@@ -425,6 +665,17 @@ namespace RequirementAI.Persistence.Migrations
                     b.Navigation("Scenario");
                 });
 
+            modelBuilder.Entity("RequirementAI.Persistence.Entities.UserStoryQualityScore", b =>
+                {
+                    b.HasOne("RequirementAI.Persistence.Entities.UserStory", "UserStory")
+                        .WithMany("QualityScores")
+                        .HasForeignKey("UserStoryId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("UserStory");
+                });
+
             modelBuilder.Entity("RequirementAI.Persistence.Entities.Organization", b =>
                 {
                     b.Navigation("Projects");
@@ -434,6 +685,8 @@ namespace RequirementAI.Persistence.Migrations
 
             modelBuilder.Entity("RequirementAI.Persistence.Entities.Persona", b =>
                 {
+                    b.Navigation("QualityScores");
+
                     b.Navigation("Scenarios");
                 });
 
@@ -444,6 +697,8 @@ namespace RequirementAI.Persistence.Migrations
 
             modelBuilder.Entity("RequirementAI.Persistence.Entities.Scenario", b =>
                 {
+                    b.Navigation("QualityScores");
+
                     b.Navigation("UserStories");
                 });
 
@@ -452,6 +707,8 @@ namespace RequirementAI.Persistence.Migrations
                     b.Navigation("AcceptanceCriteria");
 
                     b.Navigation("EdgeCases");
+
+                    b.Navigation("QualityScores");
                 });
 #pragma warning restore 612, 618
         }

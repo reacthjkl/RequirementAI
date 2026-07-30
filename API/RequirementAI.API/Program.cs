@@ -1,4 +1,5 @@
 using RequirementAI.API;
+using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -40,6 +41,15 @@ app.UseCors(app.Environment.EnvironmentName);
 
 app.UseAuthentication();
 app.UseAuthorization();
+
+app.UseSerilogRequestLogging(options =>
+{
+    options.EnrichDiagnosticContext = (diagnosticContext, httpContext) =>
+    {
+        diagnosticContext.Set("RequestHost", httpContext.Request.Host.Value);
+        diagnosticContext.Set("UserAgent", httpContext.Request.Headers.UserAgent.ToString());
+    };
+});
 
 app.MapControllers();
 

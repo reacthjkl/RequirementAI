@@ -11,6 +11,7 @@ import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { faCheck, faPen, faTrash } from '@fortawesome/free-solid-svg-icons';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { ConfirmationModal } from '../../../../../shared/components/confirmation-modal/confirmation-modal';
+import { UserStoryFormFields } from '../../../../../shared/components/user-story-form-fields/user-story-form-fields';
 import { ENTITY_ICONS } from '../../../../../shared/icons/entity-icons';
 import { Scenario } from '../../../../../shared/models/scenario.model';
 import { UserStory } from '../../../../../shared/models/user-story.model';
@@ -26,7 +27,7 @@ type UserStoryForm = FormGroup<{
 
 @Component({
   selector: 'app-project-wizard-user-stories-step',
-  imports: [ReactiveFormsModule, FontAwesomeModule],
+  imports: [ReactiveFormsModule, FontAwesomeModule, UserStoryFormFields],
   templateUrl: './project-wizard-user-stories-step.html',
   styleUrl: './project-wizard-user-stories-step.scss',
 })

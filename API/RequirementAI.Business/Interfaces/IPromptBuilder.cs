@@ -5,5 +5,6 @@ namespace RequirementAI.Business.Interfaces;
 
 public interface IPromptBuilder
 {
-    LLMRequestDto Build<TEntity, TDto>(TEntity entity, string? customInstructions = null);
+    LLMRequestDto BuildRefinementPrompt<TEntity, TDto>(TEntity entity, string? customInstructions = null);
+    LLMRequestDto BuildAnalysisPrompt<TEntity, TRequestDto, TResponseDto>(TEntity entity);
 }

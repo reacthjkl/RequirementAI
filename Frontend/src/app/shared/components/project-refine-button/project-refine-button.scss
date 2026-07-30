@@ -1,0 +1,15 @@
+.project-refinement-badge {
+  padding-block: 0.45rem;
+}
+
+.status-icon-spin {
+  animation: status-icon-spin 0.85s linear infinite;
+  display: inline-flex;
+  transform-origin: center;
+}
+
+@keyframes status-icon-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
