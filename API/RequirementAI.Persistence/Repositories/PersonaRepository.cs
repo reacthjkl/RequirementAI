@@ -13,6 +13,13 @@ public class PersonaRepository(RequirementAIContext context): IPersonaRepository
             ?? throw new EntityNotFoundException<Persona>(id);
     }
 
+    public async Task<Persona> GetById(Guid id, Guid organizationId, CancellationToken ct)
+    {
+        return await context.Personas
+                   .FirstOrDefaultAsync(p => p.Id == id && p.Project.OrganizationId == organizationId, ct)
+               ?? throw new EntityNotFoundException<Persona>(id);
+    }
+
     public async Task<Persona> GetWithProjectById(Guid id, CancellationToken ct)
     {
         return await context.Personas
@@ -25,6 +32,13 @@ public class PersonaRepository(RequirementAIContext context): IPersonaRepository
     {
         return await context.Personas
             .Where(p => p.ProjectId == projectId)
+            .ToListAsync(ct);
+    }
+
+    public async Task<IList<Persona>> GetByProject(Guid projectId, Guid organizationId, CancellationToken ct)
+    {
+        return await context.Personas
+            .Where(p => p.ProjectId == projectId && p.Project.OrganizationId == organizationId)
             .ToListAsync(ct);
     }
 

@@ -67,8 +67,10 @@ public class AnalysisTaskProvider: IAnalysisTaskProvider
                               - weaknesses
                               - suggestions
 
-                              Check whether the story follows the structure:
-                              As a [persona], I want [action/capability], so that [benefit/business value].
+                              Check whether the story clearly expresses, in the input language:
+                              - the persona or role
+                              - the desired action or capability
+                              - the resulting benefit or business value
 
                               Do not refine or rewrite the user story.
                               Return only the quality analysis according to the provided JSON schema.

@@ -25,15 +25,13 @@ public static class AppSetup
         {
             if (builder.Environment.IsDevelopment()) options.EnableSensitiveDataLogging();
             options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection"));
-        });    
+        });
     }
 
     public static void SetupAutoMapper(HostApplicationBuilder builder)
     {
-        builder.Services.AddAutoMapper(cfg =>
-            {
-                cfg.LicenseKey = builder.Configuration["AutoMapperOptions:LicenseKey"];
-            },
+        builder.Services.AddAutoMapper(
+            cfg => { cfg.LicenseKey = builder.Configuration["AutoMapperOptions:LicenseKey"]; },
             typeof(UserProfile),
             typeof(PersonaProfile),
             typeof(ScenarioProfile),
@@ -41,16 +39,16 @@ public static class AppSetup
             typeof(AcceptanceCriteriaProfile),
             typeof(EdgeCaseProfile),
             typeof(QualityScoreProfile)
-        );    
+        );
     }
 
     public static void SetupServices(HostApplicationBuilder builder)
     {
         builder.Services.AddHostedService<RefinementWorker>();
         builder.Services.AddScoped<IProjectRefinementJobProcessor, ProjectRefinementJobProcessor>();
-        
+
         builder.Services.AddHostedService<AnalysisWorker>();
-        builder.Services.AddScoped<IQualityAnalysisJobProcessor, QualityAnalysisJobProcessor>();
+        builder.Services.AddScoped<IAnalysisJobProcessor, AnalysisJobProcessor>();
     }
 
     public static void SetupLogging(HostApplicationBuilder builder)

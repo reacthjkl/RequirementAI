@@ -49,6 +49,52 @@ namespace RequirementAI.Persistence.Migrations
                     b.ToTable("AcceptanceCriteria");
                 });
 
+            modelBuilder.Entity("RequirementAI.Persistence.Entities.BaseJob", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("ErrorMessage")
+                        .HasMaxLength(1024)
+                        .HasColumnType("character varying(1024)");
+
+                    b.Property<DateTimeOffset?>("FinishedAt")
+                        .HasColumnType("timestamptz");
+
+                    b.Property<string>("FinishedBy")
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)");
+
+                    b.Property<Guid>("ProjectId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTimeOffset?>("StartedAt")
+                        .HasColumnType("timestamptz");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)");
+
+                    b.Property<int>("TryCount")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTimeOffset>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProjectId");
+
+                    b.ToTable("BaseJobs");
+
+                    b.UseTptMappingStrategy();
+                });
+
             modelBuilder.Entity("RequirementAI.Persistence.Entities.EdgeCase", b =>
                 {
                     b.Property<Guid>("Id")
@@ -240,84 +286,6 @@ namespace RequirementAI.Persistence.Migrations
                     b.HasIndex("OrganizationId");
 
                     b.ToTable("Projects");
-                });
-
-            modelBuilder.Entity("RequirementAI.Persistence.Entities.ProjectRefinementJob", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<DateTimeOffset>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("CustomInstructions")
-                        .HasMaxLength(2048)
-                        .HasColumnType("character varying(2048)");
-
-                    b.Property<string>("ErrorMessage")
-                        .HasMaxLength(1024)
-                        .HasColumnType("character varying(1024)");
-
-                    b.Property<DateTimeOffset?>("FinishedAt")
-                        .HasColumnType("timestamptz");
-
-                    b.Property<Guid>("ProjectId")
-                        .HasColumnType("uuid");
-
-                    b.Property<DateTimeOffset?>("StartedAt")
-                        .HasColumnType("timestamptz");
-
-                    b.Property<string>("Status")
-                        .IsRequired()
-                        .HasMaxLength(255)
-                        .HasColumnType("character varying(255)");
-
-                    b.Property<DateTimeOffset>("UpdatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ProjectId");
-
-                    b.ToTable("ProjectRefinementJobs");
-                });
-
-            modelBuilder.Entity("RequirementAI.Persistence.Entities.QualityAnalysisJob", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<DateTimeOffset>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("ErrorMessage")
-                        .HasMaxLength(1024)
-                        .HasColumnType("character varying(1024)");
-
-                    b.Property<DateTimeOffset?>("FinishedAt")
-                        .HasColumnType("timestamptz");
-
-                    b.Property<Guid>("ProjectId")
-                        .HasColumnType("uuid");
-
-                    b.Property<DateTimeOffset?>("StartedAt")
-                        .HasColumnType("timestamptz");
-
-                    b.Property<string>("Status")
-                        .IsRequired()
-                        .HasMaxLength(255)
-                        .HasColumnType("character varying(255)");
-
-                    b.Property<DateTimeOffset>("UpdatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ProjectId");
-
-                    b.ToTable("QualityAnalysisJobs");
                 });
 
             modelBuilder.Entity("RequirementAI.Persistence.Entities.Scenario", b =>
@@ -548,6 +516,24 @@ namespace RequirementAI.Persistence.Migrations
                     b.ToTable("UserStoryQualityScores");
                 });
 
+            modelBuilder.Entity("RequirementAI.Persistence.Entities.ProjectRefinementJob", b =>
+                {
+                    b.HasBaseType("RequirementAI.Persistence.Entities.BaseJob");
+
+                    b.Property<string>("CustomInstructions")
+                        .HasMaxLength(2048)
+                        .HasColumnType("character varying(2048)");
+
+                    b.ToTable("ProjectRefinementJobs");
+                });
+
+            modelBuilder.Entity("RequirementAI.Persistence.Entities.QualityAnalysisJob", b =>
+                {
+                    b.HasBaseType("RequirementAI.Persistence.Entities.BaseJob");
+
+                    b.ToTable("QualityAnalysisJobs");
+                });
+
             modelBuilder.Entity("RequirementAI.Persistence.Entities.AcceptanceCriteria", b =>
                 {
                     b.HasOne("RequirementAI.Persistence.Entities.UserStory", "UserStory")
@@ -557,6 +543,15 @@ namespace RequirementAI.Persistence.Migrations
                         .IsRequired();
 
                     b.Navigation("UserStory");
+                });
+
+            modelBuilder.Entity("RequirementAI.Persistence.Entities.BaseJob", b =>
+                {
+                    b.HasOne("RequirementAI.Persistence.Entities.Project", null)
+                        .WithMany()
+                        .HasForeignKey("ProjectId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("RequirementAI.Persistence.Entities.EdgeCase", b =>
@@ -601,24 +596,6 @@ namespace RequirementAI.Persistence.Migrations
                         .IsRequired();
 
                     b.Navigation("Organization");
-                });
-
-            modelBuilder.Entity("RequirementAI.Persistence.Entities.ProjectRefinementJob", b =>
-                {
-                    b.HasOne("RequirementAI.Persistence.Entities.Project", null)
-                        .WithMany()
-                        .HasForeignKey("ProjectId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("RequirementAI.Persistence.Entities.QualityAnalysisJob", b =>
-                {
-                    b.HasOne("RequirementAI.Persistence.Entities.Project", null)
-                        .WithMany()
-                        .HasForeignKey("ProjectId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
                 });
 
             modelBuilder.Entity("RequirementAI.Persistence.Entities.Scenario", b =>
@@ -674,6 +651,24 @@ namespace RequirementAI.Persistence.Migrations
                         .IsRequired();
 
                     b.Navigation("UserStory");
+                });
+
+            modelBuilder.Entity("RequirementAI.Persistence.Entities.ProjectRefinementJob", b =>
+                {
+                    b.HasOne("RequirementAI.Persistence.Entities.BaseJob", null)
+                        .WithOne()
+                        .HasForeignKey("RequirementAI.Persistence.Entities.ProjectRefinementJob", "Id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("RequirementAI.Persistence.Entities.QualityAnalysisJob", b =>
+                {
+                    b.HasOne("RequirementAI.Persistence.Entities.BaseJob", null)
+                        .WithOne()
+                        .HasForeignKey("RequirementAI.Persistence.Entities.QualityAnalysisJob", "Id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("RequirementAI.Persistence.Entities.Organization", b =>

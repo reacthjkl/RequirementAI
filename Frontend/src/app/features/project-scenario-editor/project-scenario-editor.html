@@ -24,70 +24,102 @@
   } @else if (isEditing && !scenario) {
     <div class="text-secondary">Scenario not found</div>
   } @else {
+    <ul class="nav nav-tabs">
+      <li class="nav-item">
+        <button
+          type="button"
+          class="nav-link"
+          [class.active]="activeTab === 'scenario'"
+          (click)="selectTab('scenario')"
+        >
+          Scenario
+        </button>
+      </li>
+      <li class="nav-item">
+        <button
+          type="button"
+          class="nav-link"
+          [class.active]="activeTab === 'qualityScore'"
+          [disabled]="!isEditing"
+          (click)="selectTab('qualityScore')"
+        >
+          Quality score
+        </button>
+      </li>
+    </ul>
+
     <section class="card border-0 shadow-sm">
       <div class="card-body">
-        <form [formGroup]="form" class="d-flex flex-column gap-4" (ngSubmit)="save()">
-          @if (!isModal) {
-            <div class="d-flex align-items-center gap-2">
-              <span class="text-primary">
-                <fa-icon [icon]="entityIcons.scenario"></fa-icon>
-              </span>
-              <h5 class="mb-0">{{ title }}</h5>
-            </div>
-          }
-
-          <div>
-            <div class="d-flex justify-content-between align-items-center gap-2">
-              <label class="form-label mb-0" for="scenarioPersona">Persona</label>
-              <button
-                type="button"
-                class="btn btn-sm btn-link link-secondary p-0 meta-details-button"
-                [disabled]="!currentPersona"
-                (click)="openPersonaDetails()"
-              >
-                Details
-              </button>
-            </div>
-
-            @if (isEditing) {
-              <button
-                id="scenarioPersona"
-                type="button"
-                class="meta-control"
-                [disabled]="!currentPersona"
-                (click)="openPersonaDetails()"
-              >
-                <span class="text-truncate">{{ currentPersona?.name ?? 'Unknown persona' }}</span>
-              </button>
-            } @else {
-              <app-meta-dropdown
-                id="scenarioPersona"
-                [value]="personaControl.value"
-                [options]="personaDropdownOptions"
-                placeholder="Select persona"
-                [disabled]="personas.length === 0"
-                [invalid]="isPersonaInvalid()"
-                (valueChange)="selectPersonaValue($event)"
-              />
-            }
-          </div>
-
-          <app-scenario-form-fields [form]="form" idPrefix="scenarioEditor" />
-
-          <div class="d-flex justify-content-end gap-2">
+        @if (activeTab === 'scenario') {
+          <form [formGroup]="form" class="d-flex flex-column gap-4" (ngSubmit)="save()">
             @if (!isModal) {
-              <button type="button" class="btn btn-outline-secondary" (click)="cancel()">
-                <fa-icon [icon]="faTimes"></fa-icon>
-                Cancel
-              </button>
+              <div class="d-flex align-items-center gap-2">
+                <span class="text-primary">
+                  <fa-icon [icon]="entityIcons.scenario"></fa-icon>
+                </span>
+                <h5 class="mb-0">{{ title }}</h5>
+              </div>
             }
 
-            <button type="submit" class="btn btn-primary" [disabled]="saving">
-              <fa-icon [icon]="faCheck"></fa-icon>
-              {{ saving ? 'Saving...' : 'Save' }}
-            </button>
-          </div>
-        </form>
+            <div>
+              <div class="d-flex justify-content-between align-items-center gap-2">
+                <label class="form-label mb-0" for="scenarioPersona">Persona</label>
+                <button
+                  type="button"
+                  class="btn btn-sm btn-link link-secondary p-0 meta-details-button"
+                  [disabled]="!currentPersona"
+                  (click)="openPersonaDetails()"
+                >
+                  Details
+                </button>
+              </div>
+
+              @if (isEditing) {
+                <button
+                  id="scenarioPersona"
+                  type="button"
+                  class="meta-control"
+                  [disabled]="!currentPersona"
+                  (click)="openPersonaDetails()"
+                >
+                  <span class="text-truncate">{{ currentPersona?.name ?? 'Unknown persona' }}</span>
+                </button>
+              } @else {
+                <app-meta-dropdown
+                  id="scenarioPersona"
+                  [value]="personaControl.value"
+                  [options]="personaDropdownOptions"
+                  placeholder="Select persona"
+                  [disabled]="personas.length === 0"
+                  [invalid]="isPersonaInvalid()"
+                  (valueChange)="selectPersonaValue($event)"
+                />
+              }
+            </div>
+
+            <app-scenario-form-fields [form]="form" idPrefix="scenarioEditor" />
+
+            <div class="d-flex justify-content-end gap-2">
+              @if (!isModal) {
+                <button type="button" class="btn btn-outline-secondary" (click)="cancel()">
+                  <fa-icon [icon]="faTimes"></fa-icon>
+                  Cancel
+                </button>
+              }
+
+              <button type="submit" class="btn btn-primary" [disabled]="saving">
+                <fa-icon [icon]="faCheck"></fa-icon>
+                {{ saving ? 'Saving...' : 'Save' }}
+              </button>
+            </div>
+          </form>
+        } @else {
+          <app-quality-score-panel
+            context="scenario"
+            [score]="latestQualityScore"
+            [loading]="qualityScoreLoading"
+          />
+        }
       </div>
     </section>
   }

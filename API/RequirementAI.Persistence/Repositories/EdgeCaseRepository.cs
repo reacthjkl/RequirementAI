@@ -13,10 +13,28 @@ public class EdgeCaseRepository(RequirementAIContext context): IEdgeCaseReposito
             ?? throw new EntityNotFoundException<EdgeCase>(id);
     }
 
+    public async Task<EdgeCase> GetById(Guid id, Guid organizationId, CancellationToken ct)
+    {
+        return await context.EdgeCases
+                   .FirstOrDefaultAsync(
+                       ec => ec.Id == id &&
+                             ec.UserStory.Scenario.Persona.Project.OrganizationId == organizationId,
+                       ct)
+               ?? throw new EntityNotFoundException<EdgeCase>(id);
+    }
+
     public async Task<IList<EdgeCase>> GetByUserStoryId(Guid userStoryId, CancellationToken ct)
     {
         return await context.EdgeCases
             .Where(ec => ec.UserStoryId == userStoryId)
+            .ToListAsync(ct);
+    }
+
+    public async Task<IList<EdgeCase>> GetByUserStoryId(Guid userStoryId, Guid organizationId, CancellationToken ct)
+    {
+        return await context.EdgeCases
+            .Where(ec => ec.UserStoryId == userStoryId &&
+                         ec.UserStory.Scenario.Persona.Project.OrganizationId == organizationId)
             .ToListAsync(ct);
     }
 

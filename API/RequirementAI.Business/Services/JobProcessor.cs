@@ -1,0 +1,42 @@
+using Microsoft.Extensions.Logging;
+using RequirementAI.Business.Interfaces;
+using RequirementAI.Contract.Enums;
+using RequirementAI.Persistence.Entities;
+using RequirementAI.Persistence.Interfaces;
+
+namespace RequirementAI.Business.Services;
+
+public abstract class JobProcessor<TJob>(
+    IJobRepository<TJob> jobRepository,
+    ILLMRouteResolver routeResolver,
+    LLMRequestPurpose purpose,
+    ILogger<JobProcessor<TJob>> logger)
+    where TJob : BaseJob
+{
+    protected abstract Task Execute(TJob job, CancellationToken ct);
+
+    public async Task ProcessNextJob(CancellationToken ct)
+    {
+        var job = await jobRepository.AcquireNextPendingJob(ct);
+
+        if (job == null)
+            return;
+
+        try
+        {
+            logger.LogInformation($"Processing job {job.Id}. Job type: {job.GetType().Name}.");
+
+            await Execute(job, ct);
+            job.FinishedBy = routeResolver.Resolve(purpose).Identifier;
+        }
+        catch (Exception ex)
+        {
+            await jobRepository.MarkFailed(job.Id, ex.Message, ct);
+            return;
+        }
+
+        job.Status = JobStatus.Completed;
+        job.FinishedAt = DateTimeOffset.UtcNow;
+        await jobRepository.Update(job, ct);
+    }
+}

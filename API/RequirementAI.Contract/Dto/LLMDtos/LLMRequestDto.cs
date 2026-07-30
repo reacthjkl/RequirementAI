@@ -1,7 +1,11 @@
+using RequirementAI.Contract.Enums;
+
 namespace RequirementAI.Contract.Dto.LLMDtos;
 
-public class LLMRequestDto(string prompt, float temperature = 2f)
+public class LLMRequestDto(
+    string prompt,
+    LLMRequestPurpose purpose)
 {
     public string Prompt { get; set; } = prompt;
-    public float Temperature { get; set; } = temperature;
+    public LLMRequestPurpose Purpose { get; set; } = purpose;
 }

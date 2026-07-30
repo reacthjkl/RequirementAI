@@ -31,7 +31,8 @@ public static class AppSetup
             typeof(UserStoryProfile),
             typeof(AcceptanceCriteriaProfile),
             typeof(EdgeCaseProfile),
-            typeof(QualityScoreProfile)
+            typeof(QualityScoreProfile),
+            typeof(QualityAnalysisJobProfile)
         );
     }
 
@@ -103,6 +104,9 @@ public static class AppSetup
     {
         builder.Services.Configure<JwtSettings>(
             builder.Configuration.GetSection("Jwt"));
+
+        builder.Services.Configure<AuthenticationSettings>(
+            builder.Configuration.GetSection("Authentication"));
 
         builder.Services.Configure<Argon2Settings>(builder.Configuration.GetSection("Argon2"));
     }

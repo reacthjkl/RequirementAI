@@ -13,10 +13,28 @@ public class AcceptanceCriteriaRepository(RequirementAIContext context): IAccept
             ?? throw new EntityNotFoundException<AcceptanceCriteria>(id);
     }
 
+    public async Task<AcceptanceCriteria> GetById(Guid id, Guid organizationId, CancellationToken ct)
+    {
+        return await context.AcceptanceCriteria
+                   .FirstOrDefaultAsync(
+                       ac => ac.Id == id &&
+                             ac.UserStory.Scenario.Persona.Project.OrganizationId == organizationId,
+                       ct)
+               ?? throw new EntityNotFoundException<AcceptanceCriteria>(id);
+    }
+
     public async Task<IList<AcceptanceCriteria>> GetByUserStoryId(Guid userStoryId, CancellationToken ct)
     {
         return await context.AcceptanceCriteria
             .Where(ac => ac.UserStoryId == userStoryId)
+            .ToListAsync(ct);
+    }
+
+    public async Task<IList<AcceptanceCriteria>> GetByUserStoryId(Guid userStoryId, Guid organizationId, CancellationToken ct)
+    {
+        return await context.AcceptanceCriteria
+            .Where(ac => ac.UserStoryId == userStoryId &&
+                         ac.UserStory.Scenario.Persona.Project.OrganizationId == organizationId)
             .ToListAsync(ct);
     }
 

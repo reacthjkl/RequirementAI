@@ -60,7 +60,9 @@
           class="card stat-card h-100 border-0 shadow-sm"
           [routerLink]="['/projects', project.id, 'personas']"
         >
-          <div class="card-body d-flex flex-lg-column align-items-start justify-content-between gap-3">
+          <div
+            class="card-body d-flex flex-lg-column align-items-start justify-content-between gap-3"
+          >
             <span class="stat-icon bg-primary-subtle text-primary">
               <fa-icon [icon]="entityCollectionIcons.personas"></fa-icon>
             </span>
@@ -78,7 +80,9 @@
           class="card stat-card h-100 border-0 shadow-sm"
           [routerLink]="['/projects', project.id, 'scenarios']"
         >
-          <div class="card-body d-flex flex-lg-column align-items-start justify-content-between gap-3">
+          <div
+            class="card-body d-flex flex-lg-column align-items-start justify-content-between gap-3"
+          >
             <span class="stat-icon bg-primary-subtle text-primary">
               <fa-icon [icon]="entityCollectionIcons.scenarios"></fa-icon>
             </span>
@@ -96,7 +100,9 @@
           class="card stat-card h-100 border-0 shadow-sm"
           [routerLink]="['/projects', project.id, 'board']"
         >
-          <div class="card-body d-flex flex-lg-column align-items-start justify-content-between gap-3">
+          <div
+            class="card-body d-flex flex-lg-column align-items-start justify-content-between gap-3"
+          >
             <span class="stat-icon bg-primary-subtle text-primary">
               <fa-icon [icon]="entityIcons.userStory"></fa-icon>
             </span>
@@ -112,7 +118,9 @@
 
     <section class="card border-0 shadow-sm">
       <div class="card-body d-flex flex-column gap-4">
-        <div class="d-flex flex-column flex-lg-row justify-content-between align-items-lg-start gap-3">
+        <div
+          class="d-flex flex-column flex-lg-row justify-content-between align-items-lg-start gap-3"
+        >
           <div>
             <h5 class="card-title mb-1">Quality overview</h5>
             <p class="card-text text-secondary mb-0">
@@ -123,13 +131,49 @@
           <button
             type="button"
             class="btn btn-outline-primary flex-shrink-0"
-            [disabled]="qualityLoading || analyzing || hasQualityInfoForToday"
+            [disabled]="qualityLoading || analyzing"
             (click)="analyzeProject()"
           >
-            <fa-icon [icon]="faRotateRight"></fa-icon>
-            {{ analyzing ? 'Refreshing...' : 'Refresh analysis' }}
+            @if (analyzing) {
+              <fa-icon [icon]="faSpinner" class="status-icon-spin"></fa-icon>
+            } @else {
+              <fa-icon [icon]="faChartLine"></fa-icon>
+            }
+            {{ analysisButtonLabel }}
           </button>
         </div>
+
+        @if (analysisJobStatus !== jobStatus.None) {
+          <div
+            class="analysis-job-status d-flex align-items-start gap-3"
+            [class.analysis-job-status-pending]="analysisJobStatus === jobStatus.Pending"
+            [class.analysis-job-status-running]="analysisJobStatus === jobStatus.Running"
+            [class.analysis-job-status-completed]="analysisJobStatus === jobStatus.Completed"
+            [class.analysis-job-status-failed]="analysisJobStatus === jobStatus.Failed"
+          >
+            <div class="analysis-job-status-icon">
+              @switch (analysisJobStatus) {
+                @case (jobStatus.Pending) {
+                  <fa-icon [icon]="faClock"></fa-icon>
+                }
+                @case (jobStatus.Running) {
+                  <fa-icon [icon]="faSpinner" class="status-icon-spin"></fa-icon>
+                }
+                @case (jobStatus.Completed) {
+                  <fa-icon [icon]="faCircleCheck"></fa-icon>
+                }
+                @case (jobStatus.Failed) {
+                  <fa-icon [icon]="faCircleExclamation"></fa-icon>
+                }
+              }
+            </div>
+
+            <div>
+              <div class="fw-semibold">{{ analysisStatusTitle }}</div>
+              <div class="small">{{ analysisStatusMessage }}</div>
+            </div>
+          </div>
+        }
 
         @if (qualityLoading) {
           <div class="text-muted">Loading quality overview...</div>
@@ -142,7 +186,11 @@
                 <div class="quality-score-card h-100">
                   <div class="d-flex justify-content-between align-items-start gap-3 mb-3">
                     <div class="text-secondary small">{{ scoreCard.label }}</div>
-                    <div class="quality-score-value text-primary">
+                    <div
+                      class="quality-score-value"
+                      [class.text-danger]="isLowScore(scoreCard.score)"
+                      [class.text-primary]="!isLowScore(scoreCard.score)"
+                    >
                       {{ scoreLabel(scoreCard.score) }}
                     </div>
                   </div>
@@ -157,6 +205,7 @@
                   >
                     <div
                       class="progress-bar"
+                      [class.bg-danger]="isLowScore(scoreCard.score)"
                       [style.width.%]="scorePercent(scoreCard.score)"
                     ></div>
                   </div>
@@ -177,9 +226,17 @@
                         <div class="small text-secondary">{{ item.itemType }}</div>
                         <div class="fw-semibold text-truncate">{{ item.title }}</div>
                       </div>
-                      <span class="quality-low-score text-danger">{{ scoreLabel(item.score) }}</span>
+                      <span
+                        class="quality-low-score"
+                        [class.text-danger]="isLowScore(item.score)"
+                        [class.text-primary]="!isLowScore(item.score)"
+                      >
+                        {{ scoreLabel(item.score) }}
+                      </span>
                     </div>
-                    <div class="small text-secondary">Evaluated {{ formatDate(item.evaluatedAt) }}</div>
+                    <div class="small text-secondary">
+                      Evaluated {{ formatDate(item.evaluatedAt) }}
+                    </div>
                   </div>
                 } @empty {
                   <div class="text-secondary">No lowest scoring items available.</div>
@@ -202,6 +259,5 @@
         }
       </div>
     </section>
-
   }
 </div>

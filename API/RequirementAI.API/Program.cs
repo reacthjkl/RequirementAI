@@ -25,7 +25,10 @@ AppSetup.SetupControllers(builder);
 
 var app = builder.Build();
 
-AppSetup.ApplyMigrations(app);
+if (app.Configuration.GetValue<bool>("Database:ApplyMigrationsOnStartup"))
+{
+    AppSetup.ApplyMigrations(app);
+}
 
 if (app.Environment.IsDevelopment())
 {

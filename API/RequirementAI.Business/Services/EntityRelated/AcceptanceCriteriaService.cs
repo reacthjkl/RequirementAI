@@ -6,24 +6,30 @@ using RequirementAI.Persistence.Interfaces;
 
 namespace RequirementAI.Business.Services.EntityRelated;
 
-public class AcceptanceCriteriaService(IAcceptanceCriteriaRepository acceptanceCriteriaRepository, IMapper mapper): IAcceptanceCriteriaService
+public class AcceptanceCriteriaService(
+    IAcceptanceCriteriaRepository acceptanceCriteriaRepository,
+    IUserStoryRepository userStoryRepository,
+    IMapper mapper): IAcceptanceCriteriaService
 {
-    public async Task<AcceptanceCriteriaResponseDto> GetById(Guid id, CancellationToken ct)
+    public async Task<AcceptanceCriteriaResponseDto> GetById(Guid id, Guid organizationId, CancellationToken ct)
     {
-        var entity = await acceptanceCriteriaRepository.GetById(id, ct);
+        var entity = await acceptanceCriteriaRepository.GetById(id, organizationId, ct);
         return mapper.Map<AcceptanceCriteriaResponseDto>(entity);
     }
 
-    public async Task<List<AcceptanceCriteriaResponseDto>> GetByUserStoryId(Guid userStoryId, CancellationToken ct)
+    public async Task<List<AcceptanceCriteriaResponseDto>> GetByUserStoryId(Guid userStoryId, Guid organizationId, CancellationToken ct)
     {
-        var entities = await acceptanceCriteriaRepository.GetByUserStoryId(userStoryId, ct);
+        var entities = await acceptanceCriteriaRepository.GetByUserStoryId(userStoryId, organizationId, ct);
         return mapper.Map<List<AcceptanceCriteriaResponseDto>>(entities);
     }
 
     public async Task<AcceptanceCriteriaResponseDto> Create(
         AcceptanceCriteriaForCreationDto dto,
+        Guid organizationId,
         CancellationToken ct)
     {
+        await userStoryRepository.GetById(dto.UserStoryId, organizationId, ct);
+
         var entity = mapper.Map<AcceptanceCriteria>(dto);
 
         var created = await acceptanceCriteriaRepository.Create(entity, ct);
@@ -33,18 +39,19 @@ public class AcceptanceCriteriaService(IAcceptanceCriteriaRepository acceptanceC
 
     public async Task Update(
         AcceptanceCriteriaForUpdateDto dto,
+        Guid organizationId,
         CancellationToken ct)
     {
-        var entity = await acceptanceCriteriaRepository.GetById(dto.Id, ct);
+        var entity = await acceptanceCriteriaRepository.GetById(dto.Id, organizationId, ct);
         
         mapper.Map(dto, entity);
         
         await acceptanceCriteriaRepository.Update(entity, ct);
     }
 
-    public async Task Delete(Guid id, CancellationToken ct)
+    public async Task Delete(Guid id, Guid organizationId, CancellationToken ct)
     {
-        var entity = await acceptanceCriteriaRepository.GetById(id, ct);
+        var entity = await acceptanceCriteriaRepository.GetById(id, organizationId, ct);
         await acceptanceCriteriaRepository.Delete(entity, ct);
     }
 }

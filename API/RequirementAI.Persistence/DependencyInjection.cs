@@ -1,4 +1,5 @@
 using Microsoft.Extensions.DependencyInjection;
+using RequirementAI.Persistence.Entities;
 using RequirementAI.Persistence.Interfaces;
 using RequirementAI.Persistence.Repositories;
 
@@ -17,8 +18,8 @@ public static class DependencyInjection
         services.AddScoped<IScenarioRepository, ScenarioRepository>();
         services.AddScoped<IUserRepository, UserRepository>();
         services.AddScoped<IUserStoryRepository, UserStoryRepository>();
-        services.AddScoped<IProjectRefinementJobRepository, ProjectRefinementJobRepository>();
-        services.AddScoped<IQualityAnalysisJobRepository, QualityAnalysisJobRepository>();
+        services.AddScoped<IJobRepository<ProjectRefinementJob>, JobRepository<ProjectRefinementJob>>();
+        services.AddScoped<IJobRepository<QualityAnalysisJob>, JobRepository<QualityAnalysisJob>>();
         services.AddScoped<IQualityScoreRepository, QualityScoreRepository>();
 
         return services;

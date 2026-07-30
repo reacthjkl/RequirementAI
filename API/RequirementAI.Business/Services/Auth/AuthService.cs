@@ -1,4 +1,3 @@
-using System.Security.Authentication;
 using AutoMapper;
 using Microsoft.Extensions.Options;
 using RequirementAI.Business.Interfaces;
@@ -13,8 +12,10 @@ namespace RequirementAI.Business.Services.Auth;
 public class AuthService(
     IAuthProvider provider,
     IUserRepository userRepository,
+    IOrganizationRepository organizationRepository,
     IJwtTokenService jwtService,
     IOptions<JwtSettings> jwtSettings,
+    IOptions<AuthenticationSettings> authenticationSettings,
     ICookiesHelper cookiesHelper,
     IMapper mapper,
     IPasswordHasher passwordHasher
@@ -22,6 +23,7 @@ public class AuthService(
     : IAuthService
 {
     private readonly JwtSettings _jwtSettings = jwtSettings.Value;
+    private readonly AuthenticationSettings _authenticationSettings = authenticationSettings.Value;
 
     public async Task AuthenticateAsync(AuthRequestDto request, CancellationToken ct)
     {
@@ -43,14 +45,14 @@ public class AuthService(
     public async Task RefreshTokens(string refreshToken, CancellationToken ct)
     {
         var user = await userRepository.GetByRefreshToken(refreshToken, ct)
-                   ?? throw new AuthenticationException("Invalid refresh token used.");
+                   ?? throw new AuthorizationException("Invalid refresh token used.");
 
         if (user.RefreshTokenExpiry <= DateTimeOffset.UtcNow)
         {
             user.RefreshToken = null;
             user.RefreshTokenExpiry = null;
             await userRepository.Update(user, ct);
-            throw new AuthenticationException("Expired refresh token used.");
+            throw new AuthorizationException("Expired refresh token used.");
         }
 
         var newAccessToken = jwtService.GenerateJwt(user);
@@ -78,6 +80,10 @@ public class AuthService(
 
     public async Task Register(RegisterRequestDto request, CancellationToken ct)
     {
+        ValidateRegistrationSecret(request.RegistrationSecret);
+
+        await organizationRepository.GetById(request.OrganizationId, ct);
+
         var existingUser = await userRepository.GetByEmailIgnoringFilters(request.Email, ct);
 
         if (existingUser != null)
@@ -89,5 +95,14 @@ public class AuthService(
             user.Password = passwordHasher.Hash(user.Password);
 
         await userRepository.Create(user, ct);
+    }
+
+    private void ValidateRegistrationSecret(string registrationSecret)
+    {
+        if (string.IsNullOrWhiteSpace(_authenticationSettings.RegistrationSecret))
+            throw new BusinessException("Registration secret has not been configured.");
+
+        if (registrationSecret != _authenticationSettings.RegistrationSecret)
+            throw new AuthorizationException("Invalid registration secret.");
     }
 }

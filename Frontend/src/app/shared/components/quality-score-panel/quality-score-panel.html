@@ -1,0 +1,56 @@
+@if (loading) {
+  <div class="text-muted">Loading latest quality score...</div>
+} @else if (!score) {
+  <div class="border rounded p-4 text-secondary">
+    No quality score is available yet. Run a project quality analysis to generate one.
+  </div>
+} @else {
+  <div class="d-flex flex-column gap-4">
+    <div class="d-flex flex-column flex-lg-row justify-content-between gap-3">
+      <div>
+        <h5 class="mb-1">{{ title }}</h5>
+        <p class="text-secondary mb-0">{{ description }}</p>
+        <div class="small text-secondary mt-2">Evaluated {{ formatDate(score.createdAt) }}</div>
+      </div>
+
+      <div class="text-center flex-shrink-0">
+        <app-quality-score-pie-chart [label]="'Overall'" [score]="score.overallScore" />
+        <div class="small text-secondary mt-2">Overall</div>
+      </div>
+    </div>
+
+    <div class="row row-cols-2 row-cols-md-3 row-cols-xl-4 g-3">
+      @for (metric of metrics; track metric.label) {
+        <div class="col">
+          <div class="border rounded p-3 h-100 text-center">
+            <app-quality-score-pie-chart [label]="metric.label" [score]="metric.score" />
+            <div class="small fw-semibold mt-2">{{ metric.label }}</div>
+          </div>
+        </div>
+      }
+    </div>
+
+    <div class="row g-3">
+      <div class="col-lg-4">
+        <section class="border rounded p-3 h-100">
+          <h6 class="text-success mb-2">Strengths</h6>
+          <p class="mb-0 text-body-secondary" style="white-space: pre-wrap">{{ score.strengths }}</p>
+        </section>
+      </div>
+
+      <div class="col-lg-4">
+        <section class="border rounded p-3 h-100">
+          <h6 class="text-danger mb-2">Weaknesses</h6>
+          <p class="mb-0 text-body-secondary" style="white-space: pre-wrap">{{ score.weaknesses }}</p>
+        </section>
+      </div>
+
+      <div class="col-lg-4">
+        <section class="border rounded p-3 h-100">
+          <h6 class="text-primary mb-2">Suggestions</h6>
+          <p class="mb-0 text-body-secondary" style="white-space: pre-wrap">{{ score.suggestions }}</p>
+        </section>
+      </div>
+    </div>
+  </div>
+}

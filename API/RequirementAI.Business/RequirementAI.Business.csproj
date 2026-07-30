@@ -7,8 +7,8 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\RequirementAi.Contract\RequirementAi.Contract.csproj" />
-        <ProjectReference Include="..\RequirementAi.Persistence\RequirementAi.Persistence.csproj" />
+        <ProjectReference Include="..\RequirementAI.Persistence\RequirementAI.Persistence.csproj" />
+        <ProjectReference Include="..\RequirementAI.Contract\RequirementAI.Contract.csproj" />
     </ItemGroup>
 
     <ItemGroup>

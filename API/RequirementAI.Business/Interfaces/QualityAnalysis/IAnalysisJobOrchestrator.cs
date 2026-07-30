@@ -2,7 +2,7 @@ using RequirementAI.Persistence.Entities;
 
 namespace RequirementAI.Business.Interfaces.QualityAnalysis;
 
-public interface IQualityAnalysisOrchestrator
+public interface IAnalysisJobOrchestrator
 {
     Task Execute(QualityAnalysisJob job, CancellationToken ct);
 }

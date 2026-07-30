@@ -19,7 +19,7 @@ public class RefinementTaskProvider : IRefinementTaskProvider
                          - behavior-focused
                          - distinct from other personas
                          - implementation-neutral
-                         
+
                          Improve:
                          - clarity
                          - consistency
@@ -30,6 +30,12 @@ public class RefinementTaskProvider : IRefinementTaskProvider
                          - expectations
                          - context of system usage
                          - relevant constraints or limitations
+                         
+                         Rules:
+                         - The persona name must be a realistic human first name, optionally with a last name.
+                         - Do not use roles, job titles, generic labels, or descriptions as persona names.
+                         - Invalid names: "Student", "User", "Customer", "Developer", "Persona 1".
+                         - Valid names: "Lena", "Markus Weber", "Anna Schmidt".
                          
                          Remove irrelevant biographical details unless they affect requirements.
                          
@@ -56,20 +62,39 @@ public class RefinementTaskProvider : IRefinementTaskProvider
                          - edge cases
                          - expected outcome
                          
+                         Length limits:
+                         - Scenario title: max. 80 characters
+                         - Scenario description: max. 6 sentences
+                         - Each sentence: max. 25 words
+                         - Do not add background story unless needed for requirements.
+                         
+                         Rules:
+                         - The scenario MUST use only the provided persona as the main actor.
+                         - If the input contains another person name, replace it with the bound persona name.
+                         - Do not merge multiple personas into one scenario.
+                         
                          Keep the output concise, structured, and testable.
                          """,
 
         [typeof(UserStory)] = """
                          Refine the user story into a clear, testable format.
                          
-                         The user story description must strictly follow this schema:
-                         
-                         As a [persona], I want [action/capability], so that [benefit/business value].
+                         The user story description must express, in this order:
+                         - the persona or role
+                         - the desired action or capability
+                         - the resulting benefit or business value
+
+                         Express this structure naturally and entirely in the input language.
+                         For German input, the description must use: Als [Persona] möchte ich [Aktion/Fähigkeit], damit [Nutzen/Mehrwert].
                          
                          Also include:
                          - Acceptance criteria
                          - Edge cases
-                         - Testable conditions
+                         
+                         Rules:
+                         - The user story MUST use only the provided persona as the main actor.
+                         - If the input contains another person name, replace it with the bound persona name.
+                         - Do not merge multiple personas into one scenario.
                          
                          Keep the output concise, structured, and implementation-neutral.
                          """

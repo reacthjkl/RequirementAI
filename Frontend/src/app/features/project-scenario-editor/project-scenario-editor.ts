@@ -10,11 +10,14 @@ import {
   MetaDropdownOption,
   MetaDropdownValue,
 } from '../../shared/components/meta-dropdown/meta-dropdown';
+import { QualityScorePanel } from '../../shared/components/quality-score-panel/quality-score-panel';
 import { ScenarioFormFields } from '../../shared/components/scenario-form-fields/scenario-form-fields';
 import { ENTITY_ICONS } from '../../shared/icons/entity-icons';
 import { Persona } from '../../shared/models/persona.model';
+import { ScenarioQualityScore } from '../../shared/models/quality-score.model';
 import { Scenario } from '../../shared/models/scenario.model';
 import { PersonaService } from '../../shared/services/persona';
+import { QualityScoreService } from '../../shared/services/quality-score';
 import { ScenarioService } from '../../shared/services/scenario';
 import { UserStoryContextModal } from '../project-user-story-editor/user-story-context-modal';
 
@@ -25,6 +28,7 @@ import { UserStoryContextModal } from '../project-user-story-editor/user-story-c
     RouterModule,
     FontAwesomeModule,
     MetaDropdown,
+    QualityScorePanel,
     ScenarioFormFields,
   ],
   templateUrl: './project-scenario-editor.html',
@@ -40,8 +44,11 @@ export class ProjectScenarioEditor {
   });
 
   public scenario: Scenario | null = null;
+  public latestQualityScore: ScenarioQualityScore | null = null;
+  public activeTab: 'scenario' | 'qualityScore' = 'scenario';
   public personas: Persona[] = [];
   public loading = true;
+  public qualityScoreLoading = false;
   public saving = false;
 
   public readonly entityIcons = ENTITY_ICONS;
@@ -56,6 +63,7 @@ export class ProjectScenarioEditor {
     private readonly fb: FormBuilder,
     private readonly modalService: NgbModal,
     private readonly personaService: PersonaService,
+    private readonly qualityScoreService: QualityScoreService,
     private readonly scenarioService: ScenarioService,
     private readonly notification: Notification,
   ) {
@@ -78,6 +86,7 @@ export class ProjectScenarioEditor {
     const [personas, scenario] = await Promise.all([
       this.personaService.getByProjectId(this.projectId),
       this.scenarioId ? this.scenarioService.getById(this.scenarioId) : Promise.resolve(null),
+      this.scenarioId ? this.loadLatestQualityScore(this.scenarioId) : Promise.resolve(),
     ]);
 
     this.personas = personas;
@@ -109,6 +118,14 @@ export class ProjectScenarioEditor {
 
   public get isModal(): boolean {
     return !!this.activeModal;
+  }
+
+  public selectTab(tab: 'scenario' | 'qualityScore'): void {
+    if (tab === 'qualityScore' && !this.isEditing) {
+      return;
+    }
+
+    this.activeTab = tab;
   }
 
   public get currentPersona(): Persona | undefined {
@@ -219,6 +236,19 @@ export class ProjectScenarioEditor {
       this.loading = false;
       this.cdr.markForCheck();
     });
+  }
+
+  private async loadLatestQualityScore(scenarioId: string): Promise<void> {
+    this.qualityScoreLoading = true;
+
+    try {
+      this.latestQualityScore = await this.qualityScoreService.getLatestByScenarioId(scenarioId);
+    } catch {
+      this.latestQualityScore = null;
+      this.notification.fail('Could not load scenario quality score');
+    } finally {
+      this.qualityScoreLoading = false;
+    }
   }
 
   private trimFormValue() {

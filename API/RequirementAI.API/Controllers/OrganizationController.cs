@@ -18,7 +18,7 @@ public class OrganizationController(IOrganizationService organizationService)
     [HttpPut]
     public async Task<IActionResult> Update([FromBody] OrganizationForUpdateDto dto, CancellationToken ct)
     {
-        await organizationService.Update(dto, ct);
+        await organizationService.Update(dto, OrganizationId, ct);
         return Ok(ResponseDto.Success());
     }
 }

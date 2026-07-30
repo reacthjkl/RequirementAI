@@ -2,112 +2,190 @@ using AutoMapper;
 using RequirementAI.Business.Interfaces.EntityRelated;
 using RequirementAI.Contract.Dto;
 using RequirementAI.Persistence.Interfaces;
+using RequirementAI.Persistence.Projections;
 
 namespace RequirementAI.Business.Services.EntityRelated;
 
-public class QualityScoreService(IQualityScoreRepository repository, IMapper mapper): IQualityScoreService
+public class QualityScoreService(
+    IQualityScoreRepository repository,
+    IProjectRepository projectRepository,
+    IMapper mapper): IQualityScoreService
 {
-    public async Task<List<PersonaQualityScoreDto>> GetPersonaQualityScores(Guid personaId, CancellationToken ct)
+    public async Task<List<PersonaQualityScoreDto>> GetPersonaQualityScores(
+        Guid personaId,
+        Guid organizationId,
+        CancellationToken ct)
     {
-        var scores = await repository.GetPersonaQualityScores(personaId, ct);
+        var scores = await repository.GetPersonaQualityScores(personaId, organizationId, ct);
         return mapper.Map<List<PersonaQualityScoreDto>>(scores);
     }
 
-    public async Task<List<ScenarioQualityScoreDto>> GetScenarioQualityScores(Guid scenarioId, CancellationToken ct)
+    public async Task<List<ScenarioQualityScoreDto>> GetScenarioQualityScores(
+        Guid scenarioId,
+        Guid organizationId,
+        CancellationToken ct)
     {
-        var scores = await repository.GetScenarioQualityScores(scenarioId, ct);
+        var scores = await repository.GetScenarioQualityScores(scenarioId, organizationId, ct);
         return mapper.Map<List<ScenarioQualityScoreDto>>(scores);
     }
 
-    public async Task<List<UserStoryQualityScoreDto>> GetUserStoryQualityScores(Guid userStoryId, CancellationToken ct)
+    public async Task<List<UserStoryQualityScoreDto>> GetUserStoryQualityScores(
+        Guid userStoryId,
+        Guid organizationId,
+        CancellationToken ct)
     {
-        var scores = await repository.GetUserStoryQualityScores(userStoryId, ct);
+        var scores = await repository.GetUserStoryQualityScores(userStoryId, organizationId, ct);
         return mapper.Map<List<UserStoryQualityScoreDto>>(scores);
     }
 
-    public async Task<ProjectQualityOverviewDto> GetProjectQualityOverview(Guid projectId, CancellationToken ct)
-{
-    var personaScores = await repository.GetLatestPersonaQualityScoresByProjectId(projectId, ct);
-    var scenarioScores = await repository.GetLatestScenarioQualityScoresByProjectId(projectId, ct);
-    var userStoryScores = await repository.GetLatestUserStoryQualityScoresByProjectId(projectId, ct);
-
-    var averagePersonaScore = AverageOrZero(personaScores.Select(x => x.OverallScore));
-    var averageScenarioScore = AverageOrZero(scenarioScores.Select(x => x.OverallScore));
-    var averageUserStoryScore = AverageOrZero(userStoryScores.Select(x => x.OverallScore));
-
-    var totalProjectScore = AverageOrZero(new[]
+    public async Task<PersonaQualityScoreDto?> GetLatestPersonaQualityScore(
+        Guid personaId,
+        Guid organizationId,
+        CancellationToken ct)
     {
-        averagePersonaScore,
-        averageScenarioScore,
-        averageUserStoryScore
-    }.Where(x => x > 0));
+        var score = await repository.GetLatestPersonaQualityScore(personaId, organizationId, ct);
+        return mapper.Map<PersonaQualityScoreDto?>(score);
+    }
 
-    return new ProjectQualityOverviewDto
+    public async Task<ScenarioQualityScoreDto?> GetLatestScenarioQualityScore(
+        Guid scenarioId,
+        Guid organizationId,
+        CancellationToken ct)
     {
-        TotalProjectScore = totalProjectScore,
+        var score = await repository.GetLatestScenarioQualityScore(scenarioId, organizationId, ct);
+        return mapper.Map<ScenarioQualityScoreDto?>(score);
+    }
 
-        AveragePersonaScore = averagePersonaScore,
-        AverageScenarioScore = averageScenarioScore,
-        AverageUserStoryScore = averageUserStoryScore,
-
-        LowestPersona = personaScores
-            .OrderBy(x => x.OverallScore)
-            .Select(x => new LowestScoreItemDto
-            {
-                ItemId = x.PersonaId,
-                ItemType = "Persona",
-                Title = x.Persona.Name,
-                Score = x.OverallScore,
-                EvaluatedAt = x.CreatedAt
-            })
-            .FirstOrDefault(),
-
-        LowestScenario = scenarioScores
-            .OrderBy(x => x.OverallScore)
-            .Select(x => new LowestScoreItemDto
-            {
-                ItemId = x.ScenarioId,
-                ItemType = "Scenario",
-                Title = x.Scenario.Title,
-                Score = x.OverallScore,
-                EvaluatedAt = x.CreatedAt
-            })
-            .FirstOrDefault(),
-
-        LowestUserStory = userStoryScores
-            .OrderBy(x => x.OverallScore)
-            .Select(x => new LowestScoreItemDto
-            {
-                ItemId = x.UserStoryId,
-                ItemType = "UserStory",
-                Title = x.UserStory.Title,
-                Score = x.OverallScore,
-                EvaluatedAt = x.CreatedAt
-            })
-            .FirstOrDefault(),
-
-        ScoreTrend = await GetProjectScoreTrend(projectId, ct)
-    };
-}
-    private async Task<List<ProjectScoreTrendPointDto>> GetProjectScoreTrend(Guid projectId, CancellationToken ct)
+    public async Task<UserStoryQualityScoreDto?> GetLatestUserStoryQualityScore(
+        Guid userStoryId,
+        Guid organizationId,
+        CancellationToken ct)
     {
-        var scores = await repository.GetAllQualityScoresByProjectId(projectId, ct);
+        var score = await repository.GetLatestUserStoryQualityScore(userStoryId, organizationId, ct);
+        return mapper.Map<UserStoryQualityScoreDto?>(score);
+    }
+
+    public async Task<ProjectQualityOverviewDto> GetProjectQualityOverview(
+        Guid projectId,
+        Guid organizationId,
+        CancellationToken ct)
+    {
+        await projectRepository.GetById(projectId, organizationId, ct);
+
+        var personaScores = await repository.GetLatestPersonaQualityScoresByProjectId(projectId, organizationId, ct);
+        var scenarioScores = await repository.GetLatestScenarioQualityScoresByProjectId(projectId, organizationId, ct);
+        var userStoryScores = await repository.GetLatestUserStoryQualityScoresByProjectId(projectId, organizationId, ct);
+
+        var averagePersonaScore = AverageOrZero(personaScores.Select(x => x.OverallScore));
+        var averageScenarioScore = AverageOrZero(scenarioScores.Select(x => x.OverallScore));
+        var averageUserStoryScore = AverageOrZero(userStoryScores.Select(x => x.OverallScore));
+
+        var totalProjectScore = CalculateTotalProjectScore(
+            averagePersonaScore,
+            averageScenarioScore,
+            averageUserStoryScore);
+
+        return new ProjectQualityOverviewDto
+        {
+            TotalProjectScore = totalProjectScore,
+
+            AveragePersonaScore = averagePersonaScore,
+            AverageScenarioScore = averageScenarioScore,
+            AverageUserStoryScore = averageUserStoryScore,
+
+            LowestPersona = personaScores
+                .OrderBy(x => x.OverallScore)
+                .Select(x => new LowestScoreItemDto
+                {
+                    ItemId = x.PersonaId,
+                    ItemType = "Persona",
+                    Title = x.Persona.Name,
+                    Score = x.OverallScore,
+                    EvaluatedAt = x.CreatedAt
+                })
+                .FirstOrDefault(),
+
+            LowestScenario = scenarioScores
+                .OrderBy(x => x.OverallScore)
+                .Select(x => new LowestScoreItemDto
+                {
+                    ItemId = x.ScenarioId,
+                    ItemType = "Scenario",
+                    Title = x.Scenario.Title,
+                    Score = x.OverallScore,
+                    EvaluatedAt = x.CreatedAt
+                })
+                .FirstOrDefault(),
+
+            LowestUserStory = userStoryScores
+                .OrderBy(x => x.OverallScore)
+                .Select(x => new LowestScoreItemDto
+                {
+                    ItemId = x.UserStoryId,
+                    ItemType = "UserStory",
+                    Title = x.UserStory.Title,
+                    Score = x.OverallScore,
+                    EvaluatedAt = x.CreatedAt
+                })
+                .FirstOrDefault(),
+
+            ScoreTrend = await GetProjectScoreTrend(projectId, organizationId, ct)
+        };
+    }
+
+    private async Task<List<ProjectScoreTrendPointDto>> GetProjectScoreTrend(
+        Guid projectId,
+        Guid organizationId,
+        CancellationToken ct)
+    {
+        var scores = await repository.GetAllQualityScoresByProjectId(projectId, organizationId, ct);
 
         return scores
-            .GroupBy(x => x.CreatedAt.Date)
+            .GroupBy(x => x.CreatedAt)
             .OrderBy(x => x.Key)
-            .Select(day =>
+            .Select(analysis =>
             {
-                var projectScore = AverageOrZero(day.Select(x => x.OverallScore));
+                var averagePersonaScore = AverageOrZero(
+                    analysis
+                        .Where(x => x.Type == QualityScoreTrendType.Persona)
+                        .Select(x => x.OverallScore));
+
+                var averageScenarioScore = AverageOrZero(
+                    analysis
+                        .Where(x => x.Type == QualityScoreTrendType.Scenario)
+                        .Select(x => x.OverallScore));
+
+                var averageUserStoryScore = AverageOrZero(
+                    analysis
+                        .Where(x => x.Type == QualityScoreTrendType.UserStory)
+                        .Select(x => x.OverallScore));
+
+                var totalProjectScore = CalculateTotalProjectScore(
+                    averagePersonaScore,
+                    averageScenarioScore,
+                    averageUserStoryScore);
 
                 return new ProjectScoreTrendPointDto
                 {
-                    Date = day.Key,
-                    Score = Convert.ToDouble(projectScore),
-                    Label = day.Key.ToString("dd.MM")
+                    Date = analysis.Key,
+                    Score = Convert.ToDouble(totalProjectScore),
+                    Label = analysis.Key.ToString("dd.MM HH:mm")
                 };
             })
             .ToList();
+    }
+
+    private static decimal CalculateTotalProjectScore(
+        decimal averagePersonaScore,
+        decimal averageScenarioScore,
+        decimal averageUserStoryScore)
+    {
+        return AverageOrZero(new[]
+        {
+            averagePersonaScore,
+            averageScenarioScore,
+            averageUserStoryScore
+        }.Where(x => x > 0));
     }
 
     private static decimal AverageOrZero(IEnumerable<int> scores)

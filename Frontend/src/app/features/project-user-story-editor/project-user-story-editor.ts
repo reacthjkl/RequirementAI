@@ -27,6 +27,7 @@ import {
   MetaDropdownOption,
   MetaDropdownValue,
 } from '../../shared/components/meta-dropdown/meta-dropdown';
+import { QualityScorePanel } from '../../shared/components/quality-score-panel/quality-score-panel';
 import {
   UserStoryFormFields,
   UserStoryFormGroup,
@@ -37,11 +38,13 @@ import { ENTITY_ICONS } from '../../shared/icons/entity-icons';
 import { AcceptanceCriteria } from '../../shared/models/acceptance-criteria.model';
 import { EdgeCase } from '../../shared/models/edge-case.model';
 import { Persona } from '../../shared/models/persona.model';
+import { UserStoryQualityScore } from '../../shared/models/quality-score.model';
 import { Scenario } from '../../shared/models/scenario.model';
 import { UserStory } from '../../shared/models/user-story.model';
 import { AcceptanceCriteriaService } from '../../shared/services/acceptance-criteria';
 import { EdgeCaseService } from '../../shared/services/edge-case';
 import { PersonaService } from '../../shared/services/persona';
+import { QualityScoreService } from '../../shared/services/quality-score';
 import { ScenarioService } from '../../shared/services/scenario';
 import { UserStoryService } from '../../shared/services/user-story';
 import {
@@ -70,7 +73,13 @@ interface ScenarioOption {
 
 @Component({
   selector: 'app-project-user-story-editor',
-  imports: [ReactiveFormsModule, FontAwesomeModule, MetaDropdown, UserStoryFormFields],
+  imports: [
+    ReactiveFormsModule,
+    FontAwesomeModule,
+    MetaDropdown,
+    QualityScorePanel,
+    UserStoryFormFields,
+  ],
   templateUrl: './project-user-story-editor.html',
   styleUrl: './project-user-story-editor.scss',
 })
@@ -96,8 +105,11 @@ export class ProjectUserStoryEditor implements AfterViewChecked, OnDestroy {
   });
 
   public userStory: UserStory | null = null;
+  public latestQualityScore: UserStoryQualityScore | null = null;
+  public activeTab: 'userStory' | 'qualityScore' = 'userStory';
   public scenarioOptions: ScenarioOption[] = [];
   public loading = true;
+  public qualityScoreLoading = false;
   public saving = false;
   public loadFailed = false;
 
@@ -129,6 +141,7 @@ export class ProjectUserStoryEditor implements AfterViewChecked, OnDestroy {
     private readonly fb: FormBuilder,
     private readonly modalService: NgbModal,
     private readonly personaService: PersonaService,
+    private readonly qualityScoreService: QualityScoreService,
     private readonly scenarioService: ScenarioService,
     private readonly userStoryService: UserStoryService,
     private readonly acceptanceCriteriaService: AcceptanceCriteriaService,
@@ -157,6 +170,7 @@ export class ProjectUserStoryEditor implements AfterViewChecked, OnDestroy {
       const [scenarioOptions, userStory] = await Promise.all([
         this.loadScenarioOptions(this.projectId),
         this.userStoryId ? this.userStoryService.getById(this.userStoryId) : Promise.resolve(null),
+        this.userStoryId ? this.loadLatestQualityScore(this.userStoryId) : Promise.resolve(),
       ]);
 
       this.scenarioOptions = scenarioOptions;
@@ -288,6 +302,28 @@ export class ProjectUserStoryEditor implements AfterViewChecked, OnDestroy {
 
   public selectScenarioValue(value: MetaDropdownValue): void {
     this.selectScenario(String(value));
+  }
+
+  public selectTab(tab: 'userStory' | 'qualityScore'): void {
+    if (tab === 'qualityScore' && !this.isEditing) {
+      return;
+    }
+
+    if (tab === this.activeTab) {
+      return;
+    }
+
+    if (tab === 'qualityScore') {
+      this.destroyDataTable('acceptanceCriteria');
+      this.destroyDataTable('edgeCases');
+    }
+
+    this.activeTab = tab;
+
+    if (tab === 'userStory') {
+      this.refreshDataTable('acceptanceCriteria');
+      this.refreshDataTable('edgeCases');
+    }
   }
 
   public async addAcceptanceCriteria(): Promise<void> {
@@ -497,6 +533,20 @@ export class ProjectUserStoryEditor implements AfterViewChecked, OnDestroy {
       this.loading = false;
       this.cdr.markForCheck();
     });
+  }
+
+  private async loadLatestQualityScore(userStoryId: string): Promise<void> {
+    this.qualityScoreLoading = true;
+
+    try {
+      this.latestQualityScore =
+        await this.qualityScoreService.getLatestByUserStoryId(userStoryId);
+    } catch {
+      this.latestQualityScore = null;
+      this.notification.fail('Could not load User Story quality score');
+    } finally {
+      this.qualityScoreLoading = false;
+    }
   }
 
   private async saveUserStory(): Promise<UserStory | null> {

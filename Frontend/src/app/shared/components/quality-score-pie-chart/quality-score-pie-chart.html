@@ -1,0 +1,8 @@
+<div class="score-chart position-relative mx-auto" [attr.aria-label]="label + ' ' + scoreLabel">
+  <canvas #scoreCanvas></canvas>
+  <div
+    class="position-absolute top-50 start-50 translate-middle fw-semibold small bg-body rounded-circle d-flex align-items-center justify-content-center"
+  >
+    {{ scoreLabel }}
+  </div>
+</div>

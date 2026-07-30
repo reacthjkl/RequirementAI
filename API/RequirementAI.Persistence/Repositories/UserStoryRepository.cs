@@ -13,10 +13,26 @@ public class UserStoryRepository(RequirementAIContext context): IUserStoryReposi
             ?? throw new EntityNotFoundException<UserStory>(id); 
     }
 
+    public async Task<UserStory> GetById(Guid id, Guid organizationId, CancellationToken ct)
+    {
+        return await context.UserStories
+                   .FirstOrDefaultAsync(
+                       us => us.Id == id && us.Scenario.Persona.Project.OrganizationId == organizationId,
+                       ct)
+               ?? throw new EntityNotFoundException<UserStory>(id);
+    }
+
     public async Task<IList<UserStory>> GetByScenario(Guid scenarioId, CancellationToken ct)
     {
         return await context.UserStories
             .Where(us => us.ScenarioId == scenarioId)
+            .ToListAsync(ct);
+    }
+
+    public async Task<IList<UserStory>> GetByScenario(Guid scenarioId, Guid organizationId, CancellationToken ct)
+    {
+        return await context.UserStories
+            .Where(us => us.ScenarioId == scenarioId && us.Scenario.Persona.Project.OrganizationId == organizationId)
             .ToListAsync(ct);
     }
 
@@ -27,10 +43,25 @@ public class UserStoryRepository(RequirementAIContext context): IUserStoryReposi
             .ToListAsync(ct);
     }
 
+    public async Task<IList<UserStory>> GetByPersona(Guid personaId, Guid organizationId, CancellationToken ct)
+    {
+        return await context.UserStories
+            .Where(us => us.Scenario.PersonaId == personaId && us.Scenario.Persona.Project.OrganizationId == organizationId)
+            .ToListAsync(ct);
+    }
+
     public async Task<IList<UserStory>> GetByProject(Guid projectId, CancellationToken ct)
     {
         return await context.UserStories
             .Where(us => us.Scenario.Persona.ProjectId == projectId)
+            .ToListAsync(ct);
+    }
+
+    public async Task<IList<UserStory>> GetByProject(Guid projectId, Guid organizationId, CancellationToken ct)
+    {
+        return await context.UserStories
+            .Where(us => us.Scenario.Persona.ProjectId == projectId &&
+                         us.Scenario.Persona.Project.OrganizationId == organizationId)
             .ToListAsync(ct);
     }
 

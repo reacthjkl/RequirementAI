@@ -1,10 +1,17 @@
 import { Component, ElementRef, OnDestroy, ViewChild } from '@angular/core';
 import { ActivatedRoute, RouterModule } from '@angular/router';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-import { faRotateRight } from '@fortawesome/free-solid-svg-icons';
+import {
+  faChartLine,
+  faCircleCheck,
+  faCircleExclamation,
+  faClock,
+  faSpinner,
+} from '@fortawesome/free-solid-svg-icons';
 import type { Chart as ChartInstance } from 'chart.js';
 import { Notification } from '../../core/services/notification.service';
 import { ProjectRefineButton } from '../../shared/components/project-refine-button/project-refine-button';
+import { JobStatus } from '../../shared/enums/job-status.enum';
 import { UserStoryStage } from '../../shared/enums/user-story-stage.enum';
 import { ENTITY_COLLECTION_ICONS, ENTITY_ICONS } from '../../shared/icons/entity-icons';
 import { LowestScoreItem } from '../../shared/models/lowest-score-item.model';
@@ -34,6 +41,8 @@ export class ProjectOverview implements OnDestroy {
   public loading = true;
   public qualityLoading = false;
   public analyzing = false;
+  public analysisJobStatus = JobStatus.None;
+  public analysisJobErrorMessage: string | null = null;
 
   public personaCount = 0;
   public scenarioCount = 0;
@@ -42,8 +51,17 @@ export class ProjectOverview implements OnDestroy {
 
   public readonly entityCollectionIcons = ENTITY_COLLECTION_ICONS;
   public readonly entityIcons = ENTITY_ICONS;
-  public readonly faRotateRight = faRotateRight;
+  public readonly jobStatus = JobStatus;
+  public readonly faCircleCheck = faCircleCheck;
+  public readonly faCircleExclamation = faCircleExclamation;
+  public readonly faClock = faClock;
+  public readonly faChartLine = faChartLine;
+  public readonly faSpinner = faSpinner;
 
+  private readonly analysisPollIntervalMs = 5000;
+  private readonly analysisJobStorageKeyPrefix = 'requirement-ai:quality-analysis-job';
+  private analysisPollTimeoutId: ReturnType<typeof setTimeout> | null = null;
+  private activeAnalysisJobId: string | null = null;
   private scoreTrendCanvasRef: ElementRef<HTMLCanvasElement> | undefined;
   private scoreTrendChart: ChartInstance | null = null;
 
@@ -84,12 +102,14 @@ export class ProjectOverview implements OnDestroy {
       this.scenarioCount = scenarioGroups.flat().length;
 
       await this.loadQualityOverview(projectId);
+      this.resumeStoredQualityAnalysisJob(projectId);
     } finally {
       this.loading = false;
     }
   }
 
   public ngOnDestroy(): void {
+    this.clearAnalysisPolling();
     this.destroyScoreTrendChart();
   }
 
@@ -99,21 +119,6 @@ export class ProjectOverview implements OnDestroy {
     }
 
     return Math.round((this.closedUserStoryCount / this.userStoryCount) * 100);
-  }
-
-  public get hasQualityInfoForToday(): boolean {
-    if (!this.qualityOverview) {
-      return false;
-    }
-
-    const today = this.dateKey(new Date());
-
-    return [
-      ...this.qualityOverview.scoreTrend.map((point) => point.date),
-      this.qualityOverview.lowestPersona?.evaluatedAt,
-      this.qualityOverview.lowestScenario?.evaluatedAt,
-      this.qualityOverview.lowestUserStory?.evaluatedAt,
-    ].some((date) => !!date && this.dateKey(date) === today);
   }
 
   public get lowestScoreItems(): LowestScoreItem[] {
@@ -138,21 +143,65 @@ export class ProjectOverview implements OnDestroy {
   }
 
   public async analyzeProject(): Promise<void> {
-    if (!this.project || this.analyzing || this.hasQualityInfoForToday) {
+    if (!this.project || this.analyzing) {
       return;
     }
 
     this.analyzing = true;
+    this.analysisJobStatus = JobStatus.Pending;
+    this.analysisJobErrorMessage = null;
+    this.clearAnalysisPolling();
 
     try {
-      await this.projectService.analyze(this.project.id);
-      await this.loadQualityOverview(this.project.id);
-      this.notification.success('Project analysis refreshed');
+      this.activeAnalysisJobId = await this.projectService.analyze(this.project.id);
+      this.storeQualityAnalysisJobId(this.project.id, this.activeAnalysisJobId);
+      void this.pollQualityAnalysisJob(this.activeAnalysisJobId);
     } catch {
-      this.notification.fail('Could not refresh project analysis');
-    } finally {
       this.analyzing = false;
+      this.activeAnalysisJobId = null;
+      this.analysisJobStatus = JobStatus.Failed;
+      this.notification.fail('Could not refresh project analysis');
     }
+  }
+
+  public get analysisStatusTitle(): string {
+    switch (this.analysisJobStatus) {
+      case JobStatus.Pending:
+        return 'Analysis queued';
+      case JobStatus.Running:
+        return 'Analysis running';
+      case JobStatus.Completed:
+        return 'Analysis updated';
+      case JobStatus.Failed:
+        return 'Analysis failed';
+      default:
+        return '';
+    }
+  }
+
+  public get analysisStatusMessage(): string {
+    switch (this.analysisJobStatus) {
+      case JobStatus.Pending:
+        return 'A new quality analysis is queued. The current scores remain visible until the job finishes.';
+      case JobStatus.Running:
+        return 'A new quality analysis is being generated. The overview will update automatically when it is ready.';
+      case JobStatus.Completed:
+        return 'The latest quality analysis is now shown.';
+      case JobStatus.Failed:
+        return this.analysisJobErrorMessage || 'The quality analysis job failed.';
+      default:
+        return '';
+    }
+  }
+
+  public get analysisButtonLabel(): string {
+    if (this.analyzing) {
+      return this.analysisJobStatus === JobStatus.Running
+        ? 'Analysis running...'
+        : 'Analysis queued...';
+    }
+
+    return 'Analyze Project';
   }
 
   public scorePercent(score: number): number {
@@ -163,12 +212,25 @@ export class ProjectOverview implements OnDestroy {
     return `${this.normalizedScore(score).toFixed(1).replace(/\.0$/, '')}/10`;
   }
 
+  public isLowScore(score: number): boolean {
+    return this.normalizedScore(score) < 5;
+  }
+
   public formatDate(value: string): string {
+    const date = new Date(value);
+
+    if (Number.isNaN(date.getTime())) {
+      return value;
+    }
+
     return new Intl.DateTimeFormat(undefined, {
       day: '2-digit',
+      hour: '2-digit',
+      minute: '2-digit',
       month: 'short',
+      timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
       year: 'numeric',
-    }).format(new Date(value));
+    }).format(date);
   }
 
   private async loadQualityOverview(projectId: string): Promise<void> {
@@ -184,6 +246,139 @@ export class ProjectOverview implements OnDestroy {
     } finally {
       this.qualityLoading = false;
     }
+  }
+
+  private async pollQualityAnalysisJob(jobId: string): Promise<void> {
+    try {
+      const response = await this.projectService.getQualityAnalysisJob(jobId);
+
+      if (jobId !== this.activeAnalysisJobId) {
+        return;
+      }
+
+      if (!response.successful) {
+        this.clearActiveAnalysisJob();
+        return;
+      }
+
+      const job = response.data;
+
+      if (!job) {
+        this.clearActiveAnalysisJob();
+        return;
+      }
+
+      this.analysisJobStatus = this.normalizeJobStatus(job.status);
+      this.analysisJobErrorMessage = job.errorMessage;
+
+      switch (this.analysisJobStatus) {
+        case JobStatus.Pending:
+        case JobStatus.Running:
+          this.scheduleAnalysisPoll(jobId);
+          return;
+        case JobStatus.Completed:
+          this.clearActiveAnalysisJob(job.projectId, JobStatus.Completed);
+          await this.loadQualityOverview(job.projectId);
+          return;
+        case JobStatus.Failed:
+          this.clearActiveAnalysisJob(job.projectId, JobStatus.Failed, job.errorMessage);
+          return;
+        case JobStatus.None:
+          this.scheduleAnalysisPoll(jobId);
+          return;
+      }
+    } catch {
+      if (jobId === this.activeAnalysisJobId) {
+        this.scheduleAnalysisPoll(jobId);
+      }
+    }
+  }
+
+  private scheduleAnalysisPoll(jobId: string): void {
+    this.clearAnalysisPolling();
+    this.analysisPollTimeoutId = setTimeout(() => {
+      void this.pollQualityAnalysisJob(jobId);
+    }, this.analysisPollIntervalMs);
+  }
+
+  private clearAnalysisPolling(): void {
+    if (this.analysisPollTimeoutId === null) {
+      return;
+    }
+
+    clearTimeout(this.analysisPollTimeoutId);
+    this.analysisPollTimeoutId = null;
+  }
+
+  private normalizeJobStatus(status: JobStatus): JobStatus {
+    switch (status) {
+      case JobStatus.Pending:
+      case JobStatus.Running:
+      case JobStatus.Completed:
+      case JobStatus.Failed:
+      case JobStatus.None:
+        return status;
+      default:
+        return JobStatus.None;
+    }
+  }
+
+  private clearActiveAnalysisJob(
+    projectId = this.project?.id,
+    status = JobStatus.None,
+    errorMessage: string | null = null,
+  ): void {
+    this.analyzing = false;
+    this.activeAnalysisJobId = null;
+    this.analysisJobStatus = status;
+    this.analysisJobErrorMessage = errorMessage;
+    this.clearAnalysisPolling();
+
+    if (projectId) {
+      this.clearStoredQualityAnalysisJobId(projectId);
+    }
+  }
+
+  private resumeStoredQualityAnalysisJob(projectId: string): void {
+    const jobId = this.storedQualityAnalysisJobId(projectId);
+
+    if (!jobId) {
+      return;
+    }
+
+    this.analyzing = true;
+    this.analysisJobStatus = JobStatus.Pending;
+    this.analysisJobErrorMessage = null;
+    this.activeAnalysisJobId = jobId;
+    void this.pollQualityAnalysisJob(jobId);
+  }
+
+  private storedQualityAnalysisJobId(projectId: string): string | null {
+    try {
+      return window.localStorage.getItem(this.qualityAnalysisJobStorageKey(projectId));
+    } catch {
+      return null;
+    }
+  }
+
+  private storeQualityAnalysisJobId(projectId: string, jobId: string): void {
+    try {
+      window.localStorage.setItem(this.qualityAnalysisJobStorageKey(projectId), jobId);
+    } catch {
+      return;
+    }
+  }
+
+  private clearStoredQualityAnalysisJobId(projectId: string): void {
+    try {
+      window.localStorage.removeItem(this.qualityAnalysisJobStorageKey(projectId));
+    } catch {
+      return;
+    }
+  }
+
+  private qualityAnalysisJobStorageKey(projectId: string): string {
+    return `${this.analysisJobStorageKeyPrefix}:${projectId}`;
   }
 
   private dateKey(value: string | Date): string {
@@ -220,7 +415,7 @@ export class ProjectOverview implements OnDestroy {
     this.scoreTrendChart = new Chart(canvas, {
       type: 'line',
       data: {
-        labels: trend.map((point) => point.label || this.formatDate(point.date)),
+        labels: trend.map((point) => this.formatDate(point.date)),
         datasets: [
           {
             data: trend.map((point) => this.normalizedScore(point.score)),
