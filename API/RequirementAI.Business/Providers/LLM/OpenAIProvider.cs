@@ -42,7 +42,7 @@ public class OpenAIProvider(ILogger<OpenAIProvider> logger) : ILLMProviderAdapte
 
         var response = completion.Value.Content[0].Text ?? throw new BusinessException("LLM Request failed.");
 
-        logger.LogInformation(
+        logger.LogDebug(
             "LLM interaction. Prompt={RequestPrompt}, Response={Response}", request.Prompt, response);
 
         return response;

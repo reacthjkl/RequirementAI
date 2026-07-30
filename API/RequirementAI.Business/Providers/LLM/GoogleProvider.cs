@@ -36,7 +36,7 @@ public class GoogleProvider(
 
         var result = ExtractText(payload);
 
-        logger.LogInformation(
+        logger.LogDebug(
             "LLM interaction. Provider={Provider}, Model={Model}, Prompt={RequestPrompt}, Response={Response}",
             providerId, model, request.Prompt, result);
 
