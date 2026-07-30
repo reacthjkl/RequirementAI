@@ -64,7 +64,10 @@ The HTTPS launch profile exposes:
 - `https://localhost:7027`
 - `http://localhost:5079`
 
-The API applies pending database migrations on startup.
+In development, the API applies pending database migrations on startup because
+`Database:ApplyMigrationsOnStartup` is enabled in `appsettings.Development.json`.
+For other environments this setting defaults to `false`; run migrations explicitly
+or enable the setting only for a controlled startup.
 
 ## Workers
 
@@ -179,6 +182,7 @@ Optional configuration:
 
 - `AutoMapperOptions:LicenseKey`
 - `Authentication:Google:ClientId`
+- `Database:ApplyMigrationsOnStartup`
 
 ### API
 
@@ -190,7 +194,7 @@ dotnet publish API/RequirementAI.API/RequirementAI.API.csproj -c Release -o publ
 
 Run the published API with `ASPNETCORE_ENVIRONMENT` set to the target environment, for example `Production`.
 
-The API applies pending Entity Framework migrations on startup. Make sure the API process has database migration permissions, or run migrations separately before starting the API.
+The API does not apply pending Entity Framework migrations on startup unless `Database:ApplyMigrationsOnStartup` is set to `true`. For production, prefer running migrations as an explicit deployment step before starting the API instead of giving every API instance migration permissions.
 
 ### Workers
 
