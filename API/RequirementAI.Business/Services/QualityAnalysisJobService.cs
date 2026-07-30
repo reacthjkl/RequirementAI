@@ -9,9 +9,9 @@ namespace RequirementAI.Business.Services;
 public class QualityAnalysisJobService(IJobRepository<QualityAnalysisJob> repo, IMapper mapper)
     : IQualityAnalysisJobService
 {
-    public async Task<QualityAnalysisJobDto> GetById(Guid jobId, CancellationToken ct)
+    public async Task<QualityAnalysisJobDto> GetById(Guid jobId, Guid organizationId, CancellationToken ct)
     {
-        var job = await repo.Get(jobId, ct);
+        var job = await repo.Get(jobId, organizationId, ct);
 
         return mapper.Map<QualityAnalysisJobDto>(job);
     }

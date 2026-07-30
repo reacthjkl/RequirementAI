@@ -18,9 +18,9 @@ public class ProjectService(
 {
     private static readonly Regex WordRegex = new(@"[\p{L}\p{N}]+", RegexOptions.Compiled);
 
-    public async Task<ProjectResponseDto> GetById(Guid id, CancellationToken ct)
+    public async Task<ProjectResponseDto> GetById(Guid id, Guid organizationId, CancellationToken ct)
     {
-        var entity = await projectRepository.GetById(id, ct);
+        var entity = await projectRepository.GetById(id, organizationId, ct);
 
         var dto = mapper.Map<ProjectResponseDto>(entity);
 
@@ -29,9 +29,9 @@ public class ProjectService(
         return dto;
     }
 
-    public async Task<ProjectWithArtifactsDto> GetWithArtifacts(Guid id, CancellationToken ct)
+    public async Task<ProjectWithArtifactsDto> GetWithArtifacts(Guid id, Guid organizationId, CancellationToken ct)
     {
-        var project = await projectRepository.GetFullProjectById(id, ct);
+        var project = await projectRepository.GetFullProjectById(id, organizationId, ct);
 
         return new ProjectWithArtifactsDto
         {
@@ -113,9 +113,9 @@ public class ProjectService(
         };
     }
 
-    public async Task<ProjectWordCountDto> GetWordCounts(Guid id, CancellationToken ct)
+    public async Task<ProjectWordCountDto> GetWordCounts(Guid id, Guid organizationId, CancellationToken ct)
     {
-        var project = await projectRepository.GetFullProjectById(id, ct);
+        var project = await projectRepository.GetFullProjectById(id, organizationId, ct);
 
         var personaCounts = project.Personas
             .OrderBy(x => x.CreatedAt)
@@ -203,17 +203,19 @@ public class ProjectService(
         return mapper.Map<ProjectResponseDto>(created);
     }
 
-    public async Task Update(ProjectForUpdateDto project, CancellationToken ct)
+    public async Task Update(ProjectForUpdateDto project, Guid organizationId, CancellationToken ct)
     {
-        var entity = await projectRepository.GetById(project.Id, ct);
+        var entity = await projectRepository.GetById(project.Id, organizationId, ct);
 
         mapper.Map(project, entity);
 
         await projectRepository.Update(entity, ct);
     }
 
-    public async Task<Guid> Refine(Guid projectId, RefineRequestDto request, CancellationToken ct)
+    public async Task<Guid> Refine(Guid projectId, Guid organizationId, RefineRequestDto request, CancellationToken ct)
     {
+        await projectRepository.GetById(projectId, organizationId, ct);
+
         var job = await projectRefinementJobRepository.Create(
             new ProjectRefinementJob
             {
@@ -225,8 +227,10 @@ public class ProjectService(
         return job.Id;
     }
 
-    public async Task<Guid> Analyze(Guid projectId, CancellationToken ct)
+    public async Task<Guid> Analyze(Guid projectId, Guid organizationId, CancellationToken ct)
     {
+        await projectRepository.GetById(projectId, organizationId, ct);
+
         var job = await qualityAnalysisJobRepository.Create(
             new QualityAnalysisJob
             {
@@ -237,9 +241,9 @@ public class ProjectService(
         return job.Id;
     }
 
-    public async Task Delete(Guid id, CancellationToken ct)
+    public async Task Delete(Guid id, Guid organizationId, CancellationToken ct)
     {
-        var entity = await projectRepository.GetById(id, ct);
+        var entity = await projectRepository.GetById(id, organizationId, ct);
         await projectRepository.Delete(entity, ct);
     }
 

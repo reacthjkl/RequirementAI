@@ -13,10 +13,26 @@ public class ScenarioRepository(RequirementAIContext context): IScenarioReposito
             ?? throw new EntityNotFoundException<Scenario>(id);
     }
 
+    public async Task<Scenario> GetById(Guid id, Guid organizationId, CancellationToken ct)
+    {
+        return await context.Scenarios
+                   .FirstOrDefaultAsync(
+                       s => s.Id == id && s.Persona.Project.OrganizationId == organizationId,
+                       ct)
+               ?? throw new EntityNotFoundException<Scenario>(id);
+    }
+
     public async Task<IList<Scenario>> GetByPersona(Guid personaId, CancellationToken ct)
     {
         return await context.Scenarios
             .Where(s => s.PersonaId == personaId)
+            .ToListAsync(ct);
+    }
+
+    public async Task<IList<Scenario>> GetByPersona(Guid personaId, Guid organizationId, CancellationToken ct)
+    {
+        return await context.Scenarios
+            .Where(s => s.PersonaId == personaId && s.Persona.Project.OrganizationId == organizationId)
             .ToListAsync(ct);
     }
 

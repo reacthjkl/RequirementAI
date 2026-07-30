@@ -7,6 +7,7 @@ public interface IJobRepository<TJob> where TJob : BaseJob
 {
     public Task<TJob?> AcquireNextPendingJob(CancellationToken ct);
     public Task<TJob> Get(Guid id, CancellationToken ct);
+    public Task<TJob> Get(Guid id, Guid organizationId, CancellationToken ct);
     public Task<TJob?> GetLastByProjectId(Guid projectId, CancellationToken ct);
     public Task<TJob?> GetLastCompletedByProjectId(Guid projectId, CancellationToken ct);
     Task<Dictionary<Guid, JobStatus>> GetLatestStatusesByProjectIds(List<Guid> projectIds, CancellationToken ct);

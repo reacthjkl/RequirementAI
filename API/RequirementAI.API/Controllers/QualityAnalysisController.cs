@@ -10,7 +10,7 @@ public class QualityAnalysisController(IQualityAnalysisJobService service): Requ
     [HttpGet("{jobId:guid}")]
     public async Task<IActionResult> GetById(Guid jobId, CancellationToken ct)
     {
-        var result = await service.GetById(jobId, ct);
+        var result = await service.GetById(jobId, OrganizationId, ct);
         return Ok(ResponseDto<QualityAnalysisJobDto>.Success(result));
     }
 }

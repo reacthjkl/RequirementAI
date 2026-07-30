@@ -87,6 +87,17 @@ public class JobRepository<TJob>(RequirementAIContext context) : IJobRepository<
                ?? throw new EntityNotFoundException<TJob>(id);
     }
 
+    public async Task<TJob> Get(Guid id, Guid organizationId, CancellationToken ct)
+    {
+        return await context.Set<TJob>()
+                   .AsNoTracking()
+                   .FirstOrDefaultAsync(
+                       x => x.Id == id &&
+                            context.Projects.Any(p => p.Id == x.ProjectId && p.OrganizationId == organizationId),
+                       ct)
+               ?? throw new EntityNotFoundException<TJob>(id);
+    }
+
     public async Task<TJob?> GetLastByProjectId(
         Guid projectId,
         CancellationToken ct

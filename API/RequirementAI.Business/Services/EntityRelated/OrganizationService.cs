@@ -14,11 +14,11 @@ public class OrganizationService(IOrganizationRepository organizationRepository,
         return mapper.Map<OrganizationResponseDto>(entity);
     }
 
-    public async Task Update(OrganizationForUpdateDto organization, CancellationToken ct)
+    public async Task Update(OrganizationForUpdateDto organization, Guid organizationId, CancellationToken ct)
     {
-        var entity = await organizationRepository.GetById(organization.Id, ct);
-        
-        mapper.Map(organization, entity);
+        var entity = await organizationRepository.GetById(organizationId, ct);
+
+        entity.Name = organization.Name;
 
         await organizationRepository.Update(entity, ct);
     }

@@ -6,49 +6,75 @@ using RequirementAI.Persistence.Projections;
 
 namespace RequirementAI.Business.Services.EntityRelated;
 
-public class QualityScoreService(IQualityScoreRepository repository, IMapper mapper): IQualityScoreService
+public class QualityScoreService(
+    IQualityScoreRepository repository,
+    IProjectRepository projectRepository,
+    IMapper mapper): IQualityScoreService
 {
-    public async Task<List<PersonaQualityScoreDto>> GetPersonaQualityScores(Guid personaId, CancellationToken ct)
+    public async Task<List<PersonaQualityScoreDto>> GetPersonaQualityScores(
+        Guid personaId,
+        Guid organizationId,
+        CancellationToken ct)
     {
-        var scores = await repository.GetPersonaQualityScores(personaId, ct);
+        var scores = await repository.GetPersonaQualityScores(personaId, organizationId, ct);
         return mapper.Map<List<PersonaQualityScoreDto>>(scores);
     }
 
-    public async Task<List<ScenarioQualityScoreDto>> GetScenarioQualityScores(Guid scenarioId, CancellationToken ct)
+    public async Task<List<ScenarioQualityScoreDto>> GetScenarioQualityScores(
+        Guid scenarioId,
+        Guid organizationId,
+        CancellationToken ct)
     {
-        var scores = await repository.GetScenarioQualityScores(scenarioId, ct);
+        var scores = await repository.GetScenarioQualityScores(scenarioId, organizationId, ct);
         return mapper.Map<List<ScenarioQualityScoreDto>>(scores);
     }
 
-    public async Task<List<UserStoryQualityScoreDto>> GetUserStoryQualityScores(Guid userStoryId, CancellationToken ct)
+    public async Task<List<UserStoryQualityScoreDto>> GetUserStoryQualityScores(
+        Guid userStoryId,
+        Guid organizationId,
+        CancellationToken ct)
     {
-        var scores = await repository.GetUserStoryQualityScores(userStoryId, ct);
+        var scores = await repository.GetUserStoryQualityScores(userStoryId, organizationId, ct);
         return mapper.Map<List<UserStoryQualityScoreDto>>(scores);
     }
 
-    public async Task<PersonaQualityScoreDto?> GetLatestPersonaQualityScore(Guid personaId, CancellationToken ct)
+    public async Task<PersonaQualityScoreDto?> GetLatestPersonaQualityScore(
+        Guid personaId,
+        Guid organizationId,
+        CancellationToken ct)
     {
-        var score = await repository.GetLatestPersonaQualityScore(personaId, ct);
+        var score = await repository.GetLatestPersonaQualityScore(personaId, organizationId, ct);
         return mapper.Map<PersonaQualityScoreDto?>(score);
     }
 
-    public async Task<ScenarioQualityScoreDto?> GetLatestScenarioQualityScore(Guid scenarioId, CancellationToken ct)
+    public async Task<ScenarioQualityScoreDto?> GetLatestScenarioQualityScore(
+        Guid scenarioId,
+        Guid organizationId,
+        CancellationToken ct)
     {
-        var score = await repository.GetLatestScenarioQualityScore(scenarioId, ct);
+        var score = await repository.GetLatestScenarioQualityScore(scenarioId, organizationId, ct);
         return mapper.Map<ScenarioQualityScoreDto?>(score);
     }
 
-    public async Task<UserStoryQualityScoreDto?> GetLatestUserStoryQualityScore(Guid userStoryId, CancellationToken ct)
+    public async Task<UserStoryQualityScoreDto?> GetLatestUserStoryQualityScore(
+        Guid userStoryId,
+        Guid organizationId,
+        CancellationToken ct)
     {
-        var score = await repository.GetLatestUserStoryQualityScore(userStoryId, ct);
+        var score = await repository.GetLatestUserStoryQualityScore(userStoryId, organizationId, ct);
         return mapper.Map<UserStoryQualityScoreDto?>(score);
     }
 
-    public async Task<ProjectQualityOverviewDto> GetProjectQualityOverview(Guid projectId, CancellationToken ct)
+    public async Task<ProjectQualityOverviewDto> GetProjectQualityOverview(
+        Guid projectId,
+        Guid organizationId,
+        CancellationToken ct)
     {
-        var personaScores = await repository.GetLatestPersonaQualityScoresByProjectId(projectId, ct);
-        var scenarioScores = await repository.GetLatestScenarioQualityScoresByProjectId(projectId, ct);
-        var userStoryScores = await repository.GetLatestUserStoryQualityScoresByProjectId(projectId, ct);
+        await projectRepository.GetById(projectId, organizationId, ct);
+
+        var personaScores = await repository.GetLatestPersonaQualityScoresByProjectId(projectId, organizationId, ct);
+        var scenarioScores = await repository.GetLatestScenarioQualityScoresByProjectId(projectId, organizationId, ct);
+        var userStoryScores = await repository.GetLatestUserStoryQualityScoresByProjectId(projectId, organizationId, ct);
 
         var averagePersonaScore = AverageOrZero(personaScores.Select(x => x.OverallScore));
         var averageScenarioScore = AverageOrZero(scenarioScores.Select(x => x.OverallScore));
@@ -103,13 +129,16 @@ public class QualityScoreService(IQualityScoreRepository repository, IMapper map
                 })
                 .FirstOrDefault(),
 
-            ScoreTrend = await GetProjectScoreTrend(projectId, ct)
+            ScoreTrend = await GetProjectScoreTrend(projectId, organizationId, ct)
         };
     }
 
-    private async Task<List<ProjectScoreTrendPointDto>> GetProjectScoreTrend(Guid projectId, CancellationToken ct)
+    private async Task<List<ProjectScoreTrendPointDto>> GetProjectScoreTrend(
+        Guid projectId,
+        Guid organizationId,
+        CancellationToken ct)
     {
-        var scores = await repository.GetAllQualityScoresByProjectId(projectId, ct);
+        var scores = await repository.GetAllQualityScoresByProjectId(projectId, organizationId, ct);
 
         return scores
             .GroupBy(x => x.CreatedAt)
