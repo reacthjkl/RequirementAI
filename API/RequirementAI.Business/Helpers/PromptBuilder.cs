@@ -86,9 +86,9 @@ public class PromptBuilder(
                                   - Do not invent information merely to satisfy analysis feedback.
 
                                   OUTPUT LANGUAGE:
-                                  English
+                                  Same as the primary natural language detected from INPUT.
 
-                                  Write every natural-language JSON value exclusively in English.
+                                  Write every natural-language JSON value exclusively in the input language.
                                   Ignore languages appearing in CONTEXT, examples, feedback, or schema descriptions.
 
                                   JSON SCHEMA:
@@ -153,9 +153,9 @@ public class PromptBuilder(
                                   - Do not use markdown or include explanations outside JSON.
 
                                   OUTPUT LANGUAGE:
-                                  English
+                                  Same as the primary natural language detected from INPUT.
 
-                                  Write every natural-language JSON value exclusively in English.
+                                  Write every natural-language JSON value exclusively in the input language.
                                   Ignore languages appearing in CONTEXT, examples, feedback, or schema descriptions.
 
                                   JSON SCHEMA:
@@ -217,9 +217,9 @@ public class PromptBuilder(
                                   - The response MUST strictly match the provided JSON schema.
 
                                   OUTPUT LANGUAGE:
-                                  English
+                                  Same as the primary natural language detected from INPUT.
 
-                                  Write every natural-language JSON value exclusively in English.
+                                  Write every natural-language JSON value exclusively in the input language.
                                   Ignore languages appearing in CONTEXT, examples, feedback, or schema descriptions.
 
                                   JSON SCHEMA:
