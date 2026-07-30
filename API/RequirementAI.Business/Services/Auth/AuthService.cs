@@ -12,6 +12,7 @@ namespace RequirementAI.Business.Services.Auth;
 public class AuthService(
     IAuthProvider provider,
     IUserRepository userRepository,
+    IOrganizationRepository organizationRepository,
     IJwtTokenService jwtService,
     IOptions<JwtSettings> jwtSettings,
     IOptions<AuthenticationSettings> authenticationSettings,
@@ -80,6 +81,8 @@ public class AuthService(
     public async Task Register(RegisterRequestDto request, CancellationToken ct)
     {
         ValidateRegistrationSecret(request.RegistrationSecret);
+
+        await organizationRepository.GetById(request.OrganizationId, ct);
 
         var existingUser = await userRepository.GetByEmailIgnoringFilters(request.Email, ct);
 
