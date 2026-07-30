@@ -107,7 +107,7 @@ dotnet run --project API/RequirementAI.Workers/RequirementAI.Workers.csproj
 
 ## User Secrets Reference
 
-User secret keys follow the JSON path structure. For example, this JSON:
+User secret keys follow the JSON path structure of the appsettings.json. For example:
 
 ```json
 {
