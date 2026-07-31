@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using RequirementAI.Contract.Exceptions;
 using RequirementAI.Persistence.Entities;
 using RequirementAI.Persistence.Interfaces;
+using RequirementAI.Persistence.Projections;
 
 namespace RequirementAI.Persistence.Repositories;
 
@@ -63,6 +64,35 @@ public class ProjectRepository(RequirementAIContext context): IProjectRepository
     {
         return await GetFullProjectQuery()
                    .FirstOrDefaultAsync(p => p.Id == id && p.OrganizationId == organizationId, ct)
+               ?? throw new EntityNotFoundException<Project>(id);
+    }
+
+    public async Task<ProjectUserStoryDetailCountProjection> GetUserStoryDetailCounts(
+        Guid id,
+        Guid organizationId,
+        CancellationToken ct)
+    {
+        return await context.Projects
+                   .Where(project => project.Id == id && project.OrganizationId == organizationId)
+                   .Select(project => new ProjectUserStoryDetailCountProjection
+                   {
+                       ProjectId = project.Id,
+                       UserStoryCount = project.Personas
+                           .SelectMany(persona => persona.Scenarios)
+                           .SelectMany(scenario => scenario.UserStories)
+                           .Count(),
+                       TotalAcceptanceCriteria = project.Personas
+                           .SelectMany(persona => persona.Scenarios)
+                           .SelectMany(scenario => scenario.UserStories)
+                           .SelectMany(userStory => userStory.AcceptanceCriteria)
+                           .Count(),
+                       TotalEdgeCases = project.Personas
+                           .SelectMany(persona => persona.Scenarios)
+                           .SelectMany(scenario => scenario.UserStories)
+                           .SelectMany(userStory => userStory.EdgeCases)
+                           .Count()
+                   })
+                   .FirstOrDefaultAsync(ct)
                ?? throw new EntityNotFoundException<Project>(id);
     }
 

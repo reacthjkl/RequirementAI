@@ -180,6 +180,28 @@ public class ProjectService(
         };
     }
 
+    public async Task<ProjectUserStoryDetailCountDto> GetUserStoryDetailCounts(
+        Guid id,
+        Guid organizationId,
+        CancellationToken ct)
+    {
+        var counts = await projectRepository.GetUserStoryDetailCounts(id, organizationId, ct);
+
+        return new ProjectUserStoryDetailCountDto
+        {
+            ProjectId = counts.ProjectId,
+            UserStoryCount = counts.UserStoryCount,
+            TotalAcceptanceCriteria = counts.TotalAcceptanceCriteria,
+            TotalEdgeCases = counts.TotalEdgeCases,
+            AverageAcceptanceCriteriaPerUserStory = AveragePerUserStory(
+                counts.TotalAcceptanceCriteria,
+                counts.UserStoryCount),
+            AverageEdgeCasesPerUserStory = AveragePerUserStory(
+                counts.TotalEdgeCases,
+                counts.UserStoryCount)
+        };
+    }
+
     public async Task<List<ProjectResponseDto>> GetByOrganizationId(Guid organizationId, CancellationToken ct)
     {
         var entities = await projectRepository.GetByOrganization(organizationId, ct);
@@ -262,5 +284,15 @@ public class ProjectService(
         return counts.Count == 0
             ? 0
             : Math.Round((decimal)counts.Average(x => x.Words), 2);
+    }
+
+    private static decimal AveragePerUserStory(int total, int userStoryCount)
+    {
+        return userStoryCount == 0
+            ? 0.00m
+            : Math.Round(
+                (decimal)total / userStoryCount,
+                2,
+                MidpointRounding.AwayFromZero);
     }
 }

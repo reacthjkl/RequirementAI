@@ -1,3 +1,4 @@
+using System.Globalization;
 using AutoMapper;
 using RequirementAI.Business.Interfaces.EntityRelated;
 using RequirementAI.Contract.Dto;
@@ -101,7 +102,7 @@ public class QualityScoreService(
                     ItemId = x.PersonaId,
                     ItemType = "Persona",
                     Title = x.Persona.Name,
-                    Score = x.OverallScore,
+                    Score = ToFixedTwoDecimals(x.OverallScore),
                     EvaluatedAt = x.CreatedAt
                 })
                 .FirstOrDefault(),
@@ -113,7 +114,7 @@ public class QualityScoreService(
                     ItemId = x.ScenarioId,
                     ItemType = "Scenario",
                     Title = x.Scenario.Title,
-                    Score = x.OverallScore,
+                    Score = ToFixedTwoDecimals(x.OverallScore),
                     EvaluatedAt = x.CreatedAt
                 })
                 .FirstOrDefault(),
@@ -125,7 +126,7 @@ public class QualityScoreService(
                     ItemId = x.UserStoryId,
                     ItemType = "UserStory",
                     Title = x.UserStory.Title,
-                    Score = x.OverallScore,
+                    Score = ToFixedTwoDecimals(x.OverallScore),
                     EvaluatedAt = x.CreatedAt
                 })
                 .FirstOrDefault(),
@@ -227,7 +228,7 @@ public class QualityScoreService(
     private static ProjectQualityCriterionAverageDto CriterionAverage(
         string artifactType,
         string criterionName,
-        IEnumerable<int> scores)
+        IEnumerable<decimal> scores)
     {
         return new ProjectQualityCriterionAverageDto
         {
@@ -272,7 +273,7 @@ public class QualityScoreService(
                 return new ProjectScoreTrendPointDto
                 {
                     Date = analysis.Key,
-                    Score = Convert.ToDouble(totalProjectScore),
+                    Score = totalProjectScore,
                     Label = analysis.Key.ToString("dd.MM HH:mm")
                 };
             })
@@ -292,21 +293,17 @@ public class QualityScoreService(
         }.Where(x => x > 0));
     }
 
-    private static decimal AverageOrZero(IEnumerable<int> scores)
-    {
-        var list = scores.ToList();
-
-        return list.Count == 0
-            ? 0
-            : Math.Round((decimal)list.Average(), 1);
-    }
-
     private static decimal AverageOrZero(IEnumerable<decimal> scores)
     {
         var list = scores.ToList();
 
         return list.Count == 0
-            ? 0
-            : Math.Round(list.Average(), 1);
+            ? 0.00m
+            : ToFixedTwoDecimals(list.Average());
+    }
+
+    private static decimal ToFixedTwoDecimals(decimal score)
+    {
+        return decimal.Parse(score.ToString("0.00", CultureInfo.InvariantCulture), CultureInfo.InvariantCulture);
     }
 }

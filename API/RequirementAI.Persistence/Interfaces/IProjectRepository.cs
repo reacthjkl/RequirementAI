@@ -1,4 +1,5 @@
 using RequirementAI.Persistence.Entities;
+using RequirementAI.Persistence.Projections;
 
 namespace RequirementAI.Persistence.Interfaces;
 
@@ -9,6 +10,10 @@ public interface IProjectRepository
     Task<Dictionary<Guid, bool>> GetCompletenessByProjectIds(List<Guid> projectIds, CancellationToken ct);
     Task<Project> GetFullProjectById(Guid id, CancellationToken ct);
     Task<Project> GetFullProjectById(Guid id, Guid organizationId, CancellationToken ct);
+    Task<ProjectUserStoryDetailCountProjection> GetUserStoryDetailCounts(
+        Guid id,
+        Guid organizationId,
+        CancellationToken ct);
     Task<DateTimeOffset> GetLatestContentUpdate(Guid id, CancellationToken ct);
     Task<IList<Project>> GetByOrganization(Guid organizationId, CancellationToken ct);
     Task<Project> Create(Project project, CancellationToken ct);

@@ -43,6 +43,15 @@ public class ProjectController(IProjectService projectService, IQualityScoreServ
         return Ok(ResponseDto<ProjectWordCountDto>.Success(result));
     }
 
+    [HttpGet("{projectId:guid}/user-story-detail-counts")]
+    public async Task<IActionResult> GetProjectUserStoryDetailCounts(
+        Guid projectId,
+        CancellationToken ct)
+    {
+        var result = await projectService.GetUserStoryDetailCounts(projectId, OrganizationId, ct);
+        return Ok(ResponseDto<ProjectUserStoryDetailCountDto>.Success(result));
+    }
+
     [HttpPost]
     public async Task<IActionResult> Create([FromBody] ProjectForCreationDto dto, CancellationToken ct)
     {

@@ -7,6 +7,10 @@ public interface IProjectService
     public Task<ProjectResponseDto> GetById(Guid id, Guid organizationId, CancellationToken ct);
     public Task<ProjectWithArtifactsDto> GetWithArtifacts(Guid id, Guid organizationId, CancellationToken ct);
     public Task<ProjectWordCountDto> GetWordCounts(Guid id, Guid organizationId, CancellationToken ct);
+    public Task<ProjectUserStoryDetailCountDto> GetUserStoryDetailCounts(
+        Guid id,
+        Guid organizationId,
+        CancellationToken ct);
     Task<List<ProjectResponseDto>> GetByOrganizationId(Guid organizationId, CancellationToken ct);
     public Task<ProjectResponseDto> Create(ProjectForCreationDto project, Guid organizationId, CancellationToken ct);
     public Task Update(ProjectForUpdateDto project, Guid organizationId, CancellationToken ct);
