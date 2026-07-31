@@ -11,7 +11,6 @@ public class AnalysisTaskProvider: IAnalysisTaskProvider
             Analyze the provided persona for requirements engineering quality.
 
             Score the following dimensions from 1 to 10:
-            - overall quality
             - clarity
             - realism
             - goal clarity
@@ -32,7 +31,6 @@ public class AnalysisTaskProvider: IAnalysisTaskProvider
             Analyze the provided scenario for requirements engineering quality.
 
             Score the following dimensions from 1 to 10:
-            - overall quality
             - clarity
             - context quality
             - trigger quality
@@ -53,7 +51,6 @@ public class AnalysisTaskProvider: IAnalysisTaskProvider
                               Analyze the provided user story for requirements engineering quality.
 
                               Score the following dimensions from 1 to 10:
-                              - overall quality
                               - clarity
                               - completeness
                               - testability

@@ -1,5 +1,8 @@
+using System.Text.Json.Serialization;
+
 namespace RequirementAI.Contract.Dto.LLMDtos;
 
+[JsonUnmappedMemberHandling(JsonUnmappedMemberHandling.Disallow)]
 public class ScenarioLlmAnalysisDto: AnalysisBaseDto
 {
     public int ClarityScore { get; set; }

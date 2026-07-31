@@ -8,7 +8,7 @@ public class LowestScoreItemDto
 
     public string Title { get; set; } = null!;
 
-    public int Score { get; set; }
+    public decimal Score { get; set; }
 
     public DateTimeOffset EvaluatedAt { get; set; }
 }

@@ -5,11 +5,11 @@ public class UserStoryQualityScore: QualityScoreBase
     public Guid UserStoryId { get; set; }
     public UserStory UserStory { get; set; } = null!;
 
-    public int ClarityScore { get; set; }
-    public int CompletenessScore { get; set; }
-    public int TestabilityScore { get; set; }
-    public int AcceptanceCriteriaScore { get; set; }
-    public int ScopeScore { get; set; }
-    public int BusinessValueScore { get; set; }
-    public int AmbiguityScore { get; set; }
+    public decimal ClarityScore { get; set; }
+    public decimal CompletenessScore { get; set; }
+    public decimal TestabilityScore { get; set; }
+    public decimal AcceptanceCriteriaScore { get; set; }
+    public decimal ScopeScore { get; set; }
+    public decimal BusinessValueScore { get; set; }
+    public decimal AmbiguityScore { get; set; }
 }

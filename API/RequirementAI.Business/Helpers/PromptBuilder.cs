@@ -206,6 +206,7 @@ public class PromptBuilder(
                                   - Score every numeric field from 1 to 10, where 1 = very poor and 10 = excellent.
                                   - Preserve the original business intent.
                                   - Score all requested quality dimensions consistently on the required scale.
+                                  - Do not calculate or return an overall score; it is calculated by the server.
                                   - Identify strengths, weaknesses, ambiguities, missing details, contradictions, risks, and edge cases when relevant.
                                   - Do not invent unsupported domain-specific facts.
                                   - Use reasonable generic assumptions only when necessary and mark them explicitly as assumptions.

@@ -10,7 +10,7 @@ public enum QualityScoreTrendType
 
 public class QualityScoreTrendProjection
 {
-    public int OverallScore { get; set; }
+    public decimal OverallScore { get; set; }
     public DateTimeOffset CreatedAt { get; set; }
     public QualityScoreTrendType Type { get; init; }
 

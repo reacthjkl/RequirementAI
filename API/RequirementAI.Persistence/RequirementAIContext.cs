@@ -202,6 +202,14 @@ public class RequirementAIContext(DbContextOptions<RequirementAIContext> options
         
         modelBuilder.Entity<PersonaQualityScore>(entity => {  
             entity.HasKey(e => e.Id);
+
+            entity.Property(e => e.OverallScore).HasPrecision(4, 2);
+            entity.Property(e => e.ClarityScore).HasPrecision(4, 2);
+            entity.Property(e => e.RealismScore).HasPrecision(4, 2);
+            entity.Property(e => e.GoalClarityScore).HasPrecision(4, 2);
+            entity.Property(e => e.PainPointsScore).HasPrecision(4, 2);
+            entity.Property(e => e.RelevanceScore).HasPrecision(4, 2);
+            entity.Property(e => e.DifferentiationScore).HasPrecision(4, 2);
             
             entity.HasOne(e => e.Persona)
                 .WithMany(e => e.QualityScores)
@@ -210,6 +218,14 @@ public class RequirementAIContext(DbContextOptions<RequirementAIContext> options
         
         modelBuilder.Entity<ScenarioQualityScore>(entity => {  
             entity.HasKey(e => e.Id);
+
+            entity.Property(e => e.OverallScore).HasPrecision(4, 2);
+            entity.Property(e => e.ClarityScore).HasPrecision(4, 2);
+            entity.Property(e => e.ContextScore).HasPrecision(4, 2);
+            entity.Property(e => e.TriggerScore).HasPrecision(4, 2);
+            entity.Property(e => e.FlowCompletenessScore).HasPrecision(4, 2);
+            entity.Property(e => e.EdgeCasesScore).HasPrecision(4, 2);
+            entity.Property(e => e.PersonaFitScore).HasPrecision(4, 2);
             
             entity.HasOne(e => e.Scenario)
                 .WithMany(e => e.QualityScores)
@@ -218,6 +234,15 @@ public class RequirementAIContext(DbContextOptions<RequirementAIContext> options
         
         modelBuilder.Entity<UserStoryQualityScore>(entity => {  
             entity.HasKey(e => e.Id);
+
+            entity.Property(e => e.OverallScore).HasPrecision(4, 2);
+            entity.Property(e => e.ClarityScore).HasPrecision(4, 2);
+            entity.Property(e => e.CompletenessScore).HasPrecision(4, 2);
+            entity.Property(e => e.TestabilityScore).HasPrecision(4, 2);
+            entity.Property(e => e.AcceptanceCriteriaScore).HasPrecision(4, 2);
+            entity.Property(e => e.ScopeScore).HasPrecision(4, 2);
+            entity.Property(e => e.BusinessValueScore).HasPrecision(4, 2);
+            entity.Property(e => e.AmbiguityScore).HasPrecision(4, 2);
             
             entity.HasOne(e => e.UserStory)
                 .WithMany(e => e.QualityScores)
