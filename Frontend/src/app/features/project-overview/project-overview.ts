@@ -1,12 +1,16 @@
 import { Component, ElementRef, OnDestroy, ViewChild } from '@angular/core';
 import { ActivatedRoute, RouterModule } from '@angular/router';
+import type { IconDefinition } from '@fortawesome/fontawesome-svg-core';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import {
   faChartLine,
   faCircleCheck,
   faCircleExclamation,
   faClock,
+  faHashtag,
+  faListCheck,
   faSpinner,
+  faTriangleExclamation,
 } from '@fortawesome/free-solid-svg-icons';
 import type { Chart as ChartInstance } from 'chart.js';
 import { Notification } from '../../core/services/notification.service';
@@ -15,13 +19,39 @@ import { JobStatus } from '../../shared/enums/job-status.enum';
 import { UserStoryStage } from '../../shared/enums/user-story-stage.enum';
 import { ENTITY_COLLECTION_ICONS, ENTITY_ICONS } from '../../shared/icons/entity-icons';
 import { LowestScoreItem } from '../../shared/models/lowest-score-item.model';
-import { ProjectQualityOverview } from '../../shared/models/project-quality-overview.model';
+import {
+  ProjectQualityCriterionAverage,
+  ProjectQualityOverview,
+} from '../../shared/models/project-quality-overview.model';
 import { ProjectScoreTrendPoint } from '../../shared/models/project-score-trend-point.model';
+import { ProjectUserStoryDetailCount } from '../../shared/models/project-user-story-detail-count.model';
+import {
+  ArtifactWordCount,
+  ProjectWordCount,
+} from '../../shared/models/project-word-count.model';
 import { Project } from '../../shared/models/project.model';
 import { PersonaService } from '../../shared/services/persona';
 import { ProjectService } from '../../shared/services/project';
 import { ScenarioService } from '../../shared/services/scenario';
 import { UserStoryService } from '../../shared/services/user-story';
+
+type QualityCriterionArtifactType = ProjectQualityCriterionAverage['artifactType'];
+
+interface QualityCriterionAverageGroup {
+  artifactType: QualityCriterionArtifactType;
+  averages: ProjectQualityCriterionAverage[];
+  icon: IconDefinition;
+  label: string;
+  subtitle: string;
+}
+
+interface WordCountArtifactGroup {
+  artifacts: ArtifactWordCount[];
+  averageWords: number;
+  icon: IconDefinition;
+  label: string;
+  totalWords: number;
+}
 
 @Component({
   selector: 'app-project-overview',
@@ -38,8 +68,12 @@ export class ProjectOverview implements OnDestroy {
 
   public project: Project | null = null;
   public qualityOverview: ProjectQualityOverview | null = null;
+  public userStoryDetailCounts: ProjectUserStoryDetailCount | null = null;
+  public wordCounts: ProjectWordCount | null = null;
   public loading = true;
   public qualityLoading = false;
+  public userStoryDetailCountsLoading = false;
+  public wordCountsLoading = false;
   public analyzing = false;
   public analysisJobStatus = JobStatus.None;
   public analysisJobErrorMessage: string | null = null;
@@ -56,7 +90,10 @@ export class ProjectOverview implements OnDestroy {
   public readonly faCircleExclamation = faCircleExclamation;
   public readonly faClock = faClock;
   public readonly faChartLine = faChartLine;
+  public readonly faHashtag = faHashtag;
+  public readonly faListCheck = faListCheck;
   public readonly faSpinner = faSpinner;
+  public readonly faTriangleExclamation = faTriangleExclamation;
 
   private readonly analysisPollIntervalMs = 5000;
   private readonly analysisJobStorageKeyPrefix = 'requirement-ai:quality-analysis-job';
@@ -101,7 +138,11 @@ export class ProjectOverview implements OnDestroy {
       );
       this.scenarioCount = scenarioGroups.flat().length;
 
-      await this.loadQualityOverview(projectId);
+      await Promise.all([
+        this.loadQualityOverview(projectId),
+        this.loadUserStoryDetailCounts(projectId),
+        this.loadWordCounts(projectId),
+      ]);
       this.resumeStoredQualityAnalysisJob(projectId);
     } finally {
       this.loading = false;
@@ -139,6 +180,61 @@ export class ProjectOverview implements OnDestroy {
       { label: 'Personas', score: this.qualityOverview.averagePersonaScore },
       { label: 'Scenarios', score: this.qualityOverview.averageScenarioScore },
       { label: 'User Stories', score: this.qualityOverview.averageUserStoryScore },
+    ];
+  }
+
+  public get criterionAverageGroups(): QualityCriterionAverageGroup[] {
+    const criterionAverages = this.qualityOverview?.criterionAverages ?? [];
+
+    return [
+      {
+        artifactType: 'Persona',
+        averages: this.criterionAveragesFor('Persona', criterionAverages),
+        icon: this.entityCollectionIcons.personas,
+        label: 'Personas',
+        subtitle: 'Persona quality criteria',
+      },
+      {
+        artifactType: 'Scenario',
+        averages: this.criterionAveragesFor('Scenario', criterionAverages),
+        icon: this.entityCollectionIcons.scenarios,
+        label: 'Scenarios',
+        subtitle: 'Scenario quality criteria',
+      },
+      {
+        artifactType: 'UserStory',
+        averages: this.criterionAveragesFor('UserStory', criterionAverages),
+        icon: this.entityIcons.userStory,
+        label: 'User Stories',
+        subtitle: 'User story quality criteria',
+      },
+    ];
+  }
+
+  public get wordCountArtifactGroups(): WordCountArtifactGroup[] {
+    if (!this.wordCounts) {
+      return [];
+    }
+
+    return [
+      this.wordCountArtifactGroup(
+        'Personas',
+        this.entityCollectionIcons.personas,
+        this.wordCounts.averageWordsPerPersona,
+        this.wordCounts.wordsPerPersona,
+      ),
+      this.wordCountArtifactGroup(
+        'Scenarios',
+        this.entityCollectionIcons.scenarios,
+        this.wordCounts.averageWordsPerScenario,
+        this.wordCounts.wordsPerScenario,
+      ),
+      this.wordCountArtifactGroup(
+        'User Stories',
+        this.entityIcons.userStory,
+        this.wordCounts.averageWordsPerUserStory,
+        this.wordCounts.wordsPerUserStory,
+      ),
     ];
   }
 
@@ -209,7 +305,14 @@ export class ProjectOverview implements OnDestroy {
   }
 
   public scoreLabel(score: number): string {
-    return `${this.normalizedScore(score).toFixed(1).replace(/\.0$/, '')}/10`;
+    return `${this.normalizedScore(score).toFixed(2)}/10`;
+  }
+
+  public criterionLabel(criterionName: string): string {
+    return criterionName
+      .replace(/Score$/, '')
+      .replace(/([a-z])([A-Z])/g, '$1 $2')
+      .replace(/([A-Z]+)([A-Z][a-z])/g, '$1 $2');
   }
 
   public isLowScore(score: number): boolean {
@@ -233,6 +336,13 @@ export class ProjectOverview implements OnDestroy {
     }).format(date);
   }
 
+  public formatCount(value: number, fractionDigits = 0): string {
+    return new Intl.NumberFormat(undefined, {
+      maximumFractionDigits: fractionDigits,
+      minimumFractionDigits: fractionDigits,
+    }).format(value);
+  }
+
   private async loadQualityOverview(projectId: string): Promise<void> {
     this.qualityLoading = true;
 
@@ -245,6 +355,33 @@ export class ProjectOverview implements OnDestroy {
       this.notification.fail('Could not load project quality overview');
     } finally {
       this.qualityLoading = false;
+    }
+  }
+
+  private async loadWordCounts(projectId: string): Promise<void> {
+    this.wordCountsLoading = true;
+
+    try {
+      this.wordCounts = await this.projectService.getWordCounts(projectId);
+    } catch {
+      this.wordCounts = null;
+      this.notification.fail('Could not load project word counts');
+    } finally {
+      this.wordCountsLoading = false;
+    }
+  }
+
+  private async loadUserStoryDetailCounts(projectId: string): Promise<void> {
+    this.userStoryDetailCountsLoading = true;
+
+    try {
+      this.userStoryDetailCounts =
+        await this.projectService.getUserStoryDetailCounts(projectId);
+    } catch {
+      this.userStoryDetailCounts = null;
+      this.notification.fail('Could not load user story detail counts');
+    } finally {
+      this.userStoryDetailCountsLoading = false;
     }
   }
 
@@ -379,6 +516,32 @@ export class ProjectOverview implements OnDestroy {
 
   private qualityAnalysisJobStorageKey(projectId: string): string {
     return `${this.analysisJobStorageKeyPrefix}:${projectId}`;
+  }
+
+  private criterionAveragesFor(
+    artifactType: QualityCriterionArtifactType,
+    criterionAverages: ProjectQualityCriterionAverage[],
+  ): ProjectQualityCriterionAverage[] {
+    return criterionAverages.filter((average) => average.artifactType === artifactType);
+  }
+
+  private wordCountArtifactGroup(
+    label: string,
+    icon: IconDefinition,
+    averageWords: number,
+    artifacts: ArtifactWordCount[],
+  ): WordCountArtifactGroup {
+    const sortedArtifacts = [...artifacts].sort(
+      (left, right) => right.words - left.words || left.title.localeCompare(right.title),
+    );
+
+    return {
+      artifacts: sortedArtifacts,
+      averageWords,
+      icon,
+      label,
+      totalWords: artifacts.reduce((total, artifact) => total + artifact.words, 0),
+    };
   }
 
   private dateKey(value: string | Date): string {

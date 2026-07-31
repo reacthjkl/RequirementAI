@@ -214,6 +214,72 @@
             }
           </div>
 
+          @if (qualityOverview.criterionAverages.length > 0) {
+            <section class="quality-criteria-card">
+              <div class="mb-3">
+                <h6 class="mb-1">Criteria averages</h6>
+                <p class="text-secondary mb-0">
+                  Average scores for every evaluated criterion by artifact type
+                </p>
+              </div>
+
+              <div class="row row-cols-1 row-cols-lg-3 g-3">
+                @for (group of criterionAverageGroups; track group.artifactType) {
+                  <div class="col">
+                    <div class="quality-criteria-group h-100">
+                      <div class="d-flex align-items-start gap-3 mb-3">
+                        <span class="stat-icon bg-primary-subtle text-primary">
+                          <fa-icon [icon]="group.icon"></fa-icon>
+                        </span>
+
+                        <div class="min-width-0">
+                          <div class="fw-semibold">{{ group.label }}</div>
+                          <div class="small text-secondary">{{ group.subtitle }}</div>
+                        </div>
+                      </div>
+
+                      <div class="d-flex flex-column gap-3">
+                        @for (average of group.averages; track average.criterionName) {
+                          <div class="quality-criterion-row">
+                            <div class="d-flex justify-content-between gap-3 mb-2">
+                              <div class="quality-criterion-label">
+                                {{ criterionLabel(average.criterionName) }}
+                              </div>
+                              <div
+                                class="quality-criterion-score"
+                                [class.text-danger]="isLowScore(average.averageScore)"
+                                [class.text-primary]="!isLowScore(average.averageScore)"
+                              >
+                                {{ scoreLabel(average.averageScore) }}
+                              </div>
+                            </div>
+
+                            <div
+                              class="progress quality-progress"
+                              role="progressbar"
+                              [attr.aria-label]="
+                                group.label + ' ' + criterionLabel(average.criterionName) + ' score'
+                              "
+                              [attr.aria-valuenow]="average.averageScore"
+                              aria-valuemin="0"
+                              aria-valuemax="10"
+                            >
+                              <div
+                                class="progress-bar"
+                                [class.bg-danger]="isLowScore(average.averageScore)"
+                                [style.width.%]="scorePercent(average.averageScore)"
+                              ></div>
+                            </div>
+                          </div>
+                        }
+                      </div>
+                    </div>
+                  </div>
+                }
+              </div>
+            </section>
+          }
+
           <div class="row g-3">
             <div class="col-lg-5">
               <h6 class="mb-3">Lowest scoring items</h6>
@@ -254,6 +320,188 @@
               } @else {
                 <div class="text-secondary">No score trend available.</div>
               }
+            </div>
+          </div>
+        }
+      </div>
+    </section>
+
+    <section class="card border-0 shadow-sm">
+      <div class="card-body d-flex flex-column gap-4">
+        <div>
+          <h5 class="card-title mb-1">Word count overview</h5>
+          <p class="card-text text-secondary mb-0">
+            Content volume across project details, personas, scenarios, and user stories
+          </p>
+        </div>
+
+        @if (wordCountsLoading) {
+          <div class="text-muted">Loading word counts...</div>
+        } @else if (!wordCounts) {
+          <div class="text-secondary">No word count information available.</div>
+        } @else {
+          <div class="d-flex align-items-center gap-3">
+            <span class="stat-icon bg-primary-subtle text-primary">
+              <fa-icon [icon]="faHashtag"></fa-icon>
+            </span>
+
+            <div>
+              <div class="text-secondary small">Total words</div>
+              <div class="fs-2 fw-bold lh-sm">
+                {{ formatCount(wordCounts.totalWords) }}
+              </div>
+              <div class="small text-secondary">Project details and all artifacts</div>
+            </div>
+          </div>
+
+          <div class="row row-cols-1 row-cols-lg-3 g-0 border-top pt-lg-4">
+            @for (group of wordCountArtifactGroups; track group.label) {
+              <section
+                class="col word-count-group px-lg-4 py-4 py-lg-0"
+                [attr.aria-label]="group.label + ' word counts'"
+              >
+                <div class="d-flex align-items-start gap-3">
+                  <span class="stat-icon bg-primary-subtle text-primary">
+                    <fa-icon [icon]="group.icon"></fa-icon>
+                  </span>
+
+                  <div class="min-width-0">
+                    <h6 class="mb-1">{{ group.label }}</h6>
+                    <div class="small text-secondary">
+                      {{ group.artifacts.length }}
+                      {{ group.artifacts.length === 1 ? 'artifact' : 'artifacts' }}
+                    </div>
+                  </div>
+                </div>
+
+                <dl class="row g-3 my-3">
+                  <div class="col-6">
+                    <div class="border-start border-2 border-primary-subtle ps-3">
+                      <dt class="text-secondary small fw-normal">Total</dt>
+                      <dd class="fs-5 fw-bold lh-sm mb-0 mt-1">
+                        {{ formatCount(group.totalWords) }}
+                      </dd>
+                    </div>
+                  </div>
+                  <div class="col-6">
+                    <div class="border-start border-2 border-primary-subtle ps-3">
+                      <dt class="text-secondary small fw-normal">Average</dt>
+                      <dd class="fs-5 fw-bold lh-sm mb-0 mt-1">
+                        {{ formatCount(group.averageWords, 2) }}
+                      </dd>
+                    </div>
+                  </div>
+                </dl>
+
+                <div class="word-count-artifacts border-top overflow-y-auto">
+                  @for (artifact of group.artifacts; track artifact.id) {
+                    <div
+                      class="d-flex align-items-center justify-content-between gap-3 py-2 border-bottom"
+                    >
+                      <span class="text-truncate" [title]="artifact.title">
+                        {{ artifact.title }}
+                      </span>
+                      <span class="flex-shrink-0 small fw-semibold text-nowrap">
+                        {{ formatCount(artifact.words) }}
+                        {{ artifact.words === 1 ? 'word' : 'words' }}
+                      </span>
+                    </div>
+                  } @empty {
+                    <div class="small text-secondary py-2">No artifacts available.</div>
+                  }
+                </div>
+              </section>
+            }
+          </div>
+        }
+      </div>
+    </section>
+
+    <section class="card border-0 shadow-sm">
+      <div class="card-body d-flex flex-column gap-4">
+        <div>
+          <h5 class="card-title mb-1">User story details</h5>
+          <p class="card-text text-secondary mb-0">
+            Acceptance criteria and edge case coverage across all user stories
+          </p>
+        </div>
+
+        @if (userStoryDetailCountsLoading) {
+          <div class="text-muted">Loading user story details...</div>
+        } @else if (!userStoryDetailCounts) {
+          <div class="text-secondary">No user story detail information available.</div>
+        } @else {
+          <div class="small text-secondary">
+            Based on {{ formatCount(userStoryDetailCounts.userStoryCount) }}
+            {{
+              userStoryDetailCounts.userStoryCount === 1 ? 'user story' : 'user stories'
+            }}
+          </div>
+
+          <div class="row row-cols-1 row-cols-md-2 g-4">
+            <div class="col">
+              <section
+                class="h-100 border-start border-2 border-primary-subtle ps-3"
+                aria-label="Acceptance criteria counts"
+              >
+                <div class="d-flex align-items-center gap-3">
+                  <span class="stat-icon bg-primary-subtle text-primary">
+                    <fa-icon [icon]="faListCheck"></fa-icon>
+                  </span>
+                  <h6 class="mb-0">Acceptance criteria</h6>
+                </div>
+
+                <dl class="row g-3 mb-0 mt-2">
+                  <div class="col-6">
+                    <dt class="text-secondary small fw-normal">Total</dt>
+                    <dd class="fs-3 fw-bold lh-sm mb-0 mt-1">
+                      {{ formatCount(userStoryDetailCounts.totalAcceptanceCriteria) }}
+                    </dd>
+                  </div>
+                  <div class="col-6">
+                    <dt class="text-secondary small fw-normal">Average / user story</dt>
+                    <dd class="fs-3 fw-bold lh-sm mb-0 mt-1">
+                      {{
+                        formatCount(
+                          userStoryDetailCounts.averageAcceptanceCriteriaPerUserStory,
+                          2
+                        )
+                      }}
+                    </dd>
+                  </div>
+                </dl>
+              </section>
+            </div>
+
+            <div class="col">
+              <section
+                class="h-100 border-start border-2 border-primary-subtle ps-3"
+                aria-label="Edge case counts"
+              >
+                <div class="d-flex align-items-center gap-3">
+                  <span class="stat-icon bg-primary-subtle text-primary">
+                    <fa-icon [icon]="faTriangleExclamation"></fa-icon>
+                  </span>
+                  <h6 class="mb-0">Edge cases</h6>
+                </div>
+
+                <dl class="row g-3 mb-0 mt-2">
+                  <div class="col-6">
+                    <dt class="text-secondary small fw-normal">Total</dt>
+                    <dd class="fs-3 fw-bold lh-sm mb-0 mt-1">
+                      {{ formatCount(userStoryDetailCounts.totalEdgeCases) }}
+                    </dd>
+                  </div>
+                  <div class="col-6">
+                    <dt class="text-secondary small fw-normal">Average / user story</dt>
+                    <dd class="fs-3 fw-bold lh-sm mb-0 mt-1">
+                      {{
+                        formatCount(userStoryDetailCounts.averageEdgeCasesPerUserStory, 2)
+                      }}
+                    </dd>
+                  </div>
+                </dl>
+              </section>
             </div>
           </div>
         }

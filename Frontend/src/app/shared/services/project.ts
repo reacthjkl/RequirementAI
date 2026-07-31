@@ -7,6 +7,8 @@ import { ApiResponse } from '../models/api-response.model';
 import { ProjectForCreation } from '../models/project-for-creation.model';
 import { ProjectForUpdate } from '../models/project-for-update.model';
 import { ProjectQualityOverview } from '../models/project-quality-overview.model';
+import { ProjectUserStoryDetailCount } from '../models/project-user-story-detail-count.model';
+import { ProjectWordCount } from '../models/project-word-count.model';
 import { Project } from '../models/project.model';
 import { QualityAnalysisJob } from '../models/quality-analysis-job.model';
 
@@ -54,6 +56,26 @@ export class ProjectService {
     const response: ApiResponse<ProjectQualityOverview | null> = await this.api.get(
       ApiController.Project,
       `${projectId}/overview`,
+    );
+
+    return response.data;
+  }
+
+  public async getWordCounts(projectId: string): Promise<ProjectWordCount | null> {
+    const response: ApiResponse<ProjectWordCount | null> = await this.api.get(
+      ApiController.Project,
+      `${projectId}/word-counts`,
+    );
+
+    return response.data;
+  }
+
+  public async getUserStoryDetailCounts(
+    projectId: string,
+  ): Promise<ProjectUserStoryDetailCount | null> {
+    const response: ApiResponse<ProjectUserStoryDetailCount | null> = await this.api.get(
+      ApiController.Project,
+      `${projectId}/user-story-detail-counts`,
     );
 
     return response.data;
