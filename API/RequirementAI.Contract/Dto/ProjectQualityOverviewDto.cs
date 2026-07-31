@@ -12,5 +12,7 @@ public class ProjectQualityOverviewDto
     public LowestScoreItemDto? LowestScenario { get; set; }
     public LowestScoreItemDto? LowestUserStory { get; set; }
 
+    public List<ProjectQualityCriterionAverageDto> CriterionAverages { get; set; } = [];
+
     public List<ProjectScoreTrendPointDto> ScoreTrend { get; set; } = [];
 }

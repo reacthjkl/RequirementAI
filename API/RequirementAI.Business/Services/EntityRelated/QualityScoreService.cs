@@ -1,6 +1,7 @@
 using AutoMapper;
 using RequirementAI.Business.Interfaces.EntityRelated;
 using RequirementAI.Contract.Dto;
+using RequirementAI.Persistence.Entities;
 using RequirementAI.Persistence.Interfaces;
 using RequirementAI.Persistence.Projections;
 
@@ -129,7 +130,110 @@ public class QualityScoreService(
                 })
                 .FirstOrDefault(),
 
+            CriterionAverages = GetCriterionAverages(personaScores, scenarioScores, userStoryScores),
+
             ScoreTrend = await GetProjectScoreTrend(projectId, organizationId, ct)
+        };
+    }
+
+    private static List<ProjectQualityCriterionAverageDto> GetCriterionAverages(
+        List<PersonaQualityScore> personaScores,
+        List<ScenarioQualityScore> scenarioScores,
+        List<UserStoryQualityScore> userStoryScores)
+    {
+        return
+        [
+            CriterionAverage(
+                "Persona",
+                nameof(PersonaQualityScore.ClarityScore),
+                personaScores.Select(x => x.ClarityScore)),
+            CriterionAverage(
+                "Persona",
+                nameof(PersonaQualityScore.RealismScore),
+                personaScores.Select(x => x.RealismScore)),
+            CriterionAverage(
+                "Persona",
+                nameof(PersonaQualityScore.GoalClarityScore),
+                personaScores.Select(x => x.GoalClarityScore)),
+            CriterionAverage(
+                "Persona",
+                nameof(PersonaQualityScore.PainPointsScore),
+                personaScores.Select(x => x.PainPointsScore)),
+            CriterionAverage(
+                "Persona",
+                nameof(PersonaQualityScore.RelevanceScore),
+                personaScores.Select(x => x.RelevanceScore)),
+            CriterionAverage(
+                "Persona",
+                nameof(PersonaQualityScore.DifferentiationScore),
+                personaScores.Select(x => x.DifferentiationScore)),
+
+            CriterionAverage(
+                "Scenario",
+                nameof(ScenarioQualityScore.ClarityScore),
+                scenarioScores.Select(x => x.ClarityScore)),
+            CriterionAverage(
+                "Scenario",
+                nameof(ScenarioQualityScore.ContextScore),
+                scenarioScores.Select(x => x.ContextScore)),
+            CriterionAverage(
+                "Scenario",
+                nameof(ScenarioQualityScore.TriggerScore),
+                scenarioScores.Select(x => x.TriggerScore)),
+            CriterionAverage(
+                "Scenario",
+                nameof(ScenarioQualityScore.FlowCompletenessScore),
+                scenarioScores.Select(x => x.FlowCompletenessScore)),
+            CriterionAverage(
+                "Scenario",
+                nameof(ScenarioQualityScore.EdgeCasesScore),
+                scenarioScores.Select(x => x.EdgeCasesScore)),
+            CriterionAverage(
+                "Scenario",
+                nameof(ScenarioQualityScore.PersonaFitScore),
+                scenarioScores.Select(x => x.PersonaFitScore)),
+
+            CriterionAverage(
+                "UserStory",
+                nameof(UserStoryQualityScore.ClarityScore),
+                userStoryScores.Select(x => x.ClarityScore)),
+            CriterionAverage(
+                "UserStory",
+                nameof(UserStoryQualityScore.CompletenessScore),
+                userStoryScores.Select(x => x.CompletenessScore)),
+            CriterionAverage(
+                "UserStory",
+                nameof(UserStoryQualityScore.TestabilityScore),
+                userStoryScores.Select(x => x.TestabilityScore)),
+            CriterionAverage(
+                "UserStory",
+                nameof(UserStoryQualityScore.AcceptanceCriteriaScore),
+                userStoryScores.Select(x => x.AcceptanceCriteriaScore)),
+            CriterionAverage(
+                "UserStory",
+                nameof(UserStoryQualityScore.ScopeScore),
+                userStoryScores.Select(x => x.ScopeScore)),
+            CriterionAverage(
+                "UserStory",
+                nameof(UserStoryQualityScore.BusinessValueScore),
+                userStoryScores.Select(x => x.BusinessValueScore)),
+            CriterionAverage(
+                "UserStory",
+                nameof(UserStoryQualityScore.AmbiguityScore),
+                userStoryScores.Select(x => x.AmbiguityScore))
+        ];
+    }
+
+    private static ProjectQualityCriterionAverageDto CriterionAverage(
+        string artifactType,
+        string criterionName,
+        IEnumerable<int> scores)
+    {
+        return new ProjectQualityCriterionAverageDto
+        {
+            ArtifactType = artifactType,
+            CriterionName = criterionName,
+            AverageScore = AverageOrZero(scores)
         };
     }
 
