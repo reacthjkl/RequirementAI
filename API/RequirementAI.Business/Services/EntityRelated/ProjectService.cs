@@ -143,28 +143,32 @@ public class ProjectService(
             })
             .ToList();
 
-        var userStoryCounts = project.Personas
+        var userStories = project.Personas
             .SelectMany(persona => persona.Scenarios)
             .SelectMany(scenario => scenario.UserStories)
+            .ToList();
+
+        var userStoryCounts = userStories
             .OrderBy(x => x.CreatedAt)
             .Select(userStory => new ArtifactWordCountDto
             {
                 Id = userStory.Id,
                 Title = userStory.Title,
-                Words = CountWords(
-                    userStory.Title,
-                    userStory.Description,
-                    string.Join(" ", userStory.AcceptanceCriteria.Select(x => x.Wording)),
-                    string.Join(" ", userStory.EdgeCases.Select(x =>
-                        JoinText(x.Preconditions, x.TriggerAction, x.ExpectedBehavior))))
+                Words = CountWords(userStory.Description)
             })
             .ToList();
 
         var projectWords = CountWords(project.Name, project.Description);
+        var userStoryTotalWords = userStories.Sum(userStory => CountWords(
+            userStory.Title,
+            userStory.Description,
+            string.Join(" ", userStory.AcceptanceCriteria.Select(x => x.Wording)),
+            string.Join(" ", userStory.EdgeCases.Select(x =>
+                JoinText(x.Preconditions, x.TriggerAction, x.ExpectedBehavior)))));
         var totalWords = projectWords
                          + personaCounts.Sum(x => x.Words)
                          + scenarioCounts.Sum(x => x.Words)
-                         + userStoryCounts.Sum(x => x.Words);
+                         + userStoryTotalWords;
 
         return new ProjectWordCountDto
         {
